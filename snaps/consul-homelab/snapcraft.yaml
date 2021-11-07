@@ -1,0 +1,29 @@
+name: consul-homelab
+version: '1.10.3'
+summary: HomeLab - Service Mesh for any runtime or cloud
+description: HomeLab - Consul automates networking for simple and secure application delivery.
+
+grade: stable
+confinement: strict
+base: core20
+
+architectures:
+  - build-on: [amd64, arm64]
+    run-on: [amd64, arm64]
+
+parts:
+  nomad:
+    plugin: go
+    go-channel: latest/stable
+    source-type: git
+    source: https://github.com/hashicorp/consul.git
+    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    build-packages:
+      - gcc
+
+apps:
+  consul-homelab:
+    command: bin/consul
+    plugs:
+      - network
+      - docker
