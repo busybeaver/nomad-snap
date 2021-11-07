@@ -21,6 +21,9 @@ jobs:
     name: 'Snapcraft'
     runs-on: ubuntu-latest
 
+    env:
+      PUBLISH_ARTIFACT: false
+
     defaults:
       run:
         shell: bash
@@ -30,7 +33,8 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout
+      - name: Git - Checkout
+        id: git_checkout
         uses: actions/checkout@v2
 
       - name: Snapcraft - Build Artifact
@@ -38,14 +42,28 @@ jobs:
         uses: snapcore/action-build@v1
 
       - name: GitHub - Upload Artifact
+        id: github_upload
         uses: actions/upload-artifact@v2
         with:
           name: nomad_snap
           path: ${{ steps.snapcraft_build.outputs.snap }}
 
+      - name: Snapcraft - Install and Test Artifact
+        id: snapcraft_test
+        run: |
+          echo '-----------------'
+          echo 'Install Snap:'
+          echo '-----------------'
+          sudo snap install --dangerous ${{ steps.snapcraft.outputs.snap }}
+          echo '-----------------'
+          echo 'Nomad version:'
+          echo '-----------------'
+          nomad version
+
       - name: Snapcraft - Publish Artifact
+        id: snapcraft_publish
         uses: snapcore/action-publish@v1
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.PUBLISH_ARTIFACT == 'true'
         with:
           # Generate via (snapcraft is available on ubuntu or via 'brew' on macOS:
           # snapcraft export-login --snaps="nomad-private" --acls="package_access,package_push,package_update,package_release" exported.txt

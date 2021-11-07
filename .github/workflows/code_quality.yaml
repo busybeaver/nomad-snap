@@ -27,7 +27,8 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout
+      - name: Git - Checkout
+        id: git_checkout
         uses: actions/checkout@v2
         with:
           # Checkout full git history; required by git-leaks
@@ -36,6 +37,7 @@ jobs:
       # using the 'github' format will automatically add github annotations:
       # https://github.com/ibiqlik/action-yamllint/pull/12
       - name: YamlLint - Scan Files
+        id: yamllint_scan
         uses: ibiqlik/action-yamllint@v3
         with:
           file_or_dir: .
@@ -44,4 +46,5 @@ jobs:
 
       # TODO: https://github.com/zricethezav/gitleaks-action/pull/34
       - name: Gitleaks - Scan For Commited Secrets
+        id: gitleaks_scan
         uses: zricethezav/gitleaks-action@v1
