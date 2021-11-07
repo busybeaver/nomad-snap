@@ -1,2 +1,3 @@
 # nomad-snap
-HashiCorp Nomad packaged as a Snap Package
+
+HashiCorp [Nomad](https://www.nomadproject.io/) packaged as a [Snap package](https://snapcraft.io/). Simplifies the installation on [Ubuntu Core](https://ubuntu.com/core) instances.
