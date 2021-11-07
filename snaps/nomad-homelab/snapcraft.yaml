@@ -1,7 +1,7 @@
-name: nomad
+name: nomad-homelab
 version: '1.1.6'
-summary: Workload Orchestration Made Easy
-description: A simple and flexible workload orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
+summary: HomeLab - Workload Orchestration Made Easy
+description: HomeLab - A simple and flexible workload orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
 
 grade: stable
 confinement: strict
@@ -22,7 +22,7 @@ parts:
       - gcc
 
 apps:
-  nomad:
+  nomad-homelab:
     command: bin/nomad
     plugs:
       - network
