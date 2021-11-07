@@ -51,7 +51,7 @@ jobs:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
     env:
-      PUBLISH_ARTIFACT: false
+      PUBLISH_ARTIFACT: true
       SNAP_WORKING_DIR: './snaps'
 
     defaults:
