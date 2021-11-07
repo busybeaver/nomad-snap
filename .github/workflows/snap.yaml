@@ -44,7 +44,11 @@ jobs:
       - name: Snapcraft - Install and Test Artifact
         id: snapcraft_test
         run: |
-          sudo snap install --dangerous ${{ steps.snapcraft_build.outputs.snap }}
+          sudo snap install --color=never --dangerous ${{ steps.snapcraft_build.outputs.snap }}
+          echo '-----------------'
+          snap list --color=never nomad-private
+          echo '-----------------'
+          snap info --color=never nomad-private
           echo '-----------------'
           nomad version
 
