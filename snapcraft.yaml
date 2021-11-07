@@ -21,8 +21,9 @@ parts:
   nomad:
     plugin: go
     go-channel: latest/stable
-    source: https://github.com/hashicorp/nomad.git#v$SNAPCRAFT_PROJECT_VERSION
     source-type: git
+    source: https://github.com/hashicorp/nomad.git
+    source-tag: v$SNAPCRAFT_PROJECT_VERSION
     build-packages:
       - gcc
 
