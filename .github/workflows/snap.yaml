@@ -36,7 +36,7 @@ jobs:
 
       - name: Build Matrix - Setup
         id: set_matrix
-        run: echo "::set-output name=matrix::$(python -c 'import os, json; print json.dumps(os.listdir("."))')"
+        run: echo "::set-output name=matrix::$(python3 -c 'import os, json; print json.dumps(os.listdir("."))')"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
