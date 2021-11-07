@@ -29,7 +29,7 @@ parts:
 
 apps:
   nomad:
-    command: nomad
+    command: bin/nomad
     plugs:
       - network
       - docker
