@@ -48,7 +48,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           # Generate via (snapcraft is available on ubuntu or via 'brew' on macOS:
-          # snapcraft export-login --snaps=nomad-private --acls package_access,package_push,package_update,package_release exported.txt
+          # snapcraft export-login --snaps="nomad-private" --acls="package_access,package_push,package_update,package_release" exported.txt
           store_login: ${{ secrets.SNAPCRAFT_STORE_LOGIN }}
           snap: ${{ steps.snapcraft_build.outputs.snap }}
           release: stable
