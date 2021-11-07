@@ -1,4 +1,4 @@
-name: nomad-private
+name: nomad
 version: '1.1.6'
 version-script: |
   if [ "$SNAPCRAFT_GRADE" = "stable" ]; then

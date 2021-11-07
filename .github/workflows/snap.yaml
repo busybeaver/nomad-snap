@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'snapcraft.yaml'
+      - 'snaps/**'
       - '.github/workflows/**'
   # run on pull requests that target the main branch
   pull_request:
@@ -17,17 +17,46 @@ on:
     - cron: '0 12 * * 1'
 
 jobs:
-  snapcraft:
-    name: 'Snapcraft'
+  matrix_setup:
+    name: 'Setup Build Matrix'
     runs-on: ubuntu-latest
-
-    env:
-      PUBLISH_ARTIFACT: false
 
     defaults:
       run:
         shell: bash
-        working-directory: '.'
+        working-directory: './snaps/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@v2
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: echo "::set-output name=matrix::$(python -c 'import os, json; print json.dumps(os.listdir("."))')"
+
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+
+  snapcraft:
+    name: 'Run Snapcraft'
+    needs: matrix_setup
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    env:
+      PUBLISH_ARTIFACT: false
+      SNAP_WORKING_DIR: './snaps'
+
+    defaults:
+      run:
+        shell: bash
 
     permissions:
       contents: read
@@ -40,23 +69,25 @@ jobs:
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
         uses: snapcore/action-build@v1
+        with:
+          path: '${{ env.SNAP_WORKING_DIR }}/${{ matrix.package }}'
 
       - name: Snapcraft - Install and Test Artifact
         id: snapcraft_test
         run: |
           sudo snap install --color=never --dangerous ${{ steps.snapcraft_build.outputs.snap }}
           echo '-----------------'
-          snap list --color=never nomad-private
+          snap list --color=never ${{ matrix.package }}
           echo '-----------------'
-          snap info --color=never nomad-private
+          snap info --color=never ${{ matrix.package }}
           echo '-----------------'
-          nomad version
+          ${{ matrix.package }} version
 
       - name: GitHub - Upload Artifact
         id: github_upload
         uses: actions/upload-artifact@v2
         with:
-          name: nomad_snap
+          name: ${{ matrix.package }}_snap
           path: ${{ steps.snapcraft_build.outputs.snap }}
 
       - name: Snapcraft - Publish Artifact
