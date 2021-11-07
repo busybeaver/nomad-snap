@@ -1,0 +1,47 @@
+name: 'Code Quality'
+
+on:
+  # run on pushes to main if snap related files were changed
+  push:
+    branches:
+      - main
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
+  # run weekly on Monday at 12:00
+  schedule:
+    - cron: '0 12 * * 1'
+
+jobs:
+  code-quality:
+    name: 'Code Quality Checks'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: '.'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # Checkout full git history; required by git-leaks
+          fetch-depth: 0
+
+      # using the 'github' format will automatically add github annotations:
+      # https://github.com/ibiqlik/action-yamllint/pull/12
+      - name: YamlLint - Scan Files
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: .
+          format: github
+          config_file: .yamllint.yml
+
+      # TODO: https://github.com/zricethezav/gitleaks-action/pull/34
+      - name: Gitleaks - Scan For Commited Secrets
+        uses: zricethezav/gitleaks-action@v1

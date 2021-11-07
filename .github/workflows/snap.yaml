@@ -1,14 +1,14 @@
 name: 'Snapcraft'
 
 on:
-  # run on pushes to master if snap related files were changed
+  # run on main to master if snap related files were changed
   push:
     branches:
       - main
     paths:
       - 'snapcraft.yaml'
       - '.github/workflows/**'
-  # run on pull requests that target the master branch
+  # run on pull requests that target the main branch
   pull_request:
     branches:
       - main
@@ -33,11 +33,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build Snapcraft
+      - name: Snapcraft - Build Artifact
         id: snapcraft_build
         uses: snapcore/action-build@v1
 
-      - uses: actions/upload-artifact@v2
+      - name: GitHub - Upload Artifact
+        uses: actions/upload-artifact@v2
         with:
           name: snap
           path: ${{ steps.snapcraft_build.outputs.snap }}
