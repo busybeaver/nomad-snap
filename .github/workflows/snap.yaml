@@ -41,24 +41,19 @@ jobs:
         id: snapcraft_build
         uses: snapcore/action-build@v1
 
+      - name: Snapcraft - Install and Test Artifact
+        id: snapcraft_test
+        run: |
+          sudo snap install --dangerous ${{ steps.snapcraft_build.outputs.snap }}
+          echo '-----------------'
+          nomad version
+
       - name: GitHub - Upload Artifact
         id: github_upload
         uses: actions/upload-artifact@v2
         with:
           name: nomad_snap
           path: ${{ steps.snapcraft_build.outputs.snap }}
-
-      - name: Snapcraft - Install and Test Artifact
-        id: snapcraft_test
-        run: |
-          echo '-----------------'
-          echo 'Install Snap:'
-          echo '-----------------'
-          sudo snap install --dangerous ${{ steps.snapcraft.outputs.snap }}
-          echo '-----------------'
-          echo 'Nomad version:'
-          echo '-----------------'
-          nomad version
 
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
