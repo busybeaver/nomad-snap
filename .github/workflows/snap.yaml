@@ -87,7 +87,7 @@ jobs:
         id: github_upload
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.package }}_snap
+          name: ${{ matrix.package }}.snap
           path: ${{ steps.snapcraft_build.outputs.snap }}
 
       - name: Snapcraft - Publish Artifact
