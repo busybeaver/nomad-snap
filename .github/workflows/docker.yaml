@@ -89,4 +89,4 @@ jobs:
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: ${{ env.REGISTRY }}/${{ matrix.package }}:${{ steps.docker_date_tag.outputs.tag }},${{ env.REGISTRY }}/${{ matrix.package }}:latest
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:${{ steps.docker_date_tag.outputs.tag }},${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest
