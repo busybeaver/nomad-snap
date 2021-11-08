@@ -53,7 +53,6 @@ jobs:
     env:
       REGISTRY: ghcr.io # GitHub Registry
       DOCKER_WORKING_DIR: './docker'
-      IMAGE_NAME: ${{ env.REGISTRY }}/${{ matrix.package }}
 
     defaults:
       run:
@@ -86,4 +85,4 @@ jobs:
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: ${{ env.IMAGE_NAME }}:$(date +%s),${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ matrix.package }}:$(date +%s),${{ env.REGISTRY }}/${{ matrix.package }}:latest
