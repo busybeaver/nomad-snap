@@ -80,7 +80,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker - Get Image Data
+      - name: Docker - Get Data
         id: docker_data
         run: |
           echo "::set-output name=date_tag::$(date +%s)"
@@ -93,3 +93,44 @@ jobs:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.docker_data.outputs.image_name }}:${{ steps.docker_data.outputs.date_tag }},${{ steps.docker_data.outputs.image_name }}:latest
+
+  code_quality:
+    name: 'Code Quality Checks'
+    needs: [matrix_setup, docker]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    env:
+      DOCKER_WORKING_DIR: './docker'
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+
+      - name: Docker - Get Data
+        id: docker_data
+        run: |
+          echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
+
+      - name: Snyk - Check for Docker Image Vulnerabilities
+        uses: snyk/actions/docker@0.3.0
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: ${{ steps.docker_data.outputs.image_name }}:latest
+
+      - name: Hadolint - Lint Dockerfile
+        uses: hadolint/hadolint-action@v1.6.0
+        with:
+          dockerfile: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile
