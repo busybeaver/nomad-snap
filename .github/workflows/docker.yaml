@@ -80,9 +80,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker - Get Date Tag
+        id: docker_date_tag
+        run: echo "::set-output name=tag::$(date +%s)"
+
       - name: Docker - Build And Publish Artifact
         uses: docker/build-push-action@v2
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: ${{ env.REGISTRY }}/${{ matrix.package }}:$(date +%s),${{ env.REGISTRY }}/${{ matrix.package }}:latest
+          tags: ${{ env.REGISTRY }}/${{ matrix.package }}:${{ steps.docker_date_tag.outputs.tag }},${{ env.REGISTRY }}/${{ matrix.package }}:latest
