@@ -48,3 +48,12 @@ jobs:
       - name: Gitleaks - Scan For Commited Secrets
         id: gitleaks_scan
         uses: zricethezav/gitleaks-action@v1
+
+      - name: GitGuardian - Scan For Commited Secrets
+        uses: GitGuardian/gg-shield-action@v1
+        env:
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
