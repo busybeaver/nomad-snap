@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
         with:
           # Checkout full git history; required by git-leaks
           fetch-depth: 0
@@ -38,7 +38,7 @@ jobs:
       # https://github.com/ibiqlik/action-yamllint/pull/12
       - name: YamlLint - Scan Files
         id: yamllint_scan
-        uses: ibiqlik/action-yamllint@v3
+        uses: ibiqlik/action-yamllint@81e214fd484713882ce4237cb7cd264d550856cf # renovate: tag=v3
         with:
           file_or_dir: .
           format: github
@@ -47,10 +47,10 @@ jobs:
       # TODO: https://github.com/zricethezav/gitleaks-action/pull/34
       - name: Gitleaks - Scan For Commited Secrets
         id: gitleaks_scan
-        uses: zricethezav/gitleaks-action@v1
+        uses: zricethezav/gitleaks-action@518e4898c0cd1cc5d9aab6627a2eabd46e81d8da # renovate: tag=v1
 
       - name: GitGuardian - Scan For Commited Secrets
-        uses: GitGuardian/ggshield-action@v1.1.0
+        uses: GitGuardian/ggshield-action@a5226e0a63850e276df1c71a81129fb82fc6e8cc # renovate: tag=v1.1.0
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
           GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
