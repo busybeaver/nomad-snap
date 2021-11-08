@@ -50,7 +50,7 @@ jobs:
         uses: zricethezav/gitleaks-action@v1
 
       - name: GitGuardian - Scan For Commited Secrets
-        uses: GitGuardian/gg-shield-action@v1
+        uses: GitGuardian/ggshield-action@v1
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
           GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
