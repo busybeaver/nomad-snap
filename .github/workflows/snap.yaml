@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -64,11 +64,11 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
 
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
-        uses: snapcore/action-build@v1
+        uses: snapcore/action-build@a400bf1c2d0f23074aaacf08a144813c3c20b35d # renovate: tag=v1
         with:
           path: '${{ env.SNAP_WORKING_DIR }}/${{ matrix.package }}'
 
@@ -85,14 +85,14 @@ jobs:
 
       - name: GitHub - Upload Artifact
         id: github_upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074 # renovate: tag=v2
         with:
           name: ${{ matrix.package }}.snap
           path: ${{ steps.snapcraft_build.outputs.snap }}
 
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
-        uses: snapcore/action-publish@v1
+        uses: snapcore/action-publish@f1879414dc5500e02a36f3d715bca6ddd438c913 # renovate: tag=v1
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.PUBLISH_ARTIFACT == 'true'
         with:
           # Generate via (snapcraft is available on ubuntu or via 'brew' on macOS:
