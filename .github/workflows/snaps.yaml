@@ -1,4 +1,4 @@
-name: 'Snapcraft'
+name: 'Snapcraft CI'
 
 on:
   # run on main to master if snap related files were changed
@@ -42,7 +42,7 @@ jobs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
 
   snapcraft:
-    name: 'Run Snapcraft'
+    name: 'Build, Test, and Publish'
     needs: matrix_setup
     runs-on: ubuntu-latest
 

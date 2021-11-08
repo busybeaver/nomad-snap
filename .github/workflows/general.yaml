@@ -1,4 +1,4 @@
-name: 'Code Quality'
+name: 'General CI'
 
 on:
   # run on pushes to main if snap related files were changed
@@ -14,7 +14,7 @@ on:
     - cron: '0 12 * * 1'
 
 jobs:
-  code-quality:
+  code_quality:
     name: 'Code Quality Checks'
     runs-on: ubuntu-latest
 
@@ -31,7 +31,7 @@ jobs:
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
         with:
-          # Checkout full git history; required by git-leaks
+          # Checkout full git history; required by git-leaks, GitGuardian
           fetch-depth: 0
 
       # using the 'github' format will automatically add github annotations:
