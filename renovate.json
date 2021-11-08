@@ -12,6 +12,7 @@
     ":maintainLockFilesWeekly",
     ":assignee(busybeaver)",
     ":enableVulnerabilityAlerts",
-    ":disableDependencyDashboard"
+    ":disableDependencyDashboard",
+    "helpers:pinGitHubActionDigests"
   ]
 }
