@@ -125,6 +125,8 @@ jobs:
           echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
 
       - name: Snyk - Check for Docker Image Vulnerabilities
+        id: snyk_scan
+        continue-on-error: true
         uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -132,6 +134,13 @@ jobs:
           image: ${{ steps.docker_data.outputs.image_name }}:latest
 
       - name: Hadolint - Lint Dockerfile
+        id: hadolint_scan
+        continue-on-error: true
         uses: hadolint/hadolint-action@d7b38582334d9ac11c12021c16f21d63015fa250 # renovate: tag=v1.6.0
         with:
           dockerfile: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile
+
+      - name: Linting - Aggregated Outcome
+        # for all steps with "continue-on-error: true"
+        if: steps.snyk_scan.outcome == 'failure' || steps.hadolint_scan.outcome == 'failure'
+        run: exit 1
