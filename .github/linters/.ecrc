@@ -1,3 +1,5 @@
 {
-  "NoColor": true
+  "NoColor": true,
+  "IgnoreDefaults": true,
+  "Exclude": ["\\.idea/"]
 }

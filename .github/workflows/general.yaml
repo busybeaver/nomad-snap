@@ -25,6 +25,7 @@ jobs:
 
     permissions:
       contents: read
+      statuses: write
 
     steps:
       - name: Git - Checkout
