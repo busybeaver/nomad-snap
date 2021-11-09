@@ -1,0 +1,4 @@
+[[rules]]
+  description = "generic secret regex"
+  regex = '''secret(.{0,20})([0-9a-zA-Z-._{}$\/\+=]{20,120})'''
+  tags = ["secret"]

@@ -34,22 +34,27 @@ jobs:
           # Checkout full git history; required by git-leaks, GitGuardian
           fetch-depth: 0
 
-      # using the 'github' format will automatically add github annotations:
-      # https://github.com/ibiqlik/action-yamllint/pull/12
-      - name: YamlLint - Scan Files
-        id: yamllint_scan
-        uses: ibiqlik/action-yamllint@81e214fd484713882ce4237cb7cd264d550856cf # renovate: tag=v3
+      - name: SuperLinter - Lint Files
+        id: superlinter_scan
+        continue-on-error: true
+        uses: github/super-linter/slim@v4
         with:
-          file_or_dir: .
-          format: github
-          config_file: .github/.yamllint.yaml
-
-      # TODO: https://github.com/zricethezav/gitleaks-action/pull/34
-      - name: Gitleaks - Scan For Commited Secrets
-        id: gitleaks_scan
-        uses: zricethezav/gitleaks-action@518e4898c0cd1cc5d9aab6627a2eabd46e81d8da # renovate: tag=v1
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
+          VALIDATE_BASH: true
+          VALIDATE_EDITORCONFIG: true
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_GITLEAKS: true
+          VALIDATE_JSON: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_NATURAL_LANGUAGE: true
+          VALIDATE_SHELL_SHFMT: true
+          VALIDATE_YAML: true
 
       - name: GitGuardian - Scan For Commited Secrets
+        id: gitguardian_scan
+        continue-on-error: true
         uses: GitGuardian/ggshield-action@a5226e0a63850e276df1c71a81129fb82fc6e8cc # renovate: tag=v1.1.0
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
@@ -57,3 +62,9 @@ jobs:
           GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+      - name: Checks - Aggregated Outcome
+        id: checks_outcome
+        # for all steps with "continue-on-error: true"
+        if: steps.superlinter_scan.outcome == 'failure' || steps.gitguardian_scan.outcome == 'failure'
+        run: exit 1

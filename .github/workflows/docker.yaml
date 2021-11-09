@@ -94,7 +94,7 @@ jobs:
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229 # renovate: tag=v2
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: ${{ github.event_name == 'push' && github.ref == github.event.repository.default_branch }}
           tags: ${{ steps.docker_data.outputs.image_name }}:${{ steps.docker_data.outputs.git_tag }},${{ steps.docker_data.outputs.image_name }}:latest
 
   code_quality:
@@ -136,15 +136,19 @@ jobs:
         with:
           image: ${{ steps.docker_data.outputs.image_name }}:latest
 
-      - name: Hadolint - Lint Dockerfile
-        id: hadolint_scan
+      - name: SuperLinter - Lint Dockerfile
+        id: superlinter_scan
         continue-on-error: true
-        uses: hadolint/hadolint-action@d7b38582334d9ac11c12021c16f21d63015fa250 # renovate: tag=v1.6.0
+        uses: github/super-linter/slim@v4
         with:
-          dockerfile: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
+          VALIDATE_DOCKERFILE: true # dockerfilelint
+          VALIDATE_DOCKERFILE_HADOLINT: true # hadolint
 
-      - name: Linting - Aggregated Outcome
-        id: lint_outcome
+      - name: Checks - Aggregated Outcome
+        id: checks_outcome
         # for all steps with "continue-on-error: true"
-        if: steps.snyk_scan.outcome == 'failure' || steps.hadolint_scan.outcome == 'failure'
+        if: steps.snyk_scan.outcome == 'failure' || steps.superlinter_scan.outcome == 'failure'
         run: exit 1
