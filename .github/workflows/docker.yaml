@@ -144,6 +144,7 @@ jobs:
           dockerfile: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile
 
       - name: Linting - Aggregated Outcome
+        id: lint_outcome
         # for all steps with "continue-on-error: true"
         if: steps.snyk_scan.outcome == 'failure' || steps.hadolint_scan.outcome == 'failure'
         run: exit 1
