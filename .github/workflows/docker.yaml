@@ -12,6 +12,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'docker/**'
+      - '.github/workflows/**'
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
@@ -83,7 +86,7 @@ jobs:
       - name: Docker - Get Data
         id: docker_data
         run: |
-          echo "::set-output name=date_tag::$(date +%s)"
+          echo "::set-output name=git_tag::$(git rev-parse --short HEAD)"
           echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
 
       - name: Docker - Build And Publish Artifact
@@ -92,7 +95,7 @@ jobs:
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-          tags: ${{ steps.docker_data.outputs.image_name }}:${{ steps.docker_data.outputs.date_tag }},${{ steps.docker_data.outputs.image_name }}:latest
+          tags: ${{ steps.docker_data.outputs.image_name }}:${{ steps.docker_data.outputs.git_tag }},${{ steps.docker_data.outputs.image_name }}:latest
 
   code_quality:
     name: 'Code Quality Checks'

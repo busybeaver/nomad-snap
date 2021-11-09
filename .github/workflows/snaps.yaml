@@ -12,6 +12,9 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'snaps/**'
+      - '.github/workflows/**'
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
