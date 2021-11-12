@@ -96,6 +96,8 @@ jobs:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: ${{ github.event_name == 'push' && github.ref == github.event.repository.default_branch }}
           tags: ${{ steps.docker_data.outputs.image_name }}:${{ steps.docker_data.outputs.git_tag }},${{ steps.docker_data.outputs.image_name }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   code_quality:
     name: 'Code Quality Checks'
