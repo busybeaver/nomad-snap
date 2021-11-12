@@ -6,7 +6,7 @@ ENV GIT_TAG_VERSION="v2.3"
 WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
-FROM homeassistant/home-assistant:2021.11@sha256:4704c8b7b937bf1646ef6238cfa695ba978ba0a423065d4a7d5883e467594e83
+FROM homeassistant/home-assistant:2021.11@sha256:cd90c5ccb9bf3d6f6f535956761c7b352071531d0565d8b9dc0ed709f64722cc
 
 ENV HOME_ASSISTANT_ENTRYPOINT="/etc/services.d/home-assistant/run"
 # this is a simple build time check to ensure that the home assistant
