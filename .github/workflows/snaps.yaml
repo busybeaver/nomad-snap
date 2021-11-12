@@ -80,11 +80,14 @@ jobs:
         run: |
           sudo snap install --color=never --dangerous ${{ steps.snapcraft_build.outputs.snap }}
           echo '-----------------'
-          snap list --color=never ${{ matrix.package }}
-          echo '-----------------'
-          snap info --color=never ${{ matrix.package }}
-          echo '-----------------'
-          ${{ matrix.package }} version
+          TEST_FILE=tests.sh
+          if test -f "$TEST_FILE"; then
+            echo "$TEST_FILE exists. Running tests:"
+            sh ./$TEST_FILE
+          else
+              echo "$TEST_FILE does not exist. Skipping tests."
+          fi
+        working-directory: '${{ env.SNAP_WORKING_DIR }}/${{ matrix.package }}'
 
       - name: GitHub - Upload Artifact
         id: github_upload
