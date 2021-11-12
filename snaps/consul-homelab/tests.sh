@@ -7,7 +7,7 @@ echo '-----------------'
 echo '-----------------'
 consul-homelab version
 echo '-----------------'
-sudo consul-homelab agent -dev &
+consul-homelab agent -dev &
 sleep 10s
 consul-homelab members
 echo '-----------------'

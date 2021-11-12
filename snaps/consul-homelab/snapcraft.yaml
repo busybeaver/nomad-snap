@@ -26,4 +26,4 @@ apps:
     command: bin/consul
     plugs:
       - network
-      - docker
+      - network-bind
