@@ -30,6 +30,8 @@ parts:
 #      fi
     build-packages:
       - gcc
+    filesets:
+      daemon-wrapper: [ bin/daemon.sh ]
 
 apps:
   consul-homelab:
