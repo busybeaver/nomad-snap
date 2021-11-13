@@ -172,7 +172,9 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: ${{ steps.docker_data.outputs.image_name }}:latest
-          args: --file=${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile --severity-threshold=medium # only report issues medium or higher (aka no low risk issues)
+          # only report issues medium or higher (aka no low risk issues)
+          args: --file=${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
+          sarif: true
 
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
