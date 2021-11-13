@@ -7,14 +7,14 @@ on:
       - main
     paths:
       - 'snaps/**'
-      - '.github/workflows/**'
+      - '.github/workflows/snaps.yaml'
   # run on pull requests that target the main branch
   pull_request:
     branches:
       - main
     paths:
       - 'snaps/**'
-      - '.github/workflows/**'
+      - '.github/workflows/snaps.yaml'
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
@@ -28,9 +28,6 @@ jobs:
       run:
         shell: bash
         working-directory: './snaps/'
-
-    permissions:
-      contents: read
 
     steps:
       - name: Git - Checkout
@@ -46,7 +43,7 @@ jobs:
 
   snapcraft:
     name: 'Build, Test, and Publish'
-    needs: matrix_setup
+    needs: [matrix_setup]
     runs-on: ubuntu-latest
 
     strategy:

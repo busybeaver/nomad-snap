@@ -32,12 +32,11 @@ jobs:
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
         with:
-          # Checkout full git history; required by git-leaks, GitGuardian
+          # Checkout full git history; required by git-leaks
           fetch-depth: 0
 
       - name: SuperLinter - Lint Files
         id: superlinter_scan
-        continue-on-error: true
         uses: github/super-linter/slim@fd9c4286d3de3fdd9258a395570cae287f13f974 # renovate: tag=v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,9 +52,29 @@ jobs:
           VALIDATE_SHELL_SHFMT: true
           VALIDATE_YAML: true
 
+  git_secrets:
+    name: 'Git Secret Exposure Checks'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: '.'
+
+    permissions:
+      contents: read
+      statuses: write
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+        with:
+          # Checkout full git history; required by GitGuardian
+          fetch-depth: 0
+
       - name: GitGuardian - Scan For Commited Secrets
         id: gitguardian_scan
-        continue-on-error: true
         uses: GitGuardian/ggshield-action@a5226e0a63850e276df1c71a81129fb82fc6e8cc # renovate: tag=v1.1.0
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
@@ -63,9 +82,3 @@ jobs:
           GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-
-      - name: Checks - Aggregated Outcome
-        id: checks_outcome
-        # for all steps with "continue-on-error: true"
-        if: steps.superlinter_scan.outcome == 'failure' || steps.gitguardian_scan.outcome == 'failure'
-        run: exit 1
