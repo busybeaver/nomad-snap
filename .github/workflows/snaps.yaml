@@ -104,4 +104,4 @@ jobs:
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
           store_login: ${{ secrets.SNAPCRAFT_STORE_LOGIN }}
           snap: ${{ steps.snapcraft_build.outputs.snap }}
-          release: stable
+          release: '${{ github.ref == github.event.repository.default_branch ? "stable" : "edge" }}'
