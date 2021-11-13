@@ -7,4 +7,3 @@ snap info --color=never nomad-homelab
 echo '-----------------'
 nomad-homelab version
 echo '-----------------'
-snap services nomad-homelab
