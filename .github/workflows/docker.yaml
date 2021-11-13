@@ -144,6 +144,7 @@ jobs:
 
     env:
       REGISTRY: ghcr.io # GitHub Registry
+      DOCKER_WORKING_DIR: './docker'
 
     defaults:
       run:
@@ -166,7 +167,22 @@ jobs:
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
         uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
+        continue-on-error: ${{ github.event_name == 'push' && github.ref == github.event.repository.default_branch }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: ${{ steps.docker_data.outputs.image_name }}:latest
+          args: --file=${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile --severity-threshold=medium # only report issues medium or higher (aka no low risk issues)
+
+      - name: GitHub - Upload result to Code Scanning
+        id: github_upload_sarif
+        uses: github/codeql-action/upload-sarif@v1
+        if: github.event_name == 'push' && github.ref == github.event.repository.default_branch
+        with:
+          sarif_file: snyk.sarif
+
+      - name: Snyk - Check Outcome
+        id: checks_outcome
+        # for all steps with "continue-on-error: true"
+        if: steps.snyk_scan.outcome == 'failure'
+        run: exit 1
