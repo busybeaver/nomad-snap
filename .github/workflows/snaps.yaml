@@ -97,8 +97,10 @@ jobs:
         uses: snapcore/action-publish@f1879414dc5500e02a36f3d715bca6ddd438c913 # renovate: tag=v1
         if: github.event_name == 'push' && github.ref == github.event.repository.default_branch && env.PUBLISH_ARTIFACT == 'true'
         with:
-          # Generate via (snapcraft is available on ubuntu or via 'brew' on macOS:
+          # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
           store_login: ${{ secrets.SNAPCRAFT_STORE_LOGIN }}
           snap: ${{ steps.snapcraft_build.outputs.snap }}
-          release: '${{ github.ref == github.event.repository.default_branch ? "stable" : "edge" }}'
+          # https://github.community/t/do-expressions-support-ternary-operators-to-change-their-returned-value/18114/3
+          # The condition evaluates to a boolean, which is implicitly cast to a number and used as array index, where false = 0 and true = 1.
+          release: ${{ fromJSON('["edge", "stable"]')[github.ref == github.event.repository.default_branch] }}
