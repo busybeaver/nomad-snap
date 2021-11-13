@@ -12,6 +12,8 @@ echo '-----------------'
 snap start consul-homelab.daemon
 sleep 10s
 echo '-----------------'
+snap logs consul-homelab
+echo '-----------------'
 snap services consul-homelab
 echo '-----------------'
 consul-homelab members
