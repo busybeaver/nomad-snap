@@ -18,22 +18,33 @@ parts:
     source-type: git
     source: https://github.com/hashicorp/consul.git
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
-    override-pull: |
-      # set -x
-      snapcraftctl pull
-      printenv
-      echo "Running on branch: $GITHUB_REF"
-      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
-        echo "Running on non-default branch, appending the short git rev to the version"
-        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-        snapcraftctl set-grade "devel"
-      fi
+#    override-pull: |
+#      set -x
+#      snapcraftctl pull
+#      printenv
+#      echo "Running on branch: $GITHUB_REF"
+#      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
+#        echo "Running on non-default branch, appending the short git rev to the version"
+#        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
+#        snapcraftctl set-grade "devel"
+#      fi
     build-packages:
       - gcc
 
 apps:
   consul-homelab:
     command: bin/consul
+    plugs:
+      - network
+      - network-bind
+  daemon:
+    # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
+    command: bin/consul agent -config-dir=$SNAP_DATA/config/
+    stop-command: bin/consul leave
+    restart-condition: always
+    daemon: simple
+    # don't start service during the snap installation since it needs some configuration files first
+    install-mode: disable
     plugs:
       - network
       - network-bind

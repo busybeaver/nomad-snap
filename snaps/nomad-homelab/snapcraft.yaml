@@ -18,16 +18,16 @@ parts:
     source-type: git
     source: https://github.com/hashicorp/nomad.git
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
-    override-pull: |
-      # set -x
-      snapcraftctl pull
-      printenv
-      echo "Running on branch: $GITHUB_REF"
-      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
-        echo "Running on non-default branch, appending the short git rev to the version"
-        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-        snapcraftctl set-grade "devel"
-      fi
+#    override-pull: |
+#      set -x
+#      snapcraftctl pull
+#      printenv
+#      echo "Running on branch: $GITHUB_REF"
+#      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
+#        echo "Running on non-default branch, appending the short git rev to the version"
+#        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
+#        snapcraftctl set-grade "devel"
+#      fi
     build-packages:
       - gcc
 
