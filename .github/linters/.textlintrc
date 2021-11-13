@@ -1,5 +1,23 @@
 {
   "filters": {
     "comments": true
+  },
+  "rules": {
+    "terminology": true,
+    "max-comma": true,
+    "sjsj": {
+      "distance": 1
+    },
+    "no-dead-link": {
+      "baseURI": "https://github.com/busybeaver/homelab-packages/"
+    },
+    "editorconfig": true,
+    "no-empty-section": true,
+    "terminology": {
+      "defaultTerms": true,
+      "skip": ["Blockquote"],
+      "terms": []
+    },
+    "period-in-list-item": true
   }
 }
