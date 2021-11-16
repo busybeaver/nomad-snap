@@ -9,7 +9,7 @@ consul-homelab version
 echo '-----------------'
 snap services consul-homelab
 echo '-----------------'
-snap start consul-homelab.daemon
+sudo snap start consul-homelab.daemon
 sleep 10s
 echo '-----------------'
 snap logs consul-homelab
@@ -23,4 +23,4 @@ echo '-----------------'
 consul-homelab kv put foo/bar 1
 consul-homelab kv get foo/bar
 echo '-----------------'
-snap stop consul-homelab.daemon
+sudo snap stop consul-homelab.daemon
