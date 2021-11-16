@@ -7,16 +7,16 @@ snap info --color=never consul-homelab
 echo '-----------------'
 consul-homelab version
 echo '-----------------'
-snap services consul-homelab
+sudo snap services consul-homelab
 echo '-----------------'
 sudo snap start consul-homelab.daemon
 sleep 10s
 echo '-----------------'
-snap logs consul-homelab
+sudo snap logs consul-homelab
 echo '-----------------'
 snap services consul-homelab
 echo '-----------------'
-consul-homelab members
+sudo consul-homelab members
 echo '-----------------'
 curl localhost:8500/v1/catalog/nodes
 echo '-----------------'
