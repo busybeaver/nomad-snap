@@ -12,7 +12,7 @@ architectures:
     run-on: [amd64, arm64]
 
 parts:
-  nomad:
+  consul:
     plugin: go
     go-channel: latest/stable
     source-type: git
@@ -30,8 +30,12 @@ parts:
 #      fi
     build-packages:
       - gcc
-    filesets:
-      daemon-wrapper: [bin/daemon.sh]
+  consul-wrapper:
+    plugin: dump
+    source-type: local
+    source: bin/
+    prime:
+      - daemon.sh
 
 apps:
   consul-homelab:
@@ -44,7 +48,7 @@ apps:
     #command: bin/consul agent -config-dir $SNAP_DATA/config/
     # we need to move this to a simple wrapper script, since snapcraft doesn't allow = chars in the command property
     # https://bugs.launchpad.net/snapd/+bug/1820055
-    command: bin/daemon.sh
+    command: daemon.sh
     stop-command: bin/consul leave
     restart-condition: always
     daemon: simple
