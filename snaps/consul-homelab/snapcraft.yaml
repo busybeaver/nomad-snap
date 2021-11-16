@@ -36,6 +36,9 @@ parts:
     source: bin/
     prime:
       - daemon.sh
+    override-prime: |
+      snapcraftctl prime
+      chmod +x daemon.sh
 
 apps:
   consul-homelab:
@@ -48,7 +51,7 @@ apps:
     #command: bin/consul agent -config-dir $SNAP_DATA/config/
     # we need to move this to a simple wrapper script, since snapcraft doesn't allow = chars in the command property
     # https://bugs.launchpad.net/snapd/+bug/1820055
-    command: sh ./daemon.sh
+    command: daemon.sh
     stop-command: bin/consul leave
     restart-condition: always
     daemon: simple
