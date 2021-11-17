@@ -230,9 +230,9 @@ jobs:
           name: ${{ steps.docker_data.outputs.image_name }}
           path: ${{ env.DOCKER_IMAGE_DEST }}
 
-        - name: Docker - Load Image
-          id: docker_import
-          run: docker image load --input ${{ env.DOCKER_IMAGE_DEST }}
+      - name: Docker - Load Image
+        id: docker_import
+        run: docker image load --input ${{ env.DOCKER_IMAGE_DEST }}
 
       - name: Docker - Log into Registry ${{ env.REGISTRY }}
         id: docker_login
