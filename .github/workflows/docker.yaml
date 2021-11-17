@@ -34,6 +34,9 @@ jobs:
         shell: bash
         working-directory: './docker/'
 
+    env:
+      REGISTRY: ghcr.io # GitHub Registry
+
     steps:
       - name: Git - Checkout
         id: git_checkout
@@ -41,10 +44,21 @@ jobs:
 
       - name: Build Matrix - Setup
         id: set_matrix
-        run: echo "::set-output name=matrix::$(python2 -c 'import os, json; print json.dumps(os.listdir("."))')"
+        run: |
+          echo "::set-output name=matrix::$(python2 -c 'import os, json; print json.dumps(os.listdir("."))')"
+          echo "::set-output name=image_name_latest::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest"
+          echo "::set-output name=image_name_git_tag::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:$(git rev-parse --short HEAD)"
+          echo "::set-output name=docker_registry::${{ env.REGISTRY }}"
+          echo "::set-output name=docker_working_dir::./docker"
+          echo "::set-output name=docker_image_dest::/tmp/image.tar"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
+      image_name_latest: ${{ steps.set_matrix.outputs.image_name_latest }}
+      image_name_git_tag: ${{ steps.set_matrix.outputs.image_name_git_tag }}
+      docker_registry: ${{ steps.set_matrix.outputs.docker_registry }}
+      docker_working_dir: ${{ steps.set_matrix.outputs.docker_working_dir }}
+      docker_image_dest: ${{ steps.set_matrix.outputs.docker_image_dest }}
 
   code_quality:
     name: 'Code Quality Checks'
@@ -87,11 +101,6 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
-    env:
-      REGISTRY: ghcr.io # GitHub Registry
-      DOCKER_WORKING_DIR: './docker'
-      DOCKER_IMAGE_DEST: '/tmp/image.tar'
-
     defaults:
       run:
         shell: bash
@@ -104,10 +113,6 @@ jobs:
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
 
-      - name: Docker - Get Data
-        id: docker_data
-        run: echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest"
-
       - name: Docker - Set-Up Environment
         id: docker_setup
         uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25 # renovate: tag=v1
@@ -116,20 +121,20 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229 # renovate: tag=v2
         with:
-          context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
+          context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
-          tags: ${{ steps.docker_data.outputs.image_name }}
+          tags: ${{ needs.matrix_setup.outputs.image_name_latest }},${{ needs.matrix_setup.outputs.image_name_git_tag }}
           # platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          outputs: type=oci,dest=${{ env.DOCKER_IMAGE_DEST }}
+          outputs: type=oci,dest=${{ needs.matrix_setup.outputs.docker_image_dest }}
 
       - name: GitHub - Upload Image Artifact
         id: docker_upload
         uses: actions/upload-artifact@v2
         with:
           name: ${{ steps.docker_data.outputs.image_name }}
-          path: ${{ env.DOCKER_IMAGE_DEST }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
           retention-days: 1
 
   container_security:
@@ -140,11 +145,6 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
-
-    env:
-      REGISTRY: ghcr.io # GitHub Registry
-      DOCKER_WORKING_DIR: './docker'
-      DOCKER_IMAGE_DEST: '/tmp/image.tar'
 
     defaults:
       run:
@@ -159,20 +159,16 @@ jobs:
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
 
-      - name: Docker - Get Data
-        id: docker_data
-        run: echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest"
-
       - name: GitHub - Download Image Artifact
-        id: docker_download
+        id: docker_load
         uses: actions/download-artifact@v2
         with:
           name: ${{ steps.docker_data.outputs.image_name }}
-          path: ${{ env.DOCKER_IMAGE_DEST }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
 
       - name: Docker - Load Image
         id: docker_import
-        run: docker image load --input ${{ env.DOCKER_IMAGE_DEST }} && docker images
+        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_dest }} && docker images
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
@@ -180,9 +176,9 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: ${{ steps.docker_data.outputs.image_name }}
+          image: ${{ needs.matrix_setup.outputs.image_name_latest }}
           # only report issues medium or higher (aka no low risk issues)
-          args: --file=${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
+          args: --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
           sarif: true
 
       - name: GitHub - Upload result to Code Scanning
@@ -203,11 +199,6 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
-    env:
-      REGISTRY: ghcr.io # GitHub Registry
-      DOCKER_WORKING_DIR: './docker'
-      DOCKER_IMAGE_DEST: '/tmp/image.tar'
-
     defaults:
       run:
         shell: bash
@@ -217,33 +208,26 @@ jobs:
       packages: write
 
     steps:
-      - name: Docker - Get Data
-        id: docker_data
-        run: |
-          echo "::set-output name=git_tag::$(git rev-parse --short HEAD)"
-          echo "::set-output name=image_base_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
-
       - name: GitHub - Download Image Artifact
         id: docker_download
         uses: actions/download-artifact@v2
         with:
           name: ${{ steps.docker_data.outputs.image_name }}
-          path: ${{ env.DOCKER_IMAGE_DEST }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
 
       - name: Docker - Load Image
-        id: docker_import
-        run: docker image load --input ${{ env.DOCKER_IMAGE_DEST }}
+        id: docker_load
+        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_dest }}
 
-      - name: Docker - Log into Registry ${{ env.REGISTRY }}
+      - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9 # renovate: tag=v1
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ${{ needs.matrix_setup.outputs.docker_registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker - Publish Artifact
         id: docker_publish
         run: |
-          docker tag ${{ steps.docker_data.outputs.image_base_name }}:latest ${{ steps.docker_data.outputs.image_base_name }}:${{ steps.docker_data.outputs.git_tag }}
-          docker image push --all-tags ${{ steps.docker_data.outputs.image_base_name }}:latest
+          docker image push --all-tags ${{ needs.matrix_setup.outputs.image_name_latest }}
