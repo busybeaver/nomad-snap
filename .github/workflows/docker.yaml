@@ -119,7 +119,7 @@ jobs:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
           push: false
           tags: ${{ steps.docker_data.outputs.image_name }}
-          platforms: ${{ steps.docker_setup.outputs.platforms }}
+          # platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           outputs: type=oci,dest=${{ env.DOCKER_IMAGE_DEST }}
