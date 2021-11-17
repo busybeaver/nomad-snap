@@ -193,7 +193,7 @@ jobs:
     needs: [code_quality, docker_build, container_security]
     runs-on: ubuntu-latest
 
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !env.ACT
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !github.event.act
 
     strategy:
       matrix:
