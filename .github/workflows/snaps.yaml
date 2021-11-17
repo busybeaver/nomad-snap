@@ -101,7 +101,7 @@ jobs:
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
         uses: snapcore/action-publish@f1879414dc5500e02a36f3d715bca6ddd438c913 # renovate: tag=v1
-        if: github.event_name == 'push' && github.ref == github.event.repository.default_branch && env.PUBLISH_ARTIFACT == 'true'
+        if: github.event_name == 'push' && github.ref == github.event.repository.default_branch && !github.event.act && env.PUBLISH_ARTIFACT == 'true'
         with:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt

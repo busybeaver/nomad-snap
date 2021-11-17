@@ -90,6 +90,7 @@ jobs:
     env:
       REGISTRY: ghcr.io # GitHub Registry
       DOCKER_WORKING_DIR: './docker'
+      DOCKER_IMAGE_DEST: '/tmp/image.tar'
 
     defaults:
       run:
@@ -116,19 +117,20 @@ jobs:
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229 # renovate: tag=v2
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
-          load: true # expose the image outside this build step
           push: false
           tags: ${{ steps.docker_data.outputs.image_name }}
-          # platforms: ${{ steps.docker_setup.outputs.platforms }} # results in :( --> buildx failed with: error: docker exporter does not currently support exporting manifest lists
+          platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          outputs: type=oci,dest=${{ env.DOCKER_IMAGE_DEST }}
 
       - name: GitHub - Upload Image Artifact
         id: docker_upload
-        uses: ishworkh/docker-image-artifact-upload@v1
+        uses: actions/upload-artifact@v2
         with:
-          image: ${{ steps.docker_data.outputs.image_name }}
-
+          name: ${{ steps.docker_data.outputs.image_name }}
+          path: ${{ env.DOCKER_IMAGE_DEST }}
+          retention-days: 1
 
   container_security:
     name: 'Container Security Checks'
@@ -142,6 +144,7 @@ jobs:
     env:
       REGISTRY: ghcr.io # GitHub Registry
       DOCKER_WORKING_DIR: './docker'
+      DOCKER_IMAGE_DEST: '/tmp/image.tar'
 
     defaults:
       run:
@@ -162,13 +165,14 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: docker_download
-        uses: ishworkh/docker-image-artifact-download@v1
+        uses: actions/download-artifact@v2
         with:
-          image: ${{ steps.docker_data.outputs.image_name }}
+          name: ${{ steps.docker_data.outputs.image_name }}
+          path: ${{ env.DOCKER_IMAGE_DEST }}
 
-      - name: Docker - Import Image
+      - name: Docker - Load Image
         id: docker_import
-        run: docker image import ${{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}
+        run: docker image load --input ${{ env.DOCKER_IMAGE_DEST }} && docker images
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
@@ -202,6 +206,7 @@ jobs:
     env:
       REGISTRY: ghcr.io # GitHub Registry
       DOCKER_WORKING_DIR: './docker'
+      DOCKER_IMAGE_DEST: '/tmp/image.tar'
 
     defaults:
       run:
@@ -220,13 +225,14 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: docker_download
-        uses: ishworkh/docker-image-artifact-download@v1
+        uses: actions/download-artifact@v2
         with:
-          image: ${{ steps.docker_data.outputs.image_base_name }}:latest
+          name: ${{ steps.docker_data.outputs.image_name }}
+          path: ${{ env.DOCKER_IMAGE_DEST }}
 
-      - name: Docker - Import Image
-        id: docker_import
-        run: docker image import ${{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}:latest
+        - name: Docker - Load Image
+          id: docker_import
+          run: docker image load --input ${{ env.DOCKER_IMAGE_DEST }}
 
       - name: Docker - Log into Registry ${{ env.REGISTRY }}
         id: docker_login
