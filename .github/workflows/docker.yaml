@@ -78,9 +78,9 @@ jobs:
           VALIDATE_DOCKERFILE: true # dockerfilelint
           VALIDATE_DOCKERFILE_HADOLINT: true # hadolint
 
-  docker:
-    name: 'Build, Test, and Publish'
-    needs: [matrix_setup, code_quality]
+  docker_build:
+    name: 'Build'
+    needs: [matrix_setup]
     runs-on: ubuntu-latest
 
     strategy:
@@ -97,45 +97,42 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
 
     steps:
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
 
+      - name: Docker - Get Data
+        id: docker_data
+        run: echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest"
+
       - name: Docker - Set-Up Environment
         id: docker_setup
         uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25 # renovate: tag=v1
 
-      - name: Docker - Log into Registry ${{ env.REGISTRY }}
-        id: docker_login
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9 # renovate: tag=v1
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Docker - Get Data
-        id: docker_data
-        run: |
-          echo "::set-output name=git_tag::$(git rev-parse --short HEAD)"
-          echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
-
-      - name: Docker - Build And Publish Artifact
-        id: docker_build_publish
+      - name: Docker - Build Artifact # but don't publish yet
+        id: docker_build
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229 # renovate: tag=v2
         with:
           context: ${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}
-          push: ${{ github.event_name == 'push' && github.ref == github.event.repository.default_branch }}
-          tags: ${{ steps.docker_data.outputs.image_name }}:${{ steps.docker_data.outputs.git_tag }},${{ steps.docker_data.outputs.image_name }}:latest
+          load: true # expose the image outside this build step
+          push: false
+          tags: ${{ steps.docker_data.outputs.image_name }}
+          platforms: steps.docker_setup.outputs.platforms
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: GitHub - Upload Image Artifact
+        id: docker_upload
+        uses: ishworkh/docker-image-artifact-upload@v1
+        with:
+          image: ${{ steps.docker_data.outputs.image_name }}
+
+
   container_security:
     name: 'Container Security Checks'
-    needs: [matrix_setup, docker]
+    needs: [docker_build]
     runs-on: ubuntu-latest
 
     strategy:
@@ -161,17 +158,25 @@ jobs:
 
       - name: Docker - Get Data
         id: docker_data
-        run: |
-          echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
+        run: echo "::set-output name=image_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest"
+
+      - name: GitHub - Download Image Artifact
+        id: docker_download
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: ${{ steps.docker_data.outputs.image_name }}
+
+      - name: Docker - Import Image
+        id: docker_import
+        run: docker image import {{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
         uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
-        continue-on-error: ${{ github.event_name == 'push' && github.ref == github.event.repository.default_branch }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: ${{ steps.docker_data.outputs.image_name }}:latest
+          image: ${{ steps.docker_data.outputs.image_name }}
           # only report issues medium or higher (aka no low risk issues)
           args: --file=${{env.DOCKER_WORKING_DIR}}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
           sarif: true
@@ -179,12 +184,60 @@ jobs:
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
         uses: github/codeql-action/upload-sarif@v1
-        if: github.event_name == 'push' && github.ref == github.event.repository.default_branch
+        if: always() && github.event_name == 'push' && github.ref == github.event.repository.default_branch
         with:
           sarif_file: snyk.sarif
 
-      - name: Snyk - Check Outcome
-        id: checks_outcome
-        # for all steps with "continue-on-error: true"
-        if: steps.snyk_scan.outcome == 'failure'
-        run: exit 1
+  docker_publish:
+    name: 'Publish'
+    needs: [code_quality, docker_build, container_security]
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !env.ACT
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    env:
+      REGISTRY: ghcr.io # GitHub Registry
+      DOCKER_WORKING_DIR: './docker'
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Docker - Get Data
+        id: docker_data
+        run: |
+          echo "::set-output name=git_tag::$(git rev-parse --short HEAD)"
+          echo "::set-output name=image_base_name::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}"
+
+      - name: GitHub - Download Image Artifact
+        id: docker_download
+        uses: ishworkh/docker-image-artifact-download@v1
+        with:
+          image: ${{ steps.docker_data.outputs.image_base_name }}:latest
+
+      - name: Docker - Import Image
+        id: docker_import
+        run: docker image import {{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}:latest
+
+      - name: Docker - Log into Registry ${{ env.REGISTRY }}
+        id: docker_login
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9 # renovate: tag=v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker - Publish Artifact
+        id: docker_publish
+        run: |
+          docker tag ${{ steps.docker_data.outputs.image_base_name }}:latest ${{ steps.docker_data.outputs.image_base_name }}:${{ steps.docker_data.outputs.git_tag }}
+          docker image push --all-tags ${{ steps.docker_data.outputs.image_base_name }}:latest
