@@ -50,7 +50,8 @@ jobs:
           echo "::set-output name=image_name_git_tag::${{ env.REGISTRY }}/${{ github.repository }}/{0}:$(git rev-parse --short HEAD)"
           echo "::set-output name=docker_registry::${{ env.REGISTRY }}"
           echo "::set-output name=docker_working_dir::./docker"
-          echo "::set-output name=docker_image_dest::/tmp/image.tar"
+          echo "::set-output name=docker_image_dir::/tmp"
+          echo "::set-output name=docker_image_file::/tmp/image.tar"
           echo "::set-output name=docker_artifact_name::tmp_docker_image_{0}"
 
     outputs:
@@ -59,7 +60,8 @@ jobs:
       image_name_git_tag: ${{ steps.set_matrix.outputs.image_name_git_tag }}
       docker_registry: ${{ steps.set_matrix.outputs.docker_registry }}
       docker_working_dir: ${{ steps.set_matrix.outputs.docker_working_dir }}
-      docker_image_dest: ${{ steps.set_matrix.outputs.docker_image_dest }}
+      docker_image_dir: ${{ steps.set_matrix.outputs.docker_image_dir }}
+      docker_image_file: ${{ steps.set_matrix.outputs.docker_image_file }}
       docker_artifact_name: ${{ steps.set_matrix.outputs.docker_artifact_name }}
 
   code_quality:
@@ -131,14 +133,14 @@ jobs:
           cache-to: type=gha,mode=max
           # https://github.com/docker/build-push-action/issues/225#issuecomment-727639184
           # https://github.com/docker/buildx/blob/bcfd4348290ecb67122a882e0ef42aa537a51ae6/docs/reference/buildx_build.md#output
-          outputs: type=docker,dest=${{ needs.matrix_setup.outputs.docker_image_dest }}
+          outputs: type=docker,dest=${{ needs.matrix_setup.outputs.docker_image_file }}
 
       - name: GitHub - Upload Image Artifact
         id: docker_upload
         uses: actions/upload-artifact@v2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_file }}
           retention-days: 1
 
   container_security:
@@ -168,11 +170,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
 
       - name: Docker - Load Image
         id: docker_import
-        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_dest }} && docker images
+        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }} && docker images
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
@@ -217,11 +219,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
 
       - name: Docker - Load Image
         id: docker_load
-        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_dest }}
+        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }}
 
       - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
