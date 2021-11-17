@@ -119,7 +119,7 @@ jobs:
           load: true # expose the image outside this build step
           push: false
           tags: ${{ steps.docker_data.outputs.image_name }}
-          platforms: steps.docker_setup.outputs.platforms
+          platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
