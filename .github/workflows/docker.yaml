@@ -46,8 +46,8 @@ jobs:
         id: set_matrix
         run: |
           echo "::set-output name=matrix::$(python2 -c 'import os, json; print json.dumps(os.listdir("."))')"
-          echo "::set-output name=image_name_latest::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:latest"
-          echo "::set-output name=image_name_git_tag::${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.package }}:$(git rev-parse --short HEAD)"
+          echo "::set-output name=image_name_latest::${{ env.REGISTRY }}/${{ github.repository }}/{0}:latest"
+          echo "::set-output name=image_name_git_tag::${{ env.REGISTRY }}/${{ github.repository }}/{0}:$(git rev-parse --short HEAD)"
           echo "::set-output name=docker_registry::${{ env.REGISTRY }}"
           echo "::set-output name=docker_working_dir::./docker"
           echo "::set-output name=docker_image_dest::/tmp/image.tar"
@@ -125,7 +125,7 @@ jobs:
         with:
           context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
-          tags: ${{ needs.matrix_setup.outputs.image_name_latest }},${{ needs.matrix_setup.outputs.image_name_git_tag }}
+          tags: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
           # platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -178,7 +178,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          image: ${{ needs.matrix_setup.outputs.image_name_latest }}
+          image: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           # only report issues medium or higher (aka no low risk issues)
           args: --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
           sarif: true
@@ -232,4 +232,4 @@ jobs:
       - name: Docker - Publish Artifact
         id: docker_publish
         run: |
-          docker image push --all-tags ${{ needs.matrix_setup.outputs.image_name_latest }}
+          docker image push --all-tags ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
