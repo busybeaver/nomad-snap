@@ -119,7 +119,7 @@ jobs:
           load: true # expose the image outside this build step
           push: false
           tags: ${{ steps.docker_data.outputs.image_name }}
-          platforms: ${{ steps.docker_setup.outputs.platforms }}
+          # platforms: ${{ steps.docker_setup.outputs.platforms }} # results in :( --> buildx failed with: error: docker exporter does not currently support exporting manifest lists
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -168,7 +168,7 @@ jobs:
 
       - name: Docker - Import Image
         id: docker_import
-        run: docker image import {{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}
+        run: docker image import ${{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
@@ -226,7 +226,7 @@ jobs:
 
       - name: Docker - Import Image
         id: docker_import
-        run: docker image import {{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}:latest
+        run: docker image import ${{ steps.docker_download.outputs.download_path }} - ${{ steps.docker_data.outputs.image_name }}:latest
 
       - name: Docker - Log into Registry ${{ env.REGISTRY }}
         id: docker_login
