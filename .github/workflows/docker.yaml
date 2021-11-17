@@ -132,7 +132,7 @@ jobs:
 
   container_security:
     name: 'Container Security Checks'
-    needs: [docker_build]
+    needs: [matrix_setup, docker_build]
     runs-on: ubuntu-latest
 
     strategy:
@@ -190,7 +190,7 @@ jobs:
 
   docker_publish:
     name: 'Publish'
-    needs: [code_quality, docker_build, container_security]
+    needs: [matrix_setup, code_quality, docker_build, container_security]
     runs-on: ubuntu-latest
 
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !github.event.act
