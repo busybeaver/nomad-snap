@@ -51,6 +51,7 @@ jobs:
           echo "::set-output name=docker_registry::${{ env.REGISTRY }}"
           echo "::set-output name=docker_working_dir::./docker"
           echo "::set-output name=docker_image_dest::/tmp/image.tar"
+          echo "::set-output name=docker_artifact_base_name::docker_image_tmp"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
@@ -59,6 +60,7 @@ jobs:
       docker_registry: ${{ steps.set_matrix.outputs.docker_registry }}
       docker_working_dir: ${{ steps.set_matrix.outputs.docker_working_dir }}
       docker_image_dest: ${{ steps.set_matrix.outputs.docker_image_dest }}
+      docker_artifact_base_name: ${{ steps.set_matrix.outputs.docker_artifact_base_name }}
 
   code_quality:
     name: 'Code Quality Checks'
@@ -133,7 +135,7 @@ jobs:
         id: docker_upload
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.docker_data.outputs.image_name }}
+          name: ${{ needs.matrix_setup.outputs.docker_artifact_base_name }}_${{ matrix.package }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
           retention-days: 1
 
@@ -163,7 +165,7 @@ jobs:
         id: docker_load
         uses: actions/download-artifact@v2
         with:
-          name: ${{ steps.docker_data.outputs.image_name }}
+          name: ${{ needs.matrix_setup.outputs.docker_artifact_base_name }}_${{ matrix.package }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
 
       - name: Docker - Load Image
@@ -212,7 +214,7 @@ jobs:
         id: docker_download
         uses: actions/download-artifact@v2
         with:
-          name: ${{ steps.docker_data.outputs.image_name }}
+          name: ${{ needs.matrix_setup.outputs.docker_artifact_base_name }}_${{ matrix.package }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dest }}
 
       - name: Docker - Load Image
