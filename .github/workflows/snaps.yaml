@@ -87,7 +87,7 @@ jobs:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Move Snap Artifact
-        id: copy_artifact
+        id: move_artifact
         run: |
           mv ${{ steps.snapcraft_build.outputs.snap }} ${{ needs.matrix_setup.outputs.snap_file }}
 
