@@ -4,6 +4,6 @@ FROM node:slim
 
 RUN apt-get update && \
     apt-get upgrade --yes && \
-    apt-get install python-is-python2=2.\* --no-install-recommends --yes && \
+    apt-get install python-is-python3=3.\* --no-install-recommends --yes && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
