@@ -108,12 +108,16 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
+    env:
+      GOSS_VERSION: v0.3.16
+
     defaults:
       run:
         shell: bash
 
     permissions:
       contents: read
+      statuses: write
 
     steps:
       - name: Git - Checkout
@@ -127,18 +131,31 @@ jobs:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
-      - name: Snapcraft - Install and Test Artifact
-        id: snapcraft_test
+      - name: Goss - Setup
+        uses: e1himself/goss-installation-action@v1.0.3
+        with:
+          version: ${{ env.GOSS_VERSION }}
+
+      - name: GitHub - Get Test Parameter
+        id: test_parameter
         run: |
-          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
-          echo '-----------------'
-          TEST_FILE=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests.sh
-          if test -f "$TEST_FILE"; then
-            echo "$TEST_FILE exists. Running tests:"
-            sh ./$TEST_FILE
-          else
-              echo "$TEST_FILE does not exist. Skipping tests."
-          fi
+          echo "::set-output name=working_dir::${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}"
+
+      - name: Goss - Install and Test Artifact
+        id: snapcraft_test
+        if: hashFiles('${{ steps.test_parameter.outputs.working_dir }}/goss.yaml') != ''
+        run: goss validate --format junit
+        working-directory: ${{ steps.test_parameter.outputs.working_dir }}
+        env:
+          SNAP_PACKAGE: ${{ needs.matrix_setup.outputs.snap_file }}
+          SERVICE_NAME: ${{ matrix.package }}
+
+      - name: GitHub - Publish Unit Test Results
+        id: github_publish_results
+        uses: EnricoMi/publish-unit-test-result-action@v1.24
+        if: always()
+        with:
+          files: ${{ steps.test_parameter.outputs.working_dir }}/**/*.xml
 
   snapcraft_publish:
     name: 'Publish'

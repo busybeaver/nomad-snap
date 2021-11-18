@@ -1,0 +1,40 @@
+command:
+  install:
+    exit-status: 0
+    exec: "sudo snap install --color=never --dangerous {{.Env.SNAP_PACKAGE}}"
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+      - installed
+    timeout: 45000 # milliseconds
+    skip: false
+  list:
+    exit-status: 0
+    exec: "snap list --color=never {{.Env.SERVICE_NAME}}"
+    timeout: 10000 # milliseconds
+    skip: false
+  info:
+    exit-status: 0
+    exec: "snap info --color=never {{.Env.SERVICE_NAME}}"
+    timeout: 10000 # milliseconds
+    skip: false
+  version:
+    exit-status: 0
+    exec: "{{.Env.SERVICE_NAME}} version"
+    timeout: 10000 # milliseconds
+    skip: false
+  service_pre_start:
+    exit-status: 0
+    exec: "sudo snap services {{.Env.SERVICE_NAME}}"
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+      - disabled
+      - inactive
+    timeout: 10000 # milliseconds
+    skip: false
+  service_start:
+    exit-status: 0
+    exec: "sudo snap start {{.Env.SERVICE_NAME}}.daemon"
+    stdout:
+      - Started
+    timeout: 30000 # milliseconds
+    skip: false
