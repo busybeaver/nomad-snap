@@ -34,6 +34,9 @@ jobs:
         shell: bash
         working-directory: './docker/'
 
+    permissions:
+      contents: read
+
     env:
       REGISTRY: ghcr.io # GitHub Registry
 
@@ -159,7 +162,7 @@ jobs:
 
     permissions:
       contents: read
-      statuses: write
+      security-events: write
 
     steps:
       - name: Git - Checkout

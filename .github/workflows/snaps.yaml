@@ -35,6 +35,9 @@ jobs:
         shell: bash
         working-directory: './snaps/'
 
+    permissions:
+      contents: read
+
     steps:
       - name: Git - Checkout
         id: git_checkout
@@ -93,7 +96,7 @@ jobs:
 
   snapcraft_test:
     name: 'Install and Test'
-    needs: [matrix_setup,snapcraft_build]
+    needs: [matrix_setup, snapcraft_build]
     runs-on: ubuntu-latest
 
     strategy:
@@ -134,7 +137,7 @@ jobs:
 
   snapcraft_publish:
     name: 'Publish'
-    needs: [matrix_setup,snapcraft_test,snapcraft_build]
+    needs: [matrix_setup, snapcraft_test, snapcraft_build]
     runs-on: ubuntu-latest
 
     if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.act
@@ -149,6 +152,9 @@ jobs:
     defaults:
       run:
         shell: bash
+
+    permissions:
+      contents: read
 
     steps:
       - name: GitHub - Download Snap Artifact
