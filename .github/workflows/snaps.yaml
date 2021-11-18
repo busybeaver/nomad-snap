@@ -132,7 +132,7 @@ jobs:
           path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
       - name: Goss - Setup
-        uses: e1himself/goss-installation-action@v1.0.3
+        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
         with:
           version: ${{ env.GOSS_VERSION }}
 
