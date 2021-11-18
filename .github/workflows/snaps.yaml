@@ -42,23 +42,28 @@ jobs:
 
       - name: Build Matrix - Setup
         id: set_matrix
-        run: echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+        run: |
+          echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+          echo "::set-output name=snap_working_dir::./snaps"
+          echo "::set-output name=snap_dir::/tmp/package.snap"
+          echo "::set-output name=snap_file::/tmp/package.snap"
+          echo "::set-output name=snap_artifact_name::tmp_{0}.snap"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
+      snap_working_dir: ${{ steps.set_matrix.outputs.snap_working_dir }}
+      snap_dir: ${{ steps.set_matrix.outputs.snap_dir }}
+      snap_file: ${{ steps.set_matrix.outputs.snap_file }}
+      snap_artifact_name: ${{ steps.set_matrix.outputs.snap_artifact_name }}
 
-  snapcraft:
-    name: 'Build, Test, and Publish'
+  snapcraft_build:
+    name: 'Build'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
-
-    env:
-      PUBLISH_ARTIFACT: false
-      SNAP_WORKING_DIR: './snaps'
 
     defaults:
       run:
@@ -76,14 +81,50 @@ jobs:
         id: snapcraft_build
         uses: snapcore/action-build@a400bf1c2d0f23074aaacf08a144813c3c20b35d # renovate: tag=v1
         with:
-          path: '${{ env.SNAP_WORKING_DIR }}/${{ matrix.package }}'
+          path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+      - name: GitHub - Upload Snap Artifact
+        id: github_upload
+        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074 # renovate: tag=v2
+        with:
+          name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
+          path: ${{ steps.snapcraft_build.outputs.snap }}
+          retention-days: 3
+
+  snapcraft_test:
+    name: 'Install and Test'
+    needs: [matrix_setup,snapcraft_build]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+
+      - name: GitHub - Download Snap Artifact
+        id: github_download
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
+          path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
       - name: Snapcraft - Install and Test Artifact
         id: snapcraft_test
         run: |
-          sudo snap install --color=never --dangerous ${{ steps.snapcraft_build.outputs.snap }}
+          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_dir }}
           echo '-----------------'
-          TEST_FILE=${{ env.SNAP_WORKING_DIR }}/${{ matrix.package }}/tests.sh
+          TEST_FILE=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests.sh
           if test -f "$TEST_FILE"; then
             echo "$TEST_FILE exists. Running tests:"
             sh ./$TEST_FILE
@@ -91,22 +132,41 @@ jobs:
               echo "$TEST_FILE does not exist. Skipping tests."
           fi
 
-      - name: GitHub - Upload Artifact
-        id: github_upload
-        uses: actions/upload-artifact@27121b0bdffd731efa15d66772be8dc71245d074 # renovate: tag=v2
+  snapcraft_publish:
+    name: 'Publish'
+    needs: [matrix_setup,snapcraft_test,snapcraft_build]
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.act
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    env:
+      PUBLISH_ARTIFACT: false
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: GitHub - Download Snap Artifact
+        id: github_download
+        uses: actions/download-artifact@v2
         with:
-          name: ${{ matrix.package }}.snap
-          path: ${{ steps.snapcraft_build.outputs.snap }}
+          name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
+          path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
         uses: snapcore/action-publish@f1879414dc5500e02a36f3d715bca6ddd438c913 # renovate: tag=v1
-        if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.act && env.PUBLISH_ARTIFACT == 'true'
+        if: env.PUBLISH_ARTIFACT == 'true'
         with:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
           store_login: ${{ secrets.SNAPCRAFT_STORE_LOGIN }}
-          snap: ${{ steps.snapcraft_build.outputs.snap }}
+          snap: ${{ needs.matrix_setup.outputs.snap_dir }}
           # https://github.community/t/do-expressions-support-ternary-operators-to-change-their-returned-value/18114/3
           # The condition evaluates to a boolean, which is implicitly cast to a number and used as array index, where false = 0 and true = 1.
           release: ${{ fromJSON('["edge", "stable"]')[github.ref == format('refs/heads/{0}', github.event.repository.default_branch)] }}
