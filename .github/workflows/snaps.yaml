@@ -144,7 +144,7 @@ jobs:
 
       - name: Goss - Install and Test Artifact
         id: snapcraft_test
-        if: hashFiles('./goss.yaml') != ''
+        if: hashFiles('${{ steps.test_parameter.outputs.working_dir }}/goss.yaml') != ''
         run: goss validate --format junit > ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.working_dir }}
         env:
@@ -154,7 +154,7 @@ jobs:
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
         uses: EnricoMi/publish-unit-test-result-action@v1.24
-        if: always()
+        if: always() && hashFiles('${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}') != ''
         with:
           files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
 
