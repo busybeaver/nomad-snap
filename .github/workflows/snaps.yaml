@@ -140,11 +140,12 @@ jobs:
         id: test_parameter
         run: |
           echo "::set-output name=working_dir::${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}"
+          echo "::set-output name=test_result_file::goss_test_results.xml"
 
       - name: Goss - Install and Test Artifact
         id: snapcraft_test
-        if: hashFiles('${{ steps.test_parameter.outputs.working_dir }}/goss.yaml') != ''
-        run: goss validate --format junit
+        if: hashFiles('./goss.yaml') != ''
+        run: goss validate --format junit > ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.working_dir }}
         env:
           SNAP_PACKAGE: ${{ needs.matrix_setup.outputs.snap_file }}
@@ -155,7 +156,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1.24
         if: always()
         with:
-          files: ${{ steps.test_parameter.outputs.working_dir }}/**/*.xml
+          files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
 
   snapcraft_publish:
     name: 'Publish'
