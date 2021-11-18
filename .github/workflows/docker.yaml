@@ -177,23 +177,23 @@ jobs:
         id: docker_import
         run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }} && docker images
 
-      - name: Snyk - Check for Docker Image Vulnerabilities
-        id: snyk_scan
-        uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          image: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
-          # only report issues medium or higher (aka no low risk issues)
-          args: --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
-          sarif: true
-
-      - name: GitHub - Upload result to Code Scanning
-        id: github_upload_sarif
-        uses: github/codeql-action/upload-sarif@v1
-        if: always() && github.event_name == 'push' && github.ref == github.event.repository.default_branch
-        with:
-          sarif_file: snyk.sarif
+#      - name: Snyk - Check for Docker Image Vulnerabilities
+#        id: snyk_scan
+#        uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
+#        env:
+#          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+#        with:
+#          image: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+#          # only report issues medium or higher (aka no low risk issues)
+#          args: --file=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile --severity-threshold=medium
+#          sarif: true
+#
+#      - name: GitHub - Upload result to Code Scanning
+#        id: github_upload_sarif
+#        uses: github/codeql-action/upload-sarif@v1
+#        if: always() && github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+#        with:
+#          sarif_file: snyk.sarif
 
   docker_publish:
     name: 'Publish'
@@ -237,4 +237,5 @@ jobs:
       - name: Docker - Publish Artifact
         id: docker_publish
         run: |
-          docker image push --all-tags ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+          docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+          docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
