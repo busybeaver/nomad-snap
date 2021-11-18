@@ -237,4 +237,5 @@ jobs:
       - name: Docker - Publish Artifact
         id: docker_publish
         run: |
-          docker image push --all-tags ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+          docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+          docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
