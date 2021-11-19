@@ -155,7 +155,7 @@ jobs:
 
       - name: GitHub - Check for Pre Test File Existence
         id: check_pre_test_file
-        uses: andstor/file-existence-action@v1.0.1
+        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
         with:
           files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.pre_test_file }}
 
@@ -170,7 +170,7 @@ jobs:
 
       - name: GitHub - Check for Test File Existence
         id: check_test_file
-        uses: andstor/file-existence-action@v1.0.1
+        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
         with:
           files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_file }}
 
@@ -185,7 +185,7 @@ jobs:
 
       - name: GitHub - Check for Post Test File Existence
         id: check_post_test_file
-        uses: andstor/file-existence-action@v1.0.1
+        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
         with:
           files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.post_test_file }}
 
