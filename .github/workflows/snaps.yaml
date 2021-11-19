@@ -135,7 +135,9 @@ jobs:
 
       - name: Snapcraft - Install Artifact
         id: snapcraft_install
-        run: sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
+        run: |
+          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
+          ls -la /var/snap
 
       - name: Goss - Setup
         uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
