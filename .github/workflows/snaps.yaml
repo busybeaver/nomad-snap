@@ -142,10 +142,16 @@ jobs:
           echo "::set-output name=working_dir::${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}"
           echo "::set-output name=test_result_file::goss_test_results.xml"
 
+      - name: Goss - Check for Test File Existence
+        id: check_test_file
+        uses: andstor/file-existence-action@v1.0.1
+        with:
+          files: '${{ steps.test_parameter.outputs.working_dir }}/goss.yaml'
+
       - name: Goss - Install and Test Artifact
         id: snapcraft_test
-        if: hashFiles('${{ steps.test_parameter.outputs.working_dir }}/goss.yaml') != ''
-        run: goss validate --format junit > ${{ steps.test_parameter.outputs.test_result_file }}
+        if: steps.check_test_file.outputs.files_exists == 'true'
+        run: goss validate --format junit | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.working_dir }}
         env:
           SNAP_PACKAGE: ${{ needs.matrix_setup.outputs.snap_file }}
@@ -154,7 +160,7 @@ jobs:
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
         uses: EnricoMi/publish-unit-test-result-action@8c0ddccd03f69215064876293657094714331b04 # renovate: tag=v1.24
-        if: always() && hashFiles('${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}') != ''
+        if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
 
