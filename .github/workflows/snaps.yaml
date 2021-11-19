@@ -116,8 +116,10 @@ jobs:
         shell: bash
 
     permissions:
+      # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
       contents: read
-      statuses: write
+      checks: write
+      pull-requests: write
 
     steps:
       - name: Git - Checkout
@@ -146,7 +148,7 @@ jobs:
         id: check_test_file
         uses: andstor/file-existence-action@v1.0.1
         with:
-          files: '${{ steps.test_parameter.outputs.working_dir }}/goss.yaml'
+          files: ${{ steps.test_parameter.outputs.working_dir }}/goss.yaml
 
       - name: Goss - Install and Test Artifact
         id: snapcraft_test
@@ -162,6 +164,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@8c0ddccd03f69215064876293657094714331b04 # renovate: tag=v1.24
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
+          check_name: Unit Test Results (Snap - ${{ matrix.package }})
           files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
 
   snapcraft_publish:
