@@ -1,0 +1,66 @@
+command:
+  list:
+    exec: "snap list --color=never {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+    timeout: 10000 # milliseconds
+    skip: false
+  info:
+    exec: "snap info --color=never {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+    timeout: 10000 # milliseconds
+    skip: false
+  version:
+    exec: "{{.Env.SERVICE_NAME}} version"
+    exit-status: 0
+    timeout: 10000 # milliseconds
+    skip: false
+  service_status:
+    exec: "snap services {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+      - active
+    timeout: 10000 # milliseconds
+    skip: false
+  service_logs:
+    exec: "snap logs {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+#    stdout:
+#      - {{.Env.SERVICE_NAME}}
+#      - disabled
+#      - inactive
+    timeout: 10000 # milliseconds
+    skip: false
+  consul_members:
+    exec: "{{.Env.SERVICE_NAME}} members"
+    exit-status: 0
+    #    stdout:
+    #      - {{.Env.SERVICE_NAME}}
+    #      - disabled
+    #      - inactive
+    timeout: 10000 # milliseconds
+    skip: false
+  kv_store_put:
+    exec: "{{.Env.SERVICE_NAME}} kv put foo/bar 1"
+    exit-status: 0
+    #    stdout:
+    #      - {{.Env.SERVICE_NAME}}
+    #      - disabled
+    #      - inactive
+    timeout: 10000 # milliseconds
+    skip: false
+http:
+  http://localhost:8500/v1/catalog/nodes:
+    method: GET
+    request-headers:
+      - "Content-Type: application/json; charset=UTF-8"
+    status: 200
+    # body: []
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 1000
+    skip: false
