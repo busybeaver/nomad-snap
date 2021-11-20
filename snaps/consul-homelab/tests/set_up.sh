@@ -9,4 +9,5 @@ log_level = \"INFO\"
 datacenter = \"github_actions\"
 node_name = \"runner\"
 server = true
+bootstrap = true
 " | sudo tee "/var/snap/${SERVICE_NAME}/current/config/test.hcl"
