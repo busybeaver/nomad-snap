@@ -1,8 +1,0 @@
-command:
-  service_stop:
-    exec: "sudo snap stop {{.Env.SERVICE_NAME}}.daemon"
-    exit-status: 0
-    stdout:
-      - Stopped
-    timeout: 30000 # milliseconds
-    skip: false

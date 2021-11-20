@@ -11,3 +11,5 @@ node_name = \"runner\"
 server = true
 bootstrap = true
 " | sudo tee "/var/snap/${SERVICE_NAME}/current/config/test.hcl"
+sudo snap start "${SERVICE_NAME}.daemon"
+sleep 10s

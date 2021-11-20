@@ -136,23 +136,21 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
-          echo "::set-output name=working_dir::${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}"
-          echo "::set-output name=pre_test_file::goss_pre_test.yaml"
-          echo "::set-output name=test_file::goss_test.yaml"
-          echo "::set-output name=post_test_file::goss_post_test.yaml"
+          echo "::set-output name=test_working_dir::${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests"
+          echo "::set-output name=test_result_file::goss_test_results.xml"
 
       - name: Snapcraft - Install Artifact
         id: snapcraft_install
         run: |
           sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
-          SET_UP_FILE=./tests/set_up.sh
+          SET_UP_FILE=./set_up.sh
           if test -f "$SET_UP_FILE"; then
             echo "$SET_UP_FILE exists. Set up artifact:"
             sh ./$SET_UP_FILE
           else
               echo "$SET_UP_FILE does not exist. Skip setting up."
           fi
-        working-directory: ${{ steps.test_parameter.outputs.working_dir }}
+        working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           SERVICE_NAME: ${{ matrix.package }}
 
@@ -161,65 +159,27 @@ jobs:
         with:
           version: ${{ env.GOSS_VERSION }}
 
-      # since Goss doesn't support ordering (yet), we need to manually work with pre and post files
-      # https://github.com/aelsabbahy/goss/issues/485
-
-      - name: GitHub - Check for Pre Test File Existence
-        id: check_pre_test_file
-        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
-        with:
-          files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.pre_test_file }}
-
-      - name: Goss - Pre Test Artifact
-        id: goss_pre_test
-        if: steps.check_pre_test_file.outputs.files_exists == 'true'
-        run: goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.pre_test_file }}_results.xml
-        working-directory: ${{ steps.test_parameter.outputs.working_dir }}
-        env:
-          GOSS_FILE: ./${{ steps.test_parameter.outputs.pre_test_file }}
-          SERVICE_NAME: ${{ matrix.package }}
-
       - name: GitHub - Check for Test File Existence
         id: check_test_file
         uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
         with:
-          files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.test_file }}
+          files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
       - name: Goss - Test Artifact
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
-        run: |
-          sleep 10s
-          sudo snap logs ${{ matrix.package }}
-          echo "---"
-          goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_file }}_results.xml
-        working-directory: ${{ steps.test_parameter.outputs.working_dir }}
+        run: goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
-          GOSS_FILE: ./${{ steps.test_parameter.outputs.test_file }}
-          SERVICE_NAME: ${{ matrix.package }}
-
-      - name: GitHub - Check for Post Test File Existence
-        id: check_post_test_file
-        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
-        with:
-          files: ${{ steps.test_parameter.outputs.working_dir }}/${{ steps.test_parameter.outputs.post_test_file }}
-
-      - name: Goss - Post Test Artifact
-        id: goss_post_test
-        if: steps.check_post_test_file.outputs.files_exists == 'true'
-        run: goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.post_test_file }}_results.xml
-        working-directory: ${{ steps.test_parameter.outputs.working_dir }}
-        env:
-          GOSS_FILE: ./${{ steps.test_parameter.outputs.post_test_file }}
           SERVICE_NAME: ${{ matrix.package }}
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
         uses: EnricoMi/publish-unit-test-result-action@8c0ddccd03f69215064876293657094714331b04 # renovate: tag=v1.24
-        if: always() && (steps.check_pre_test_file.outputs.files_exists == 'true' || steps.check_test_file.outputs.files_exists == 'true' || steps.check_post_test_file.outputs.files_exists == 'true')
+        if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           check_name: Unit Test Results (Snap - ${{ matrix.package }})
-          files: ${{ steps.test_parameter.outputs.working_dir }}/**/*_results.xml
+          files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
 
   snapcraft_publish:
     name: 'Publish'

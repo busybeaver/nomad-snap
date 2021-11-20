@@ -1,8 +1,0 @@
-command:
-  service_start:
-    exec: "sudo snap start {{.Env.SERVICE_NAME}}.daemon"
-    exit-status: 0
-    stdout:
-      - Started
-    timeout: 30000 # milliseconds
-    skip: false

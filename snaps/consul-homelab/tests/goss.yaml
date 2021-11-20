@@ -27,7 +27,7 @@ command:
     timeout: 10000 # milliseconds
     skip: false
   service_logs:
-    exec: "snap logs {{.Env.SERVICE_NAME}}"
+    exec: "sudo snap logs {{.Env.SERVICE_NAME}}"
     exit-status: 0
 #    stdout:
 #      - {{.Env.SERVICE_NAME}}
@@ -54,7 +54,7 @@ command:
     timeout: 10000 # milliseconds
     skip: false
 file:
-  /var/snap/{{.Env.SERVICE_NAME}}/current/config/test.json:
+  /var/snap/{{.Env.SERVICE_NAME}}/current/config/test.hcl:
     exists: true
     skip: false
 port:
