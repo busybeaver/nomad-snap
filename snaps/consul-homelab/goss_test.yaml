@@ -53,6 +53,14 @@ command:
     #      - inactive
     timeout: 10000 # milliseconds
     skip: false
+file:
+  /var/snap/{{.Env.SERVICE_NAME}}/current/config/test.json:
+    exists: true
+    skip: false
+port:
+  tcp:8500:
+    listening: true
+    skip: false
 http:
   http://localhost:8500/v1/catalog/nodes:
     method: GET

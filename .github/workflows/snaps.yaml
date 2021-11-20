@@ -188,7 +188,10 @@ jobs:
       - name: Goss - Test Artifact
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
-        run: goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_file }}_results.xml
+        run: |
+          snap logs ${{ matrix.package }}
+          echo "---"
+          goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_file }}_results.xml
         working-directory: ${{ steps.test_parameter.outputs.working_dir }}
         env:
           GOSS_FILE: ./${{ steps.test_parameter.outputs.test_file }}
