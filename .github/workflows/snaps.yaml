@@ -136,8 +136,10 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
-          echo "::set-output name=test_working_dir::${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests"
+          TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests
+          echo "::set-output name=test_working_dir::${TEST_WORKING_DIR}"
           echo "::set-output name=test_result_file::goss_test_results.xml"
+          mkdir -p ${TEST_WORKING_DIR}
 
       - name: Snapcraft - Install Artifact
         id: snapcraft_install
