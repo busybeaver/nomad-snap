@@ -48,7 +48,7 @@ apps:
       - network-bind
   daemon:
     # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
-    #command: bin/consul agent -config-dir $SNAP_DATA/config/
+    # command: bin/consul agent -config-dir $SNAP_DATA/config/
     # we need to move this to a simple wrapper script, since snapcraft doesn't allow = chars in the command property
     # https://bugs.launchpad.net/snapd/+bug/1820055
     command: daemon.sh

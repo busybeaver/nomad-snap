@@ -133,17 +133,6 @@ jobs:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
-      - name: Snapcraft - Install Artifact
-        id: snapcraft_install
-        run: |
-          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
-          ls -la /var/snap/${{ matrix.package }}
-
-      - name: Goss - Setup
-        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
-        with:
-          version: ${{ env.GOSS_VERSION }}
-
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
@@ -151,6 +140,26 @@ jobs:
           echo "::set-output name=pre_test_file::goss_pre_test.yaml"
           echo "::set-output name=test_file::goss_test.yaml"
           echo "::set-output name=post_test_file::goss_post_test.yaml"
+
+      - name: Snapcraft - Install Artifact
+        id: snapcraft_install
+        run: |
+          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
+          SET_UP_FILE=./tests/set_up.sh
+          if test -f "$SET_UP_FILE"; then
+            echo "$SET_UP_FILE exists. Set up artifact:"
+            sh ./$SET_UP_FILE
+          else
+              echo "$SET_UP_FILE does not exist. Skip setting up."
+          fi
+        working-directory: ${{ steps.test_parameter.outputs.working_dir }}
+        env:
+          SERVICE_NAME: ${{ matrix.package }}
+
+      - name: Goss - Setup
+        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
+        with:
+          version: ${{ env.GOSS_VERSION }}
 
       # since Goss doesn't support ordering (yet), we need to manually work with pre and post files
       # https://github.com/aelsabbahy/goss/issues/485
