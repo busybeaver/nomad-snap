@@ -1,5 +1,5 @@
 #!/bin/bash
 set -x
 
-mkdir -p "/var/snap/${SERVICE_NAME}/current/config"
-echo "{\"dev\": true}" > "/var/snap/${SERVICE_NAME}/current/config/test.json"
+sudo mkdir -p "/var/snap/${SERVICE_NAME}/current/config"
+sudo echo "{\"dev\": true}" > "/var/snap/${SERVICE_NAME}/current/config/test.json"
