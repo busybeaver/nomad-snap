@@ -189,7 +189,6 @@ jobs:
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
         run: |
-          ifconfig
           sleep 10s
           sudo snap logs ${{ matrix.package }}
           echo "---"
