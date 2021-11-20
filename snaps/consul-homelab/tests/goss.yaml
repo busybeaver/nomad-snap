@@ -17,7 +17,7 @@ command:
     exec: "{{.Env.SERVICE_NAME}} version"
     exit-status: 0
     stdout:
-      - {{.Env.SERVICE_NAME}}
+      - Consul
     timeout: 10000 # milliseconds
     skip: false
   service_status:
