@@ -189,7 +189,7 @@ jobs:
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
         run: |
-          snap logs ${{ matrix.package }}
+          sudo snap logs ${{ matrix.package }}
           echo "---"
           goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_file }}_results.xml
         working-directory: ${{ steps.test_parameter.outputs.working_dir }}
