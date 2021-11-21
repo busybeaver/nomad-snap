@@ -83,7 +83,7 @@ jobs:
       - name: Snapcraft - Set up Build Environment
         id: snapcraft_setup
         # prefix all env variables with "CI_ENV_" to ensure these do not clash with env variables within the snapcraft build environment
-        run: printenv | sed 's/#.*//g' | sed -e 's/^/CI_ENV_/' > .ci.env
+        run: printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" | sed -e 's/^/CI_ENV_/' > .ci.env
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: Snapcraft - Build Artifact

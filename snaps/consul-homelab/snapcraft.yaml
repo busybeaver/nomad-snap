@@ -50,6 +50,8 @@ parts:
         snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
         snapcraftctl set-grade "devel"
       fi
+# alternative for the export statement:
+# set -a; . .ci.env; set +a
 
 apps:
   consul-homelab:
