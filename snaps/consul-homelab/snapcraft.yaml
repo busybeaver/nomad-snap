@@ -23,7 +23,7 @@ parts:
   consul-wrapper:
     plugin: dump
     source-type: local
-    source: bin/
+    source: ./bin/
     prime:
       # files in the prime phase/area are available in the final snap package
       - daemon.sh
@@ -34,7 +34,7 @@ parts:
   build-env:
     plugin: dump
     source-type: local
-    source: /
+    source: ./
     stage:
       # files in the stage phase/area are only available during the build of the snap package, but not in the final package itself
       - .ci.env
