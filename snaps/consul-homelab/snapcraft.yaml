@@ -40,8 +40,8 @@ parts:
       - .ci.env
     override-stage: |
       snapcraftctl stage
-      export $(cat .ci.env | xargs)
 
+      set -a; . .ci.env; set +a
       printenv
 
       echo "Running on branch: $CI_ENV_GITHUB_REF"
@@ -50,8 +50,8 @@ parts:
         snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
         snapcraftctl set-grade "devel"
       fi
-# alternative for the export statement:
-# set -a; . .ci.env; set +a
+# alternative for the source statement:
+# export $(cat .ci.env | xargs)
 
 apps:
   consul-homelab:
