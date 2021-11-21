@@ -43,7 +43,7 @@ parts:
       set -x
       snapcraftctl stage
 
-      CI_ENV_FILE = ".ci.env"
+      CI_ENV_FILE=".ci.env"
       if [ test -f "$SET_UP_FILE" ]; then
         set -a; . "$CI_ENV_FILE"; set +a
 
