@@ -80,6 +80,11 @@ jobs:
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
 
+      - name: Snapcraft - Set up Build Environment
+        id: snapcraft_setup_build
+        run: printenv > .ci.env
+        working-directory:  ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
         uses: snapcore/action-build@a400bf1c2d0f23074aaacf08a144813c3c20b35d # renovate: tag=v1

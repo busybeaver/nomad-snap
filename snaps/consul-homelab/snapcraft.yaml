@@ -18,16 +18,6 @@ parts:
     source-type: git
     source: https://github.com/hashicorp/consul.git
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
-#    override-pull: |
-#      set -x
-#      snapcraftctl pull
-#      printenv
-#      echo "Running on branch: $GITHUB_REF"
-#      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
-#        echo "Running on non-default branch, appending the short git rev to the version"
-#        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-#        snapcraftctl set-grade "devel"
-#      fi
     build-packages:
       - gcc
   consul-wrapper:
@@ -37,8 +27,28 @@ parts:
     prime:
       - daemon.sh
     override-prime: |
+      set -x
       snapcraftctl prime
       chmod +x daemon.sh
+  build-env:
+    plugin: dump
+    source-type: local
+    source: /
+    stage:
+      - .ci.env
+    override-stage: |
+      set -x
+      snapcraftctl stage
+      export $(cat .ci.env | xargs)
+
+      printenv
+
+      echo "Running on branch: $GITHUB_REF"
+      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
+        echo "Running on non-default branch, appending the short git rev to the version"
+        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
+        snapcraftctl set-grade "devel"
+      fi
 
 apps:
   consul-homelab:
