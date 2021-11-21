@@ -222,7 +222,7 @@ jobs:
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
         uses: snapcore/action-publish@f1879414dc5500e02a36f3d715bca6ddd438c913 # renovate: tag=v1
-        if: env.PUBLISH_ARTIFACT == 'true'
+        if: env.PUBLISH_ARTIFACT == 'true' && matrix.package == "consul-homelab"
         with:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
