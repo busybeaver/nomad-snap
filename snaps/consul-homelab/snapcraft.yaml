@@ -36,22 +36,26 @@ parts:
     source-type: local
     source: ./
     stage:
-      # files in the stage phase/area are only available during the build of the snap package, but not in the final package itself
+      # files in the stage phase/area are only available during the build of the snap package,
+      # but not in the final package itself
       - .ci.env
     override-stage: |
+      set -x
       snapcraftctl stage
 
-      set -a; . .ci.env; set +a
-      printenv
+      CI_ENV_FILE = ".ci.env"
+      if [ test -f "$SET_UP_FILE" ]; then
+        set -a; . "$CI_ENV_FILE"; set +a
 
-      echo "Running on branch: $CI_ENV_GITHUB_REF"
-      if [ -n "$CI_ENV_GITHUB_REF" ] && [ "$CI_ENV_GITHUB_REF" != "refs/heads/main" ]; then
-        echo "Running on non-default branch, appending the short git rev to the version"
-        snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-        snapcraftctl set-grade "devel"
+        echo "Running on branch: $CI_ENV_GITHUB_REF"
+        if [ -n "$CI_ENV_GITHUB_REF" ] && [ "$CI_ENV_GITHUB_REF" != "refs/heads/main" ]; then
+          echo "Running on non-default branch, appending the short git rev to the version"
+          snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
+          snapcraftctl set-grade "devel"
+        fi
+      else
+          echo "$CI_ENV_FILE does not exist. Skip setting up properties based on CI environment."
       fi
-# alternative for the source statement:
-# export $(cat .ci.env | xargs)
 
 apps:
   consul-homelab:
