@@ -1,7 +1,7 @@
 name: nomad-homelab
 version: '1.1.6'
-summary: HomeLab - Workload Orchestration Made Easy
-description: HomeLab - A simple and flexible workload orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
+summary: HomeLab Nomad - Workload Orchestration Made Easy
+description: HomeLab Nomad - A simple and flexible workload orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
 
 grade: stable
 confinement: strict
