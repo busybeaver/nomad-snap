@@ -45,8 +45,8 @@ parts:
 
       printenv
 
-      echo "Running on branch: $GITHUB_REF"
-      if ! [ "$GITHUB_REF" = "refs/heads/main" ]; then
+      echo "Running on branch: $CI_ENV_GITHUB_REF"
+      if ! [ "$CI_ENV_GITHUB_REF" = "refs/heads/main" ]; then
         echo "Running on non-default branch, appending the short git rev to the version"
         snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
         snapcraftctl set-grade "devel"
