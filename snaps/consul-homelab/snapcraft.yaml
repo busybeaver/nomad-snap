@@ -44,7 +44,7 @@ parts:
       snapcraftctl stage
 
       CI_ENV_FILE=".ci.env"
-      if [ test -f "$CI_ENV_FILE" ]; then
+      if test -f "$CI_ENV_FILE"; then
         set -a; . "$CI_ENV_FILE"; set +a
 
         echo "Running on branch: $CI_ENV_GITHUB_REF"
