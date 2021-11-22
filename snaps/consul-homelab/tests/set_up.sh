@@ -1,9 +1,9 @@
 #!/bin/bash
 set -x
 
-cd /var/snap/"${SERVICE_NAME}"/current/
+cd "/var/snap/${SERVICE_NAME}/current/" || exit 1
 sudo mkdir config data
-ls -la
+
 echo "
 bind_addr = \"{{ GetInterfaceIP \\\"eth0\\\" }}\"
 data_dir = \"/var/snap/${SERVICE_NAME}/current/data\"
@@ -13,5 +13,5 @@ node_name = \"runner\"
 server = true
 bootstrap = true
 " | sudo tee ./config/test.hcl
-sudo snap start "${SERVICE_NAME}".daemon
+sudo snap start "${SERVICE_NAME}.daemon"
 sleep 10s
