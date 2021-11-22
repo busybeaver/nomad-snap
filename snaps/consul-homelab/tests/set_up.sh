@@ -2,6 +2,7 @@
 set -x
 
 sudo mkdir -p "/var/snap/${SERVICE_NAME}/current/{config,data}/"
+ls -la "/var/snap/${SERVICE_NAME}/current/"
 echo "
 bind_addr = \"{{ GetInterfaceIP \\\"eth0\\\" }}\"
 data_dir = \"/var/snap/${SERVICE_NAME}/current/data\"
