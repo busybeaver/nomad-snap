@@ -10,7 +10,7 @@ The snap package can be installed by running:
 sudo snap install consul-homelab
 ```
 
-*Note:* The package is currently published privately, so only selected Ubuntu One accounts can download/install it from the Snapcraft store.
+_Note:_ The package is currently published privately, so only selected Ubuntu One accounts can download/install it from the Snapcraft store.
 
 ## Usage
 
