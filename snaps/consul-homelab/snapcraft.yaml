@@ -74,6 +74,7 @@ apps:
     daemon: simple
     # don't start service during the snap installation since it needs some configuration files first
     install-mode: disable
+    stop-timeout: 10s
     plugs:
       - network
       - network-bind
