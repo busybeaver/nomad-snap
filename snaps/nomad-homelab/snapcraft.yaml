@@ -20,6 +20,17 @@ parts:
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
     build-packages:
       - gcc
+  nomad-wrapper:
+    plugin: dump
+    source-type: local
+    source: ./bin/
+    prime:
+      # files in the prime phase/area are available in the final snap package
+      - daemon.sh
+    override-prime: |
+      set -x
+      snapcraftctl prime
+      chmod +x daemon.sh
   build-env:
     plugin: dump
     source-type: local
@@ -51,4 +62,19 @@ apps:
     command: bin/nomad
     plugs:
       - network
-      - docker
+      - network-bind
+  daemon:
+    # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
+    # command: bin/consul agent -config-dir $SNAP_DATA/config/
+    # we need to move this to a simple wrapper script, since snapcraft doesn't allow = chars in the command property
+    # https://bugs.launchpad.net/snapd/+bug/1820055
+    command: daemon.sh
+    # no need for a "stop-command", the daemon/service is simply stopped via SIGINT
+    restart-condition: always
+    daemon: simple
+    # don't start service during the snap installation since it needs some configuration files first
+    install-mode: disable
+    stop-timeout: 10s
+    plugs:
+      - network
+      - network-bind
