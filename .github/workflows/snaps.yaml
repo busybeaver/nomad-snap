@@ -148,16 +148,17 @@ jobs:
           echo "::set-output name=test_result_file::goss_test_results.xml"
           mkdir -p ${TEST_WORKING_DIR}
 
-      - name: Snapcraft - Install Artifact
-        id: snapcraft_install
+      - name: Snapcraft - Pre Test Setup
+        id: snapcraft_setup
         run: |
+          echo "Install snap package:"
           sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
-          SET_UP_FILE=./set_up.sh
-          if test -f "$SET_UP_FILE"; then
-            echo "$SET_UP_FILE exists. Set up artifact:"
-            sh ./$SET_UP_FILE
+          SETUP_FILE=./setup.sh
+          if test -f "$SETUP_FILE"; then
+            echo "$SETUP_FILE exists. Going to run setup:"
+            sh ./$SETUP_FILE
           else
-              echo "$SET_UP_FILE does not exist. Skip setting up."
+            echo "$SETUP_FILE does not exist. Skip setup."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
@@ -178,6 +179,20 @@ jobs:
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
         run: goss validate --format junit --max-concurrent 1 | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        env:
+          SERVICE_NAME: ${{ matrix.package }}
+
+      - name: Snapcraft - Post Test Teardown
+        id: snapcraft_teardown
+        run: |
+          TEARDOWN_FILE=./teardown.sh
+          if test -f "$TEARDOWN_FILE"; then
+            echo "$TEARDOWN_FILE exists. Going to run teardown:"
+            sh ./$TEARDOWN_FILE
+          else
+            echo "$TEARDOWN_FILE does not exist. Skip teardown."
+          fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           SERVICE_NAME: ${{ matrix.package }}
