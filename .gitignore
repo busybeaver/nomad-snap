@@ -225,3 +225,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,osx,visualstudiocode,intellij,snap,snapcraft
+
+# -------
+# Custom:
+# -------
+
+# created by the GitHub Actions CI build system
+**/.ci.env
