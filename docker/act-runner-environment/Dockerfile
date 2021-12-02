@@ -10,6 +10,6 @@ LABEL org.opencontainers.image.title="A minimal act runner environment with Pyth
 
 RUN apt-get update && \
     apt-get upgrade --no-install-recommends --yes && \
-    apt-get install python-is-python3=3.\* --no-install-recommends --yes && \
+    apt-get install python3-minimal=3.\* --no-install-recommends --yes && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
