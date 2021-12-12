@@ -199,7 +199,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@8c0ddccd03f69215064876293657094714331b04 # renovate: tag=v1.24
+        uses: EnricoMi/publish-unit-test-result-action@dc4b2f22e07d0995dffe65daf902598f695e8827 # renovate: tag=v1.25
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           check_name: Unit Test Results (Snap - ${{ matrix.package }})
