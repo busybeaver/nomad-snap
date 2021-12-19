@@ -183,6 +183,7 @@ jobs:
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
         uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -197,7 +198,7 @@ jobs:
         # always run, even if the previous step failed due to found vulnerabilities (so it vulnerabilities get reported)
         # only run if the sarif file exists
         # only run on pushes on the default branch
-        if: always() && hashFiles('snyk.sarif') != '' && github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: hashFiles('snyk.sarif') != '' && github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         with:
           sarif_file: snyk.sarif
 
