@@ -91,7 +91,7 @@ jobs:
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
-        uses: github/super-linter/slim@563be7dc5568017515b9e700329e9c6d3862f2b7 # renovate: tag=v4
+        uses: github/super-linter/slim@b8641364ca9a79b3cf07f3c4c59a82709cd39094 # renovate: tag=v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
