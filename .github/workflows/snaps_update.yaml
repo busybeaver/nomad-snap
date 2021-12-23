@@ -84,13 +84,15 @@ jobs:
           echo "::set-output name=source_git_url::$(echo $GIT_REPO_URL)"
           echo "::set-output name=source_git_org::$(echo $GIT_ORG)"
           echo "::set-output name=source_git_repo::$(echo $GIT_REPO)"
+
+          echo "$GIT_REPO_URL $GIT_ORG $GIT_REPO"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Latest Release
         uses: pozetroninc/github-action-get-latest-release@v0.5.0
         with:
-          owner: ${{ steps.yq_get_data.outputs.source_git_org }}
-          repo: ${{ steps.yq_get_data.outputs.source_git_repo }}
+          owner: ${{ steps.github_retrieve_data.outputs.source_git_org }}
+          repo: ${{ steps.github_retrieve_data.outputs.source_git_repo }}
           excludes: prerelease, draft
 
       - name: GitHub - Evaluate Data
