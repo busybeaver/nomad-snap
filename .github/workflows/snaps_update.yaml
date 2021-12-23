@@ -1,0 +1,100 @@
+name: 'Snapcraft Update CI'
+
+on:
+  # run on main if the file itself was changed
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/snaps_update*'
+  # run daily on midnight
+  schedule:
+    - cron: '0 0 * * *'
+
+concurrency:
+  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
+  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+
+jobs:
+  matrix_setup:
+    name: 'Setup Build Matrix'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: './snaps/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: |
+          echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+          echo "::set-output name=snap_working_dir::./snaps"
+
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      snap_working_dir: ${{ steps.set_matrix.outputs.snap_working_dir }}
+
+  snapcraft_update:
+    name: 'Update'
+    needs: [matrix_setup]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+
+      - name: yq - Setup
+        id: yq_setup
+        uses: mikefarah/yq@v4.16.2
+
+      - name: Python - Install Dependencies
+        id: python_run_pip
+        run: |
+          python3 -m pip install -r
+
+      - name: GitHub - Retrieve Data
+        id: github_retrieve_data
+        run: |
+          GIT_REPO_URL=$(yq eval --no-colors '.parts.[] | select(.source-type == "git") | .source' snapcraft.yaml)
+          GIT_ORG=$(python3 -c 'from giturlparse import parse; print(parse($GIT_REPO_URL).owner)')
+          GIT_REPO=$(python3 -c 'from giturlparse import parse; print(parse($GIT_REPO_URL).repo)')
+          echo "::set-output name=current_version::$(yq eval --no-colors '.version' snapcraft.yaml)"
+          echo "::set-output name=source_git_url::$(echo $GIT_REPO_URL)"
+          echo "::set-output name=source_git_org::$(echo $GIT_ORG)"
+          echo "::set-output name=source_git_repo::$(echo $GIT_REPO)"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+      - name: GitHub - Get Latest Release
+        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        with:
+          owner: ${{ steps.yq_get_data.outputs.source_git_org }}
+          repo: ${{ steps.yq_get_data.outputs.source_git_repo }}
+          excludes: prerelease, draft
+
+      - name: GitHub - Evaluate Data
+        id: github_evaluate_data
+        run: |
+          echo foobar
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
