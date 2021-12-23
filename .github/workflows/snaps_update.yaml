@@ -77,9 +77,9 @@ jobs:
       - name: GitHub - Retrieve Data
         id: github_retrieve_data
         run: |
-          GIT_REPO_URL=$(yq eval --no-colors '.parts.[] | select(.source-type == "git") | .source' snapcraft.yaml)
-          GIT_ORG=$(python3 -c 'from giturlparse import parse; print(parse($GIT_REPO_URL).owner)')
-          GIT_REPO=$(python3 -c 'from giturlparse import parse; print(parse($GIT_REPO_URL).repo)')
+          export GIT_REPO_URL=$(yq eval --no-colors '.parts.[] | select(.source-type == "git") | .source' snapcraft.yaml)
+          export GIT_ORG=$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).owner)')
+          export GIT_REPO=$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).repo)')
           echo "::set-output name=current_version::$(yq eval --no-colors '.version' snapcraft.yaml)"
           echo "::set-output name=source_git_url::$(echo $GIT_REPO_URL)"
           echo "::set-output name=source_git_org::$(echo $GIT_ORG)"
