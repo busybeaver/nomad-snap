@@ -101,7 +101,7 @@ jobs:
           export LATEST_VERSION="${{ steps.github_latest_version.outputs.release }}"
           echo "Used Version: v$USED_VERSION"
           echo "Used Version: $LATEST_VERSION"
-          SEMVER_COMPARE=$(python3 -c 'import os; import semver; print(semver.compare(os.getenv("USED_VERSION"),os.getenv("LATEST_VERSION").removeprefix("v")))')
+          SEMVER_COMPARE=$(python3 -c 'import os; import string; import semver; print(semver.compare(os.getenv("USED_VERSION"),os.getenv("LATEST_VERSION").removeprefix("v")))')
           # a value of minus one means the first version (parameter) [used version] is lower second version (parameter) [current version] according to semver
           if $SEMVER_COMPARE = "-1"; then
             echo "Newer version available, going to update the snapcraft.yaml file and create a PR."
