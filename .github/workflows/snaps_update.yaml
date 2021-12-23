@@ -67,7 +67,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@v4.16.2
+        uses: mikefarah/yq@915e9de437b645435e004ef13c5dc347f855658d # renovate: tag=v4.16.2
 
       - name: Python - Install Dependencies
         id: python_run_pip
@@ -90,7 +90,7 @@ jobs:
 
       - name: GitHub - Get Latest Release
         id: github_latest_version
-        uses: pozetroninc/github-action-get-latest-release@v0.5.0
+        uses: pozetroninc/github-action-get-latest-release@2b51d48e904071035d6632715d41966f516711dd # renovate: tag=v0.5.0
         with:
           owner: ${{ steps.github_retrieve_data.outputs.source_git_org }}
           repo: ${{ steps.github_retrieve_data.outputs.source_git_repo }}
