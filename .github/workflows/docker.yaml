@@ -91,7 +91,7 @@ jobs:
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
-        uses: github/super-linter/slim@563be7dc5568017515b9e700329e9c6d3862f2b7 # renovate: tag=v4
+        uses: github/super-linter/slim@b8641364ca9a79b3cf07f3c4c59a82709cd39094 # renovate: tag=v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -235,7 +235,7 @@ jobs:
 
       - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9 # renovate: tag=v1
+        uses: docker/login-action@42d299face0c5c43a0487c477f595ac9cf22f1a7 # renovate: tag=v1
         with:
           registry: ${{ needs.matrix_setup.outputs.docker_registry }}
           username: ${{ github.actor }}
