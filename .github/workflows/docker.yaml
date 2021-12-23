@@ -1,7 +1,7 @@
 name: 'Docker CI'
 
 on:
-  # run on main to master if docker related files were changed
+  # run on pushes to main if docker related files were changed
   push:
     branches:
       - main

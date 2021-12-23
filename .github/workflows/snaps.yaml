@@ -1,7 +1,7 @@
 name: 'Snapcraft CI'
 
 on:
-  # run on main to master if snap related files were changed
+  # run on pushes to main if snap related files were changed
   push:
     branches:
       - main
@@ -23,7 +23,6 @@ concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
   # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
   group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
-
 
 jobs:
   matrix_setup:
