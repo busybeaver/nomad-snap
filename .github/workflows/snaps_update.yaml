@@ -77,13 +77,13 @@ jobs:
       - name: GitHub - Retrieve Data
         id: github_retrieve_data
         run: |
-          export GIT_REPO_URL=$(yq eval --no-colors '.parts.[] | select(.source-type == "git") | .source' snapcraft.yaml)
-          export GIT_ORG=$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).owner)')
-          export GIT_REPO=$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).repo)')
+          export GIT_REPO_URL="$(yq eval --no-colors '.parts.[] | select(.source-type == "git") | .source' snapcraft.yaml)"
+          export GIT_ORG="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).owner)')"
+          export GIT_REPO="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).repo)')"
           echo "::set-output name=used_version::$(yq eval --no-colors '.version' snapcraft.yaml)"
-          echo "::set-output name=source_git_url::$(echo $GIT_REPO_URL)"
-          echo "::set-output name=source_git_org::$(echo $GIT_ORG)"
-          echo "::set-output name=source_git_repo::$(echo $GIT_REPO)"
+          echo "::set-output name=source_git_url::$GIT_REPO_URL"
+          echo "::set-output name=source_git_org::$GIT_ORG"
+          echo "::set-output name=source_git_repo::$GIT_REPO"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Latest Release
@@ -101,7 +101,7 @@ jobs:
           export LATEST_VERSION="${{ steps.github_latest_version.outputs.release }}"
           echo "Used Version: v$USED_VERSION"
           echo "Used Version: $LATEST_VERSION"
-          SEMVER_COMPARE=$(python3 -c 'import os; import semver; print(semver.compare(os.getenv("USED_VERSION"),os.getenv("LATEST_VERSION").lstrip("v")))')
+          SEMVER_COMPARE="$(python3 -c 'import os; import semver; print(semver.compare(os.getenv("USED_VERSION"),os.getenv("LATEST_VERSION").lstrip("v")))')"
           # a value of minus one means the first version (parameter) [used version] is lower second version (parameter) [current version] according to semver
           if [[ "$SEMVER_COMPARE" == "-1" ]]; then
             echo "Newer version available, going to update the snapcraft.yaml file and create a PR."
