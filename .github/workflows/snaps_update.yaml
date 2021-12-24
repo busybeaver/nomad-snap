@@ -126,6 +126,15 @@ jobs:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
           private_key: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_PRIVATE_KEY }}
 
+      - name: GitHub - Setup GPG Keys
+        uses: crazy-max/ghaction-import-gpg@v3
+        id: github_setup_gpg
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git-user-signingkey: true
+          git-commit-gpgsign: true
+
       - name: GitHub - Create Pull Request
         uses: peter-evans/create-pull-request@dcd5fd746d53dd8de555c0f10bca6c35628be47a # renovate: tag=v3.12.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
@@ -133,9 +142,9 @@ jobs:
           token: ${{ steps.github_generate_app_token.outputs.token }}
           add-paths: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/snapcraft.yaml
           commit-message: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          branch: snapcraft-update/${{ matrix.package }}
+          committer: ${{ steps.github_setup_gpg.outputs.name }} <${{ steps.github_setup_gpg.outputs.email }}>
+          author: ${{ steps.github_setup_gpg.outputs.name }} <${{ steps.github_setup_gpg.outputs.email }}>
+          branch: snap-update/${{ matrix.package }}
           delete-branch: true
           title: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
           body: |
