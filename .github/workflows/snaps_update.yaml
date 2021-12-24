@@ -112,7 +112,7 @@ jobs:
           # a value of minus one means the first version (parameter) [used version] is lower second version (parameter) [current version] according to semver
           if [[ "$SEMVER_COMPARE" == "-1" ]]; then
             echo "Newer version available, going to update the snapcraft.yaml file to version $LATEST_VERSION and create a PR."
-            yq eval --no-colors --exit-status --inplace '.version = "$LATEST_VERSION"' snapcraft.yaml
+            yq eval --no-colors --exit-status --inplace '.version = strenv(LATEST_VERSION)' snapcraft.yaml
             git diff | cat # testing
             echo "::set-output name=version_updated::true"
           else
