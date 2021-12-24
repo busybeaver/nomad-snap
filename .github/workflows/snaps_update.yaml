@@ -120,7 +120,7 @@ jobs:
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Generate App Token
-        uses: tibdex/github-app-token@v1.5.0
+        uses: tibdex/github-app-token@1901dc7d52169e70c27a8da37aef0d423e2867a2 # renovate: tag=v1.5.0
         id: github_generate_app_token
         with:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
