@@ -119,3 +119,20 @@ jobs:
             echo "::set-output name=version_updated::false"
           fi
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+      - name: GitHub - Create Pull Request
+        uses: peter-evans/create-pull-request@v3.12.0
+        if: steps.github_evaluate_data.outputs.version_updated == 'true'
+        with:
+          add-paths: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/snapcraft.yaml
+          commit-message: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          branch: snap-update/${{ matrix.package }}
+          delete-branch: true
+          title: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
+          body: |
+            This Pull Request updates [{{ matrix.package }}](${{ steps.github_retrieve_data.outputs.source_git_url }}) from _v${{ steps.github_retrieve_data.outputs.used_version }}_ to _${{ steps.github_latest_version.outputs.release }}_.
+          labels: dependencies
+          assignees: busybeaver
+          reviewers: busybeaver
