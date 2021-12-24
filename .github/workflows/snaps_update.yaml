@@ -58,13 +58,19 @@ jobs:
         shell: bash
 
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
 
     steps:
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+        with:
+          # this allows the "create-pull-request" action to push to branches in the repository:
+          # https://github.com/peter-evans/create-pull-request/blob/28fa4848947e0faa7fa50647691d01477589d5e9/docs/concepts-guidelines.md#push-using-ssh-deploy-keys
+          # using a deploy_key triggers (only) "on:push" workflows, while using the github_token triggers no workflows at all
+          # https://github.com/peter-evans/create-pull-request/issues/48
+          ssh-key: ${{ secrets.SSH_PRIVATE_DEPLOY_KEY_SNAP_UPDATE }}
 
       - name: yq - Setup
         id: yq_setup
@@ -124,11 +130,12 @@ jobs:
         uses: peter-evans/create-pull-request@dcd5fd746d53dd8de555c0f10bca6c35628be47a # renovate: tag=v3.12.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           add-paths: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/snapcraft.yaml
           commit-message: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          branch: snap-update/${{ matrix.package }}
+          branch: snapcraft-update/${{ matrix.package }}
           delete-branch: true
           title: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
           body: |
