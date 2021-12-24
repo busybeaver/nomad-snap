@@ -121,7 +121,7 @@ jobs:
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Create Pull Request
-        uses: peter-evans/create-pull-request@v3.12.0
+        uses: peter-evans/create-pull-request@dcd5fd746d53dd8de555c0f10bca6c35628be47a # renovate: tag=v3.12.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           add-paths: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/snapcraft.yaml
