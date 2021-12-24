@@ -1,11 +1,10 @@
 name: 'General CI'
 
 on:
-  # run on pushes to main and snapcraft-update/**
+  # run on pushes to main
   push:
     branches:
       - main
-      - snapcraft-update/**
   # run on pull requests that target the main branch
   pull_request:
     branches:

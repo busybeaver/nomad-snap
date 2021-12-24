@@ -59,18 +59,11 @@ jobs:
 
     permissions:
       contents: read
-      pull-requests: write
 
     steps:
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
-        with:
-          # this allows the "create-pull-request" action to push to branches in the repository:
-          # https://github.com/peter-evans/create-pull-request/blob/28fa4848947e0faa7fa50647691d01477589d5e9/docs/concepts-guidelines.md#push-using-ssh-deploy-keys
-          # using a deploy_key triggers (only) "on:push" workflows, while using the github_token triggers no workflows at all
-          # https://github.com/peter-evans/create-pull-request/issues/48
-          ssh-key: ${{ secrets.SSH_PRIVATE_DEPLOY_KEY_SNAP_UPDATE }}
 
       - name: yq - Setup
         id: yq_setup
@@ -126,11 +119,18 @@ jobs:
           fi
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
+      - name: GitHub - Generate App Token
+        uses: tibdex/github-app-token@v1.5.0
+        id: github_generate_app_token
+        with:
+          app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
+          private_key: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_PRIVATE_KEY }}
+
       - name: GitHub - Create Pull Request
         uses: peter-evans/create-pull-request@dcd5fd746d53dd8de555c0f10bca6c35628be47a # renovate: tag=v3.12.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.github_generate_app_token.outputs.token }}
           add-paths: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/snapcraft.yaml
           commit-message: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
           committer: GitHub <noreply@github.com>
@@ -139,7 +139,7 @@ jobs:
           delete-branch: true
           title: "fix(deps): update ${{ matrix.package }} to ${{ steps.github_latest_version.outputs.release }}"
           body: |
-            This Pull Request updates [{{ matrix.package }}](${{ steps.github_retrieve_data.outputs.source_git_url }}) from _v${{ steps.github_retrieve_data.outputs.used_version }}_ to _${{ steps.github_latest_version.outputs.release }}_.
+            This Pull Request updates [${{ matrix.package }}](${{ steps.github_retrieve_data.outputs.source_git_url }}) from _v${{ steps.github_retrieve_data.outputs.used_version }}_ to _${{ steps.github_latest_version.outputs.release }}_.
           labels: dependencies
           assignees: busybeaver
           reviewers: busybeaver

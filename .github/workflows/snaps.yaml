@@ -1,11 +1,10 @@
 name: 'Snapcraft CI'
 
 on:
-  # run on pushes to main and snapcraft-update/** if snap related files were changed
+  # run on pushes to main if snap related files were changed
   push:
     branches:
       - main
-      - snapcraft-update/**
     paths:
       - 'snaps/**'
       - '.github/workflows/snaps.yaml'
