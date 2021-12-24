@@ -121,7 +121,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@v1.5.0
+        uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
