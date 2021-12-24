@@ -73,7 +73,7 @@ jobs:
       - name: Python - Install Dependencies
         id: python_run_pip
         run: |
-          python3 -m pip install -r .github/workflows/snaps_update_requirements.pip
+          python3 -m pip install -r .github/workflows/snaps_update.pip
 
       - name: GitHub - Retrieve Repository Source and Current Version
         id: github_retrieve_data
