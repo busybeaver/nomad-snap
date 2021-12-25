@@ -1,16 +1,13 @@
 name: consul-homelab
-version: '1.10.3'
+version: '1.11.1'
 summary: HomeLab Consul - Service Mesh for any runtime or cloud
 description: HomeLab Consul - Consul automates networking for simple and secure application delivery.
-
 grade: stable
 confinement: strict
 base: core20
-
 architectures:
   - build-on: [amd64, arm64]
     run-on: [amd64, arm64]
-
 parts:
   consul:
     plugin: go
@@ -56,7 +53,6 @@ parts:
       else
           echo "$CI_ENV_FILE does not exist. Skip setting up properties based on CI environment."
       fi
-
 apps:
   consul-homelab:
     command: bin/consul
