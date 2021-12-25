@@ -222,20 +222,36 @@ jobs:
       packages: write
 
     steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+        with:
+          fetch-depth: 2
+
+      - name: Git - Get Changed Files
+        id: git_changed_files
+        uses: tj-actions/changed-files@v2.0.0
+        with:
+          files: |
+            ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
+
       - name: GitHub - Download Image Artifact
         id: github_download
         uses: actions/download-artifact@f023be2c48cc18debc3bacd34cb396e0295e2869 # renovate: tag=v2
+        if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
 
       - name: Docker - Load Image
         id: docker_load
+        if: steps.git_changed_files.outputs.any_changed == 'true'
         run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }}
 
       - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
         uses: docker/login-action@42d299face0c5c43a0487c477f595ac9cf22f1a7 # renovate: tag=v1
+        if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           registry: ${{ needs.matrix_setup.outputs.docker_registry }}
           username: ${{ github.actor }}
@@ -243,6 +259,7 @@ jobs:
 
       - name: Docker - Publish Artifact
         id: docker_publish
+        if: steps.git_changed_files.outputs.any_changed == 'true'
         run: |
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
