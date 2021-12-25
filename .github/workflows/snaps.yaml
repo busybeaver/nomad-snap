@@ -122,10 +122,7 @@ jobs:
         shell: bash
 
     permissions:
-      # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
       contents: read
-      checks: write
-      pull-requests: write
 
     steps:
       - name: Git - Checkout
@@ -202,6 +199,7 @@ jobs:
         uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
+          # # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
           app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
