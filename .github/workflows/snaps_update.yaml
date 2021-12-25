@@ -70,16 +70,17 @@ jobs:
         id: yq_setup
         uses: mikefarah/yq@915e9de437b645435e004ef13c5dc347f855658d # renovate: tag=v4.16.2
 
-      - name: Python - Get pip Cache Dir
-        id: python_pip_cache_dir
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+#      - name: Python - Get pip Cache Dir
+#        id: python_pip_cache_dir
+#        run: |
+#          echo "::set-output name=dir::$(pip cache dir)"
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
         uses: actions/cache@v2
         with:
-          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
+#          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
+          path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/*.pip') }}
           restore-keys: |
             ${{ runner.os }}-pip-
