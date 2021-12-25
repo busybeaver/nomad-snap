@@ -6,6 +6,7 @@ on:
     branches:
       - main
     paths:
+      - 'snaps/**'
       - '.github/workflows/snaps_update.*'
   # run daily on midnight
   schedule:
@@ -45,7 +46,7 @@ jobs:
       snap_working_dir: ${{ steps.set_matrix.outputs.snap_working_dir }}
 
   snapcraft_update:
-    name: 'Update'
+    name: 'Update Check'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
 
