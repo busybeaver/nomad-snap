@@ -184,6 +184,7 @@ jobs:
 
       - name: Snapcraft - Post Test Teardown
         id: snapcraft_teardown
+        if: always()
         run: |
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
@@ -196,11 +197,20 @@ jobs:
         env:
           SERVICE_NAME: ${{ matrix.package }}
 
+      - name: GitHub - Generate App Token
+        id: github_generate_app_token
+        uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
+        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        with:
+          app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
+          private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
         uses: EnricoMi/publish-unit-test-result-action@dc4b2f22e07d0995dffe65daf902598f695e8827 # renovate: tag=v1.25
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
+          github_token: ${{ steps.github_generate_app_token.outputs.token }}
           check_name: Unit Test Results (Snap - ${{ matrix.package }})
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
 
