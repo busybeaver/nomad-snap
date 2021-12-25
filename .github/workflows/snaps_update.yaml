@@ -77,7 +77,7 @@ jobs:
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
-        uses: actions/cache@v2
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # renovate: tag=v2
         with:
 #          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
           path: ~/.cache/pip
