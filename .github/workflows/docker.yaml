@@ -147,6 +147,117 @@ jobs:
           path: ${{ needs.matrix_setup.outputs.docker_image_file }}
           retention-days: 1
 
+  docker_test:
+    name: 'Test'
+    needs: [matrix_setup, docker_build]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    env:
+      GOSS_VERSION: v0.3.16
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2
+
+      - name: GitHub - Download Image Artifact
+        id: github_download
+        uses: actions/download-artifact@f023be2c48cc18debc3bacd34cb396e0295e2869 # renovate: tag=v2
+        with:
+          name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
+          path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
+
+      - name: GitHub - Get Test Parameter
+        id: test_parameter
+        run: |
+          TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests
+          echo "::set-output name=test_working_dir::${TEST_WORKING_DIR}"
+          echo "::set-output name=test_result_file::goss_test_results.xml"
+          mkdir -p ${TEST_WORKING_DIR}
+
+      - name: Docker - Load Image
+        id: docker_load
+        run: docker image load --input ${{ needs.matrix_setup.outputs.docker_image_file }} && docker images
+
+      - name: Docker - Pre Test Setup
+        id: docker_setup
+        run: |
+          SETUP_FILE=./setup.sh
+          if test -f "$SETUP_FILE"; then
+            echo "$SETUP_FILE exists. Going to run setup:"
+            sh ./$SETUP_FILE
+          else
+            echo "$SETUP_FILE does not exist. Skip setup."
+          fi
+        working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        env:
+          IMAGE_NAME: ${{ matrix.package }}
+
+      - name: Goss - Setup
+        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
+        with:
+          version: ${{ env.GOSS_VERSION }}
+
+      - name: GitHub - Check for Test File Existence
+        id: check_test_file
+        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
+        with:
+          files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
+
+      # TODO: add functionality to pass docker run parameter for the test run
+      - name: Goss - Test Docker Image
+        id: goss_test
+        if: steps.check_test_file.outputs.files_exists == 'true'
+        run: dgoss run ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        env:
+          IMAGE_NAME: ${{ matrix.package }}
+          GOSS_OPTS: --format junit --max-concurrent 1
+
+      - name: Docker - Post Test Teardown
+        id: docker_teardown
+        if: always()
+        run: |
+          TEARDOWN_FILE=./teardown.sh
+          if test -f "$TEARDOWN_FILE"; then
+            echo "$TEARDOWN_FILE exists. Going to run teardown:"
+            sh ./$TEARDOWN_FILE
+          else
+            echo "$TEARDOWN_FILE does not exist. Skip teardown."
+          fi
+        working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        env:
+          IMAGE_NAME: ${{ matrix.package }}
+
+      - name: GitHub - Generate App Token
+        id: github_generate_app_token
+        uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
+        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        with:
+          # # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
+          app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
+          private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
+
+      - name: GitHub - Publish Unit Test Results
+        id: github_publish_results
+        uses: EnricoMi/publish-unit-test-result-action@dc4b2f22e07d0995dffe65daf902598f695e8827 # renovate: tag=v1.25
+        if: always() && steps.check_test_file.outputs.files_exists == 'true'
+        with:
+          github_token: ${{ steps.github_generate_app_token.outputs.token }}
+          check_name: Unit Test Results (Docker - ${{ matrix.package }})
+          files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+
   container_security:
     name: 'Container Security Checks'
     needs: [matrix_setup, docker_build]
@@ -204,7 +315,7 @@ jobs:
 
   docker_publish:
     name: 'Publish'
-    needs: [matrix_setup, code_quality, docker_build, container_security]
+    needs: [matrix_setup, code_quality, docker_build, docker_test, container_security]
     runs-on: ubuntu-latest
 
     if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.act

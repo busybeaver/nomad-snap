@@ -14,8 +14,11 @@ Building, packaging, and publishing services and applications for the personal H
 
 Published to the [Snapcraft store](https://snapcraft.io/) (right now privately/unlisted).
 
+* HashiCorp [Nomad](https://www.nomadproject.io/)
 * HashiCorp [Consul](https://www.consul.io/)
-* _(Canonical provides a HashiCorp [Vault snap package](https://snapcraft.io/vault), so no need to build/create it)_
+
+_Note:_ Canonical provides a HashiCorp [Vault snap package](https://snapcraft.io/vault), so no need to build/create it.
+
 
 ## Docker Images
 
