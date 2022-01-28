@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - gh-readonly-queue/main/**
     paths:
       - 'docker/**'
       - '.github/workflows/docker.yaml'

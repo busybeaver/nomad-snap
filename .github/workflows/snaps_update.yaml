@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - gh-readonly-queue/main/**
     paths:
       - 'snaps/**'
       - '.github/workflows/snaps_update.*'
