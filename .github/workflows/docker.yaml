@@ -252,7 +252,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@dc4b2f22e07d0995dffe65daf902598f695e8827 # renovate: tag=v1.25
+        uses: EnricoMi/publish-unit-test-result-action@dcac06369f794058b4a69fe6a746ae4c24731c37 # renovate: tag=v1.28
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
