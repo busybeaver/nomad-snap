@@ -16,24 +16,21 @@
     // "default:automergeDigest",
   ],
   "labels": ["dependencies"],
+  "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {
-      "description": "Automatically merge minor and patch-level updates",
+      "description": "Minor and patch-level updates with usually no breaking changes",
       "matchUpdateTypes": ["minor", "patch", "digest", "pin", "lockFileMaintenance"],
-      "automerge": true,
       "stabilityDays": 5,
       "assignees": ["busybeaver"],
-      "reviewers": ["busybeaver"]
-      // consider using branch auto-merging:
-      // https://docs.renovatebot.com/noise-reduction/#branch-automerging
+      "reviewers": ["repository-assistant[bot]"]
     },
     {
-      "description": "Manually merge major updates",
+      "description": "Major updates with breaking changes",
       "matchUpdateTypes": ["major"],
-      "automerge": false,
       "stabilityDays": 7,
       "assignees": ["busybeaver"],
-      "reviewers": ["busybeaver"],
+      "reviewers": ["repository-assistant[bot]", "busybeaver"],
       "addLabels": ["major-update"]
     }
   ],
