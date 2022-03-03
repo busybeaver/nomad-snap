@@ -342,7 +342,7 @@ jobs:
 
       - name: Git - Get Changed Files
         id: git_changed_files
-        uses: tj-actions/changed-files@1980f551b48196e1d8aa48fbfd924cedde0d3e13 # tag=v3.0.2
+        uses: tj-actions/changed-files@450eadf5a0462f8d0b5e99d07d4b6d8f7358420c # tag=v5.0.0
         with:
           files: |
             ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
