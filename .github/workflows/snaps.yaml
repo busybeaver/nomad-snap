@@ -168,7 +168,7 @@ jobs:
 
       - name: GitHub - Check for Test File Existence
         id: check_test_file
-        uses: andstor/file-existence-action@87d74d4732ddb824259d80c8a508c0124bf1c673 # renovate: tag=v1.0.1
+        uses: andstor/file-existence-action@f02338908d150e00a4b8bebc2dad18bd9e5229b0 # tag=v1.1.0
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
