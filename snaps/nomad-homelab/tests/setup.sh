@@ -21,7 +21,9 @@ client {
 }
 " | sudo tee ./config/test.hcl
 
-# TODO
+sudo snap connect "${SERVICE_NAME}:mount-observe" ":mount-observe"
+sudo snap connect "${SERVICE_NAME}.daemon:mount-observe" ":mount-observe"
+sudo snap connections "${SERVICE_NAME}"
 
 sudo snap start "${SERVICE_NAME}.daemon"
 sleep 10s

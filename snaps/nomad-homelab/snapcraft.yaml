@@ -61,7 +61,7 @@ apps:
       - network-bind
       # nomad requires access to "/proc/self/mountinfo"
       # see: https://bugs.launchpad.net/snapcraft/+bug/1544243
-      - mount-observe
+      - mount-observe # requires manual connect after installation
   daemon:
     # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
     # command: bin/consul agent -config-dir $SNAP_DATA/config/
@@ -79,4 +79,4 @@ apps:
       - network-bind
       # nomad requires access to "/proc/self/mountinfo"
       # see: https://bugs.launchpad.net/snapcraft/+bug/1544243
-      - mount-observe
+      - mount-observe # requires manual connect after installation
