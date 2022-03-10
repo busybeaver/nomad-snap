@@ -27,6 +27,3 @@ sudo snap connections "${SERVICE_NAME}"
 
 sudo snap start "${SERVICE_NAME}.daemon"
 sleep 10s
-
-# TODO: temp
-sudo snap logs "${SERVICE_NAME}"

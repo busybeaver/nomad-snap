@@ -32,9 +32,10 @@ command:
     exec: "sudo snap logs {{.Env.SERVICE_NAME}}"
     exit-status: 0
     stdout:
-      # TODO: fix me
-      - member joined, marking health alive
+      - started client
+      - election won
       - cluster leadership acquired
+      - node registration complete
     timeout: 10000 # milliseconds
     skip: false
   nomad_server_members:
