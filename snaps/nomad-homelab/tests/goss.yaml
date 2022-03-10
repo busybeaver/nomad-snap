@@ -1,0 +1,81 @@
+command:
+  list:
+    exec: "snap list --color=never {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+    timeout: 10000 # milliseconds
+    skip: false
+  info:
+    exec: "snap info --color=never {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+    timeout: 10000 # milliseconds
+    skip: false
+  version:
+    exec: "{{.Env.SERVICE_NAME}} version"
+    exit-status: 0
+    stdout:
+      - Nomad
+    timeout: 10000 # milliseconds
+    skip: false
+  service_status:
+    exec: "snap services {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      - {{.Env.SERVICE_NAME}}
+      - active
+    timeout: 10000 # milliseconds
+    skip: false
+  service_logs:
+    exec: "sudo snap logs {{.Env.SERVICE_NAME}}"
+    exit-status: 0
+    stdout:
+      # TODO: fix me
+      - member joined, marking health alive
+      - cluster leadership acquired
+    timeout: 10000 # milliseconds
+    skip: false
+  nomad_server_members:
+    exec: "{{.Env.SERVICE_NAME}} server members"
+    exit-status: 0
+    stdout:
+      - alive
+      - runner
+      - github_actions
+    timeout: 10000 # milliseconds
+    skip: false
+  nomad_node_status:
+    exec: "{{.Env.SERVICE_NAME}} node status"
+    exit-status: 0
+    stdout:
+      - ready
+      - runner
+      - github_actions
+    timeout: 10000 # milliseconds
+    skip: false
+  nomad_agent_info:
+    exec: "{{.Env.SERVICE_NAME}} agent-info"
+    exit-status: 0
+    timeout: 10000 # milliseconds
+    skip: false
+file:
+  /var/snap/{{.Env.SERVICE_NAME}}/current/config/test.hcl:
+    exists: true
+    skip: false
+port:
+  tcp:4646:
+    listening: true
+    skip: false
+http:
+  http://localhost:4646/v1/agent/members:
+    method: GET
+    request-headers:
+      - "Content-Type: application/json; charset=UTF-8"
+    status: 200
+    # body: []
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 1000
+    skip: false
