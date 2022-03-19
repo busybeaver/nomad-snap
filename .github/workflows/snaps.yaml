@@ -89,7 +89,7 @@ jobs:
 
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
-        uses: snapcore/action-build@a400bf1c2d0f23074aaacf08a144813c3c20b35d # renovate: tag=v1
+        uses: snapcore/action-build@ea14cdeb353272f75977040488ca191880509a8c # tag=v1
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
