@@ -25,15 +25,10 @@ client {
 
 sudo snap connect "${SERVICE_NAME}:mount-observe" ":mount-observe"
 sudo snap connect "${SERVICE_NAME}:network-observe" ":network-observe"
-sudo snap connections "${SERVICE_NAME}"
+# TODO: add docker plug/connection
 
+sudo snap connections "${SERVICE_NAME}"
 sudo snap start "${SERVICE_NAME}.daemon"
 sleep 10s
 
-# temp:
-nomad-homelab server members
-nomad-homelab node status
-nomad-homelab agent-info
-sudo snap logs nomad-homelab
-sleep 10s
-sudo snap logs nomad-homelab
+sudo snap logs "${SERVICE_NAME}"

@@ -16,6 +16,7 @@ bootstrap = true
 " | sudo tee ./config/test.hcl
 
 sudo snap connections "${SERVICE_NAME}"
-
 sudo snap start "${SERVICE_NAME}.daemon"
 sleep 10s
+
+sudo snap logs "${SERVICE_NAME}"
