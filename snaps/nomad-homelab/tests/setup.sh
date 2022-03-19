@@ -33,3 +33,5 @@ nomad-homelab server members
 nomad-homelab node status
 nomad-homelab agent-info
 sudo snap logs nomad-homelab
+sleep 10s
+sudo snap logs nomad-homelab
