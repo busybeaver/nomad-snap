@@ -1,26 +1,26 @@
 command:
-  list:
+  snap_list:
     exec: "snap list --color=never {{.Env.SERVICE_NAME}}"
     exit-status: 0
     stdout:
       - {{.Env.SERVICE_NAME}}
     timeout: 10000 # milliseconds
     skip: false
-  info:
+  snap_info:
     exec: "snap info --color=never {{.Env.SERVICE_NAME}}"
     exit-status: 0
     stdout:
       - {{.Env.SERVICE_NAME}}
     timeout: 10000 # milliseconds
     skip: false
-  version:
+  nomad_version:
     exec: "{{.Env.SERVICE_NAME}} version"
     exit-status: 0
     stdout:
       - Nomad
     timeout: 10000 # milliseconds
     skip: false
-  service_status:
+  snap_service:
     exec: "snap services {{.Env.SERVICE_NAME}}"
     exit-status: 0
     stdout:
@@ -28,7 +28,7 @@ command:
       - active
     timeout: 10000 # milliseconds
     skip: false
-  service_logs:
+  snap_logs:
     exec: "sudo snap logs {{.Env.SERVICE_NAME}}"
     exit-status: 0
     stdout:
