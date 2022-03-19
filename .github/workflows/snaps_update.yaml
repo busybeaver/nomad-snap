@@ -9,6 +9,13 @@ on:
     paths:
       - 'snaps/**'
       - '.github/workflows/snaps_update.*'
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'snaps/**'
+      - '.github/workflows/snaps_update.*'
   # run daily on midnight
   schedule:
     - cron: '0 0 * * *'
