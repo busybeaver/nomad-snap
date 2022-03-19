@@ -244,7 +244,7 @@ jobs:
 
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
-        uses: snapcore/action-publish@f1879414dc5500e02a36f3d715bca6ddd438c913 # renovate: tag=v1
+        uses: snapcore/action-publish@128198fd2ed6446f70918a2a2d3ae7cbe758bf3a # tag=v1
         if: env.PUBLISH_ARTIFACT == 'true'
         with:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
