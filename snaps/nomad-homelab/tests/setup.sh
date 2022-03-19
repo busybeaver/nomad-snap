@@ -27,3 +27,9 @@ sudo snap connections "${SERVICE_NAME}"
 
 sudo snap start "${SERVICE_NAME}.daemon"
 sleep 10s
+
+# temp:
+nomad-homelab server members
+nomad-homelab node status
+nomad-homelab agent-info
+sudo snap logs nomad-homelab

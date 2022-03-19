@@ -19,6 +19,10 @@ Published to the [Snapcraft store](https://snapcraft.io/) (right now privately/u
 
 _Note:_ Canonical provides a HashiCorp [Vault snap package](https://snapcraft.io/vault), so no need to build/create it.
 
+## SPK Packages
+
+* todo
+
 ## Docker Images
 
 Docker images are pushed/published to GitHub packages (the ghcr.io registry) within this repository.
