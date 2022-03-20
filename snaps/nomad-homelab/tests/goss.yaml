@@ -65,10 +65,10 @@ file:
   /var/snap/{{.Env.SERVICE_NAME}}/current/config/test.hcl:
     exists: true
     skip: false
-port:
-  tcp:4646:
-    listening: true
-    skip: false
+#port:
+#  tcp:4646:
+#    listening: true
+#    skip: false
 http:
   http://localhost:4646/v1/agent/members:
     method: GET
