@@ -1,0 +1,9 @@
+version: '3'
+services:
+  home_assistant:
+    container_name: home_assistant
+    image: "${IMAGE_NAME}"
+    volumes:
+      - ./.config:/config:rw
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: host

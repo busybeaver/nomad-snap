@@ -1,0 +1,13 @@
+command:
+port:
+  tcp:8123:
+    listening: true
+    skip: false
+http:
+  http://localhost:8123/:
+    method: GET
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 1000
+    skip: false
