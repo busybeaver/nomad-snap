@@ -220,10 +220,10 @@ jobs:
       - name: Goss - Test Docker Image
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
-        run: dcgoss run ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        run: dcgoss run | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
-          IMAGE_NAME: ${{ matrix.package }}
+          IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
 
       - name: Docker - Post Test Teardown
