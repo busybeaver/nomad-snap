@@ -2,4 +2,10 @@
 set -x
 
 docker-compose down
-cat /goss/docker_output.log
+
+CONTAINER_LOGS=/docker_output.log
+if [[ -z "${CONTAINER_LOGS}" ]]; then
+  cat "${CONTAINER_LOGS}"
+else
+  echo "No container logs found at \"${CONTAINER_LOGS}\""
+fi

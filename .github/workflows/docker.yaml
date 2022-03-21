@@ -226,6 +226,7 @@ jobs:
         env:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
+          GOSS_SLEEP: 30s
 
       - name: Docker - Post Test Teardown
         id: docker_teardown
