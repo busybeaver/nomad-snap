@@ -220,7 +220,7 @@ jobs:
       - name: Goss - Test Docker Image
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
-        run: dgoss run ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        run: dcgoss run ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           IMAGE_NAME: ${{ matrix.package }}
