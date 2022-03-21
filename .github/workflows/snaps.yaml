@@ -19,6 +19,17 @@ on:
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
+  # trigger releases manually
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: 'Publish release to the Snapcraft store'
+        required: true
+        type: choice
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
 
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
@@ -218,14 +229,11 @@ jobs:
     needs: [matrix_setup, snapcraft_test, snapcraft_build]
     runs-on: ubuntu-latest
 
-    if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && !github.event.act
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && !github.event.act
 
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
-
-    env:
-      PUBLISH_ARTIFACT: false
 
     defaults:
       run:
@@ -245,7 +253,6 @@ jobs:
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
         uses: snapcore/action-publish@128198fd2ed6446f70918a2a2d3ae7cbe758bf3a # tag=v1
-        if: env.PUBLISH_ARTIFACT == 'true'
         with:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
