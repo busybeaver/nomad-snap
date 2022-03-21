@@ -1,6 +1,6 @@
 version: '3'
 services:
-  home_assistant:
+  container_under_test:
     container_name: home_assistant
     image: "${IMAGE_NAME}"
     volumes:
