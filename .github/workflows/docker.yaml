@@ -202,6 +202,8 @@ jobs:
             echo "$SETUP_FILE does not exist. Skip setup."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        env:
+          IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
 
       - name: Goss - Setup
         uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
@@ -250,6 +252,8 @@ jobs:
             echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
+        env:
+          IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
