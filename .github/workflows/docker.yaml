@@ -232,12 +232,23 @@ jobs:
         id: docker_teardown
         if: always()
         run: |
+          echo "Running general teardown..."
+
+          docker-compose down
+
+          CONTAINER_LOGS=/docker_output.log
+          if test -f "$CONTAINER_LOGS"; then
+            cat "$CONTAINER_LOGS"
+          else
+            echo "No container logs found at \"$CONTAINER_LOGS\""
+          fi
+
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
-            echo "$TEARDOWN_FILE exists. Going to run teardown:"
+            echo "$TEARDOWN_FILE exists. Going to run service-specific teardown:"
             sh ./$TEARDOWN_FILE
           else
-            echo "$TEARDOWN_FILE does not exist. Skip teardown."
+            echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
