@@ -202,8 +202,6 @@ jobs:
             echo "$SETUP_FILE does not exist. Skip setup."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
-        env:
-          IMAGE_NAME: ${{ matrix.package }}
 
       - name: Goss - Setup
         uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
@@ -216,7 +214,6 @@ jobs:
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
-      # TODO: add functionality to pass docker run parameter for the test run
       - name: Goss - Test Docker Image
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
@@ -234,7 +231,9 @@ jobs:
         run: |
           echo "Running general teardown..."
 
-          docker-compose down
+          if test -f "docker-compose.yaml"; then
+            docker-compose down
+          fi
 
           CONTAINER_LOGS=/docker_output.log
           if test -f "$CONTAINER_LOGS"; then
@@ -251,8 +250,6 @@ jobs:
             echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
-        env:
-          IMAGE_NAME: ${{ matrix.package }}
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
