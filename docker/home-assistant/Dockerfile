@@ -1,11 +1,11 @@
-# a HomeAssistant version that can be run as non-root user
-
+# syntax=docker/dockerfile:1.4
 FROM alpine/git:v2.32.0@sha256:a8a31155488a93a4d8abb834777c7b5f9d7c93db6051defbad8cc066b4e90072 as build
 
 ENV GIT_TAG_VERSION="v2.3"
 WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
+# a HomeAssistant version that can be run as non-root user
 FROM homeassistant/home-assistant:2022.3@sha256:ba21b80e476575feb2195797e31e968bb36f4b9c4c77040b1f761e3e6f7a903a
 
 ENV HOME_ASSISTANT_ENTRYPOINT="/etc/services.d/home-assistant/run"
