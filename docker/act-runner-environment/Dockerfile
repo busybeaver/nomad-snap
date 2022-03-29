@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.4
+
 # A Debian based minimal Node.js environment with Python installed; mostly used for running the GitHub Action CI
 # locally via "act"; tries to mimic the runtime environment of GitHub Actions while being as minimal as possible
 FROM node:slim@sha256:3894373926629c8e2c437314fb253b5d261efa6bddb2c947474406470fee2890
