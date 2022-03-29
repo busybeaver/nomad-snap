@@ -15,6 +15,6 @@ ENV HOME_ASSISTANT_ENTRYPOINT="/etc/services.d/home-assistant/run"
 # runtime (which is obviously not desirable)
 RUN cat ${HOME_ASSISTANT_ENTRYPOINT} > /dev/null
 # copy/override the entry point of home-assistant
-COPY --from=build /tmp/homeassistant-docker-venv/run ${HOME_ASSISTANT_ENTRYPOINT}
+COPY --from=build --link=true /tmp/homeassistant-docker-venv/run ${HOME_ASSISTANT_ENTRYPOINT}
 # update linux base packages (to fix potential security issues)
 RUN apk update --no-cache && apk upgrade --no-cache
