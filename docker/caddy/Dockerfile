@@ -8,7 +8,7 @@ RUN xcaddy build \
 
 FROM caddy:alpine@sha256:f95672886ddd6284ccba4b0be903d0d0949d7c665f5e7acc96cc6a0af2467364
 
-COPY --from=builder --link /usr/bin/caddy /usr/bin/caddy
+COPY --from=builder --link=true /usr/bin/caddy /usr/bin/caddy
 
 # Allow to run Caddy on privileged ports (as a non-root user)
 RUN apk --update-cache --no-cache add libcap=~2.50 && \
