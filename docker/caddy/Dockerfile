@@ -4,7 +4,8 @@ FROM caddy:2.4.6-builder-alpine@sha256:d3811a1602e1769981c2a02479d473ba66eb7541a
 RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare \
     --with github.com/lolPants/caddy-requestid \
-    --with github.com/hslatman/caddy-crowdsec-bouncer
+    --with github.com/hslatman/caddy-crowdsec-bouncer \
+    --with github.com/caddyserver/transform-encoder
 
 FROM caddy:2.4.6-alpine@sha256:dd418a7216b6f833804da6b82fb215b7659f22ba7dd0196e201b2266dc2fd095
 
