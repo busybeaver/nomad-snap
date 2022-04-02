@@ -104,14 +104,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cifs-utils python3 python3-pip jq
 
-          mkdir -p /toolkit
-          cd /toolkit
-          git clone https://github.com/SynologyOpenSource/pkgscripts-ng
-          cd /toolkit/pkgscripts-ng/
+          mkdir .toolkit
+          git clone https://github.com/SynologyOpenSource/pkgscripts-ng .toolkit
+          cd .toolkit
           git checkout DSM7.0
+          cd ..
 
-          /toolkit/pkgscripts-ng/EnvDeploy -v 7.0 --list
-          /toolkit/pkgscripts-ng/EnvDeploy -v 7.0 -p ${{ matrix.arch }}
+          .toolkit/EnvDeploy -v 7.0 --list
+          .toolkit/EnvDeploy -v 7.0 -p ${{ matrix.arch }}
 
       - name: SPK - Build Artifact
         id: spk_build
