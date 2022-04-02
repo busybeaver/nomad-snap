@@ -1,0 +1,130 @@
+name: 'Synology CI'
+
+on:
+  # run on pushes to main if spk related files were changed
+  push:
+    branches:
+      - main
+      - gh-readonly-queue/main/**
+    paths:
+      - 'spk/**'
+      - '.github/workflows/spk.yaml'
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'spk/**'
+      - '.github/workflows/spk.yaml'
+  # run weekly on Monday at 12:00
+  schedule:
+    - cron: '0 12 * * 1'
+  # trigger releases manually
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: 'Publish release to the GitHub releases'
+        required: true
+        type: choice
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
+
+concurrency:
+  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
+  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+
+jobs:
+  matrix_setup:
+    name: 'Setup Build Matrix'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: './spk/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: |
+          echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+          echo "::set-output name=spk_working_dir::./spk"
+          echo "::set-output name=spk_dir::/tmp"
+          echo "::set-output name=spk_file::/tmp/package.spk"
+          echo "::set-output name=spk_artifact_name::tmp_{0}.spk"
+
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      spk_working_dir: ${{ steps.set_matrix.outputs.spk_working_dir }}
+      spk_dir: ${{ steps.set_matrix.outputs.spk_dir }}
+      spk_file: ${{ steps.set_matrix.outputs.spk_file }}
+      spk_artifact_name: ${{ steps.set_matrix.outputs.spk_artifact_name }}
+
+  spk_build:
+    name: 'Build'
+    needs: [matrix_setup]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+        arch: ['x86_64', 'armv7', 'armv8']
+
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+
+      - name: SPK - Set up Build Environment
+        id: spk_setup
+        run: |
+          # TODO: move this to a docker image to have reporoducable builds
+          set -x
+          set -e
+
+          apt-get update
+          apt-get install -y cifs-utils python3 python3-pip jq
+
+          mkdir -p /toolkit
+          cd /toolkit
+          git clone https://github.com/SynologyOpenSource/pkgscripts-ng
+          cd /toolkit/pkgscripts-ng/
+          git checkout DSM7.0
+
+          /toolkit/pkgscripts-ng/EnvDeploy -v 7.0 --list
+          /toolkit/pkgscripts-ng/EnvDeploy -v 7.0 -p ${{ matrix.arch }}
+
+      - name: SPK - Build Artifact
+        id: spk_build
+        run: |
+
+#      - name: GitHub - Move SPK Artifact
+#        id: move_artifact
+#        run: |
+#          mv ${{ steps.spk_build.outputs.spk }} ${{ needs.matrix_setup.outputs.spk_file }}
+#
+#      - name: GitHub - Upload SPK Artifact
+#        id: github_upload
+#        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+#        with:
+#          name: ${{ format(needs.matrix_setup.outputs.spk_artifact_name, matrix.package) }}
+#          path: ${{ needs.matrix_setup.outputs.spk_file }}
+#          retention-days: 3
+
