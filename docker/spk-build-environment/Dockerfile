@@ -29,4 +29,4 @@ RUN apt-get update && \
 
 COPY --from=build /tmp/pkgscripts-ng ./pkgscripts-ng
 # run for all required platforms; see documentation above
-RUN ./pkgscripts-ng/EnvDeploy -v ${DSM_VERSION} -p apollolake
+RUN find . && ./pkgscripts-ng/EnvDeploy -v ${DSM_VERSION} -p apollolake
