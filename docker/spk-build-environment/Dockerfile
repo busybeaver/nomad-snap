@@ -2,8 +2,8 @@ FROM alpine/git:v2.32.0@sha256:a8a31155488a93a4d8abb834777c7b5f9d7c93db6051defba
 
 ENV GIT_TAG_VERSION="DSM7.0"
 WORKDIR /tmp/pkgscripts-ng
-RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/SynologyOpenSource/pkgscripts-ng.git .
-
+RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/SynologyOpenSource/pkgscripts-ng.git . && \
+    rm -rf .git
 
 FROM debian:stable-slim@sha256:a04e8ec615db03154299695a65f7a85b8800a4e7878d241871419d3878e3662d
 
@@ -29,4 +29,4 @@ RUN apt-get update && \
 
 COPY --from=build /tmp/pkgscripts-ng ./pkgscripts-ng
 # run for all required platforms; see documentation above
-RUN find . && ./pkgscripts-ng/EnvDeploy -v ${DSM_VERSION} -p apollolake
+RUN find . && ./pkgscripts-ng/EnvDeploy -v ${DSM_VERSION} -p apollolake; find .
