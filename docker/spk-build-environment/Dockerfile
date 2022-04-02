@@ -22,10 +22,11 @@ WORKDIR /toolkit
 
 RUN apt-get update && \
     apt-get upgrade --no-install-recommends --yes && \
-    apt-get install cifs-utils python3 python3-pip --no-install-recommends --yes && \
+    apt-get install cifs-utils=2:\* python3=3.\* python3-pip=20.\* --no-install-recommends --yes && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir ./build_env
 
-COPY --from=build /tmp/pkgscripts-ng .
+COPY --from=build /tmp/pkgscripts-ng ./pkgscripts-ng
 # run for all required platforms; see documentation above
-RUN ./EnvDeploy -v ${DSM_VERSION} -p apollolake
+RUN ./pkgscripts-ng/EnvDeploy -v ${DSM_VERSION} -p apollolake
