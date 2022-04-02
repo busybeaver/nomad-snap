@@ -58,6 +58,7 @@ jobs:
         id: set_matrix
         run: |
           echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+          echo "::set-output name=spk_arch::['x86_64', 'armv7', 'armv8']"
           echo "::set-output name=spk_working_dir::./spk"
           echo "::set-output name=spk_dir::/tmp"
           echo "::set-output name=spk_file::/tmp/package.spk"
@@ -65,6 +66,7 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
+      spk_arch: ${{ steps.set_matrix.outputs.spk_arch }}
       spk_working_dir: ${{ steps.set_matrix.outputs.spk_working_dir }}
       spk_dir: ${{ steps.set_matrix.outputs.spk_dir }}
       spk_file: ${{ steps.set_matrix.outputs.spk_file }}
@@ -78,7 +80,7 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
-        arch: ['x86_64', 'armv7', 'armv8']
+        arch: ${{ fromJson(needs.matrix_setup.outputs.spk_arch) }}
 
     defaults:
       run:
@@ -99,8 +101,8 @@ jobs:
           set -x
           set -e
 
-          apt-get update
-          apt-get install -y cifs-utils python3 python3-pip jq
+          sudo apt-get update
+          sudo apt-get install -y cifs-utils python3 python3-pip jq
 
           mkdir -p /toolkit
           cd /toolkit
