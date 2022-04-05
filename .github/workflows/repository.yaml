@@ -18,7 +18,7 @@ concurrency:
 jobs:
   repository:
     # TODO: pin to a sha tag
-    uses: busybeaver/homelab-shared/blob/main/.github/workflows/repository.yaml@main
+    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@main
     secrets:
       REPOSITORY_ASSISTANT_APP_ID: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}
       REPOSITORY_ASSISTANT_PRIVATE_KEY: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}
