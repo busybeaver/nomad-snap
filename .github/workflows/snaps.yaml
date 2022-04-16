@@ -6,16 +6,16 @@ on:
     branches:
       - main
       - gh-readonly-queue/main/**
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps.yaml'
+#    paths:
+#      - 'snaps/**'
+#      - '.github/workflows/snaps.yaml'
   # run on pull requests that target the main branch
   pull_request:
     branches:
       - main
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps.yaml'
+#    paths:
+#      - 'snaps/**'
+#      - '.github/workflows/snaps.yaml'
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
