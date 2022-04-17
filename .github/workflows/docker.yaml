@@ -233,28 +233,27 @@ jobs:
         id: docker_teardown
         if: always()
         run: |
-          echo "Running general teardown..."
-
-          # sudo is required, otherwise "find" runs in permission errors
-          CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name "docker_output.log")
-          if test -f "$CONTAINER_LOGS_FILE"; then
-            echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
-            echo "Container logs found at \"$CONTAINER_LOGS_FILE\""
-            cat "$CONTAINER_LOGS_FILE"
-          else
-            echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
-
-            FALLBACK_LOGS_FILE="fallback.log"
-            echo "no container logs available" > "$FALLBACK_LOGS_FILE"
-            echo "::set-output name=container_logs::$(pwd)/${FALLBACK_LOGS_FILE}"
-          fi
-
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
             echo "$TEARDOWN_FILE exists. Going to run service-specific teardown:"
             sh ./$TEARDOWN_FILE
           else
             echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
+          fi
+
+          echo "Running general teardown..."
+          # sudo is required, otherwise "find" runs in permission errors
+          CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name "docker_output.log")
+          if test -f "$CONTAINER_LOGS_FILE"; then
+            echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
+            echo "Container logs found at \"$CONTAINER_LOGS_FILE\":"
+            cat "$CONTAINER_LOGS_FILE"
+          else
+            echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
+
+            FALLBACK_LOGS_FILE="container_fallback.log"
+            echo "no container logs available" > "$FALLBACK_LOGS_FILE"
+            echo "::set-output name=container_logs::$(pwd)/${FALLBACK_LOGS_FILE}"
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
 
