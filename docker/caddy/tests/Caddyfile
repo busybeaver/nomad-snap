@@ -3,6 +3,10 @@
   auto_https disable_redirects
 }
 
-localhost {
-  respond "Hello, world!"
+:80 {
+  respond "Hello, HTTP world!"
+}
+
+:443 {
+  respond "Hello, HTTPS world!"
 }
