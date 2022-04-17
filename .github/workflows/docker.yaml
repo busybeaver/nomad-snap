@@ -250,7 +250,7 @@ jobs:
             cat "$CONTAINER_LOGS_FILE"
             # TODO: temp
             echo "---"
-            ls -la config
+            cat ${{ steps.test_parameter.outputs.test_result_file }}
           else
             echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
 
