@@ -6,16 +6,16 @@ on:
     branches:
       - main
       - gh-readonly-queue/main/**
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps.yaml'
+#    paths:
+#      - 'snaps/**'
+#      - '.github/workflows/snaps.yaml'
   # run on pull requests that target the main branch
   pull_request:
     branches:
       - main
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps.yaml'
+#    paths:
+#      - 'snaps/**'
+#      - '.github/workflows/snaps.yaml'
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -89,7 +89,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: Snapcraft - Set up Build Environment
         id: snapcraft_setup
@@ -139,7 +139,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: GitHub - Download Snap Artifact
         id: github_download
@@ -208,7 +208,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
+        uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe # tag=v1.5.2
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           # # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
@@ -217,7 +217,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@4a00ba50806e7658e5005bb91acdb3274714595a # tag=v1.31
+        uses: EnricoMi/publish-unit-test-result-action@0c8c54b3a1700e3d97e2efc1ccd68316af0eb6f6 # tag=v1.32
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}

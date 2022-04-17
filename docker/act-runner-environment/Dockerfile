@@ -1,10 +1,10 @@
 # A Debian based minimal Node.js environment with Python installed; mostly used for running the GitHub Action CI
 # locally via "act"; tries to mimic the runtime environment of GitHub Actions while being as minimal as possible
-FROM node:slim@sha256:05669526d5e628193fe7e20540a45ff1929414e8c2e713454eee39f717521636
+FROM node:lts-bullseye-slim@sha256:84166838030b78441db7c90e0407cee1da736157a70f398b6589ea1f4ffa753a
 
 LABEL org.opencontainers.image.title="A minimal act runner environment with Python 3 installed" \
       org.opencontainers.image.description="A Debian based minimal Node.js environment with Python installed; mostly used for running the GitHub Action CI locally via \"act\"; tries to mimic the runtime environment of GitHub Actions while being as minimal as possible" \
-      org.opencontainers.image.base.name="node:slim" \
+      org.opencontainers.image.base.name="lts-bullseye-slim" \
       org.opencontainers.image.authors="busybeaver" \
       org.opencontainers.image.source="https://github.com/busybeaver/homelab-packages"
 
