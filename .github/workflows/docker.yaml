@@ -141,7 +141,7 @@ jobs:
           outputs: type=docker,dest=${{ needs.matrix_setup.outputs.docker_image_file }}
 
       - name: GitHub - Upload Image Artifact
-        id: github_upload
+        id: github_upload_image
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -173,7 +173,7 @@ jobs:
         uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: GitHub - Download Image Artifact
-        id: github_download
+        id: github_download_image
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -185,6 +185,7 @@ jobs:
           TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests
           echo "::set-output name=test_working_dir::${TEST_WORKING_DIR}"
           echo "::set-output name=test_result_file::goss_test_results.xml"
+          echo "::set-output name=container_logs_name::container_logs_{0}.log"
           mkdir -p ${TEST_WORKING_DIR}
 
       - name: Docker - Load Image
@@ -234,13 +235,15 @@ jobs:
         run: |
           echo "Running general teardown..."
 
-          CONTAINER_LOGS=$(find /tmp/ -name 'docker_output.log')
+          # sudo is required, otherwise "find" runs in permission errors
+          CONTAINER_LOGS=$(sudo find /tmp/ -name 'docker_output.log')
           if test -f "$CONTAINER_LOGS"; then
             echo "Container logs found at \"$CONTAINER_LOGS\""
             cat "$CONTAINER_LOGS"
           else
             echo "No container logs found at \"$CONTAINER_LOGS\""
           fi
+          echo "::set-output name=container_logs::${CONTAINER_LOGS}"
 
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
@@ -250,8 +253,15 @@ jobs:
             echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
-        env:
-          IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+
+      - name: GitHub - Upload Container Logs
+        id: github_upload_logs
+        if: always()
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        with:
+          name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
+          path: ${{ steps.docker_teardown.outputs.container_logs }}
+          retention-days: 7
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
@@ -294,7 +304,7 @@ jobs:
         uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: GitHub - Download Image Artifact
-        id: github_download
+        id: github_download_image
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -360,7 +370,7 @@ jobs:
             ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
 
       - name: GitHub - Download Image Artifact
-        id: github_download
+        id: github_download_image
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
