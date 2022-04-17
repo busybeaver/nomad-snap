@@ -249,9 +249,6 @@ jobs:
             echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
             echo "Container logs found at \"$CONTAINER_LOGS_FILE\":"
             cat "$CONTAINER_LOGS_FILE"
-            # TODO: temp
-            echo "---"
-            cat ${{ steps.test_parameter.outputs.test_result_file }}
           else
             echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
 

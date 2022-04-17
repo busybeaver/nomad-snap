@@ -4,9 +4,10 @@ services:
     container_name: container_under_test
     image: "${IMAGE_NAME}"
     volumes:
-#      - ./config:/config:rw
-      - /etc/localtime:/etc/localtime:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile
     tmpfs:
+      - /data
       - /config
     ports:
-      - "8123:8123"
+      - "80:80"
+      - "443:443"
