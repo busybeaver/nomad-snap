@@ -1,3 +1,8 @@
+{
+  debug
+  auto_https disable_redirects
+}
+
 localhost {
-	respond "Hello, world!"
+  respond "Hello, world!"
 }
