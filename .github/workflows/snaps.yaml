@@ -154,7 +154,7 @@ jobs:
           TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests
           echo "::set-output name=test_working_dir::${TEST_WORKING_DIR}"
           echo "::set-output name=test_result_file::goss_test_results.xml"
-          echo "::set-output name=container_logs_name::snap_logs_{0}.log"
+          echo "::set-output name=snap_logs_name::snap_logs_{0}.log"
           mkdir -p ${TEST_WORKING_DIR}
 
       - name: Snapcraft - Pre Test Setup
@@ -210,7 +210,7 @@ jobs:
           # https://github.com/koalaman/shellcheck/wiki/SC2024#rationale
           # shellcheck disable=SC2024
           sudo snap logs "${SERVICE_NAME}" > "$SNAP_LOGS_FILE"
-          echo "::set-output name=container_logs::$(pwd)/${SNAP_LOGS_FILE}"
+          echo "::set-output name=snap_logs::$(pwd)/${SNAP_LOGS_FILE}"
           echo "Snap logs found at \"$SNAP_LOGS_FILE\":"
           cat "$SNAP_LOGS_FILE"
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
@@ -222,8 +222,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
         with:
-          name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
-          path: ${{ steps.docker_teardown.outputs.container_logs }}
+          name: ${{ format(steps.test_parameter.outputs.snap_logs_name, matrix.package) }}
+          path: ${{ steps.snapcraft_teardown.outputs.snap_logs }}
           retention-days: 7
 
       - name: GitHub - Generate App Token
