@@ -206,6 +206,9 @@ jobs:
 
           echo "Running general teardown..."
           SNAP_LOGS_FILE="snap_${SERVICE_NAME}.log"
+          # according to the shellcheck docs, the check should be disabled in this scenario (see last bullet point):
+          # https://github.com/koalaman/shellcheck/wiki/SC2024#rationale
+          # shellcheck disable=SC2024
           sudo snap logs "${SERVICE_NAME}" > "$SNAP_LOGS_FILE"
           echo "::set-output name=container_logs::$(pwd)/${SNAP_LOGS_FILE}"
           echo "Snap logs found at \"$SNAP_LOGS_FILE\":"
