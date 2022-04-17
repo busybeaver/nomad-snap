@@ -238,16 +238,15 @@ jobs:
           # sudo is required, otherwise "find" runs in permission errors
           CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name 'docker_output.log')
           if test -f "$CONTAINER_LOGS_FILE"; then
-            echo "Container logs found at \"$CONTAINER_LOGS_FILE\""
-            cat "$CONTAINER_LOGS"
-
             echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
+            echo "Container logs found at \"$CONTAINER_LOGS_FILE\""
+            cat "$CONTAINER_LOGS_FILE"
           else
             echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
 
-            FALLBACK_LOGS_FILE=".fallback.log"
+            FALLBACK_LOGS_FILE="fallback.log"
             echo "no container logs available" > "$FALLBACK_LOGS_FILE"
-            echo "::set-output name=container_logs::${FALLBACK_LOGS_FILE}"
+            echo "::set-output name=container_logs::$(pwd)/${FALLBACK_LOGS_FILE}"
           fi
 
           TEARDOWN_FILE=./teardown.sh
@@ -265,7 +264,7 @@ jobs:
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
         with:
           name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
-          path: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.docker_teardown.outputs.container_logs }}
+          path: ${{ steps.docker_teardown.outputs.container_logs }}
           retention-days: 7
 
       - name: GitHub - Generate App Token
