@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
+# ${1} usually resolves to ".git/COMMIT_EDITMSG"
 if [ -z "${1}" ]; then
 	echo " Missing argument (commit message). Did you try to run this manually?"
 	exit 1
 fi
 
-commitTitle="$(cat "${1}" | head -n1)"
+commitTitle="$(< "${1}" head -n1)"
 
 # ignore merge requests
 if echo "${commitTitle}" | grep -qE "^Merge branch \'"; then
