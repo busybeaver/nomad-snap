@@ -3,3 +3,10 @@ commit-msg:
   scripts:
     "semantic-commit-message":
       runner: bash
+
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "**/{Dockerfile,*.json,*.md,*.toml}"
+      run: dprint check {staged_files}

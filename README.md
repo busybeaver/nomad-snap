@@ -35,15 +35,15 @@ Docker images are pushed/published to GitHub packages (the ghcr.io registry) wit
 On macOS run the following command to install lefthook:
 
 ```shell
-brew install lefthook
+brew install lefthook dprint
 ```
 
-For other operating systems, have a look at the installation section in the [lefthook install documentation](https://github.com/evilmartians/lefthook/blob/4d074e16260327fa22d05cc01c959825e8abc80a/docs/other.md).
+For other operating systems, have a look at the installation section in the [lefthook install documentation](https://github.com/evilmartians/lefthook/blob/4d074e16260327fa22d05cc01c959825e8abc80a/docs/other.md) and the [dprint docs](https://dprint.dev/install/).
 
 Subsequently, setup lefthook by running:
 
 ```shell
-lefthook install
+lefthook install && dprint config init
 ```
 
 ## Development
