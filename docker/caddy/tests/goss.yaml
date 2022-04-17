@@ -1,11 +1,11 @@
 command:
 port:
-  tcp:80:
-    listening: true
-    skip: false
-  tcp:443:
-    listening: true
-    skip: false
+#  tcp:80:
+#    listening: true
+#    skip: false
+#  tcp:443:
+#    listening: true
+#    skip: false
 http:
   http://127.0.0.1:80/:
     method: GET

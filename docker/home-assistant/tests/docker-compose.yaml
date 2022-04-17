@@ -4,7 +4,6 @@ services:
     container_name: container_under_test
     image: "${IMAGE_NAME}"
     volumes:
-#      - ./config:/config:rw
       - /etc/localtime:/etc/localtime:ro
     tmpfs:
       - /config
