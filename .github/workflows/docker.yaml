@@ -236,7 +236,7 @@ jobs:
           echo "Running general teardown..."
 
           # sudo is required, otherwise "find" runs in permission errors
-          CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name 'docker_output.log')
+          CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name "docker_output.log")
           if test -f "$CONTAINER_LOGS_FILE"; then
             echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
             echo "Container logs found at \"$CONTAINER_LOGS_FILE\""
@@ -272,7 +272,7 @@ jobs:
         uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe # tag=v1.5.2
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
-          # # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
+          # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
           app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
@@ -282,8 +282,12 @@ jobs:
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
-          check_name: Unit Test Results (Docker - ${{ matrix.package }})
+          check_name: Test Results (Docker - ${{ matrix.package }})
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
+          # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
+          # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
+          comment_mode: off
 
   container_security:
     name: 'Container Security Checks'
