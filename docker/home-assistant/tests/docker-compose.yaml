@@ -6,6 +6,6 @@ services:
     volumes:
       - ./.config:/config:rw
       - /etc/localtime:/etc/localtime:ro
-    #network_mode: host
-    ports:
-      - "8123:8123"
+    network_mode: host
+#    ports:
+#      - "8123:8123"
