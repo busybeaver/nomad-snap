@@ -221,11 +221,7 @@ jobs:
         if: steps.check_test_file.outputs.files_exists == 'true'
         # the service to test needs to be called "container_under_test" in the docker-compose.yaml file;
         # it's important to set DEBUG=true, else will the docker container logs be deleted after running the tests
-        run: |
-          DEBUG=true dcgoss run container_under_test | tee ${{ steps.test_parameter.outputs.test_result_file }}
-
-          echo "Container Logs:"
-          cat "$(dirname "$(find /tmp/ -name 'goss')")/docker_output.log"
+        run: DEBUG=true dcgoss run container_under_test | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
@@ -238,12 +234,9 @@ jobs:
         run: |
           echo "Running general teardown..."
 
-          if test -f "docker-compose.yaml"; then
-            docker-compose down
-          fi
-
-          CONTAINER_LOGS=/docker_output.log
+          CONTAINER_LOGS=$(find /tmp/ -name 'docker_output.log')
           if test -f "$CONTAINER_LOGS"; then
+            echo "Container logs found at \"$CONTAINER_LOGS\""
             cat "$CONTAINER_LOGS"
           else
             echo "No container logs found at \"$CONTAINER_LOGS\""
