@@ -245,7 +245,7 @@ jobs:
           else
             echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
 
-            FALLBACK_LOGS_FILE="./.fallback.log"
+            FALLBACK_LOGS_FILE=".fallback.log"
             echo "no container logs available" > "$FALLBACK_LOGS_FILE"
             echo "::set-output name=container_logs::${FALLBACK_LOGS_FILE}"
           fi
