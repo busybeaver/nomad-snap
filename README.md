@@ -30,6 +30,22 @@ Docker images are pushed/published to GitHub packages (the ghcr.io registry) wit
 * A modified [HomeAssistant](https://www.home-assistant.io/) version that can be run as non-root user
 * A minimal act runner environment with Python 3 installed
 
+## Setup
+
+On macOS run the following command to install lefthook:
+
+```shell
+brew install lefthook
+```
+
+For other operating systems, have a look at the installation section in the [lefthook install documentation](https://github.com/evilmartians/lefthook/blob/4d074e16260327fa22d05cc01c959825e8abc80a/docs/other.md).
+
+Subsequently, setup lefthook by running:
+
+```shell
+lefthook install
+```
+
 ## Development
 
 Use [act](https://github.com/nektos/act) to run the GitHub Actions CI flow locally.
