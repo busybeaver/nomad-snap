@@ -6,7 +6,7 @@ if [ -z "${1}" ]; then
 	exit 1
 fi
 
-commitTitle="$(< "${1}" head -n1)"
+commitTitle="$(head <"${1}" -n1)"
 
 # ignore merge requests
 if echo "${commitTitle}" | grep -qE "^Merge branch \'"; then
