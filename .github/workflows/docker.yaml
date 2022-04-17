@@ -248,6 +248,9 @@ jobs:
             echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
             echo "Container logs found at \"$CONTAINER_LOGS_FILE\":"
             cat "$CONTAINER_LOGS_FILE"
+            # TODO: temp
+            echo "---"
+            ls -la config
           else
             echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
 
