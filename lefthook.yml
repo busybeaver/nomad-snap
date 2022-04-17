@@ -8,5 +8,5 @@ pre-commit:
   parallel: true
   commands:
     format:
-      glob: "**/{Dockerfile,*.json,*.md,*.toml}"
-      run: dprint check {staged_files}
+      glob: "*.{json,md,toml}"
+      run: dprint fmt {staged_files} && git add {staged_files}
