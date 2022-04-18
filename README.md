@@ -41,7 +41,7 @@ brew install just
 
 For other operating systems, have a look at the installation section in the [just documentation](https://github.com/casey/just/tree/df8eabb3ef705e0807b863db2a0c99061f691bbe#packages=).
 
-Subsequently, setup the repository:
+Subsequently, set up the repository:
 
 ```shell
 # 1) install the required tooling: the install step uses brew and therefore works only on macos;

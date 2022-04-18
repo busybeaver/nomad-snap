@@ -45,6 +45,14 @@ snap_build package:
   @# With --debug, if snapcraft encounters an error it will automatically open a shell within snap’s virtual environment (allows to explore the build issue directly)
   cd {{justfile_directory()}}/snaps/{{package}}/ && snapcraft --debug
 
+snap_create_login_token:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  IFS=$'\n\t'
+  cd {{justfile_directory()}}/
+  SNAPS=$(ls -m snaps | tr -d ' ')
+  snapcraft export-login --snaps="$SNAPS" --acls="package_access,package_push,package_update,package_release" .login_token.txt
+
 # builds the specified docker image
 docker_build package:
   cd {{justfile_directory()}}/docker/{{package}}/ && docker build -t local-build_{{package}} .
