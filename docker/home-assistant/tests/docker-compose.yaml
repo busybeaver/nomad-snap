@@ -6,6 +6,6 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
     tmpfs:
-      - /config
+      - /config:rw,mode=777
     ports:
       - "8123:8123"

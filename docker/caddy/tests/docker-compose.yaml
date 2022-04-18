@@ -4,10 +4,10 @@ services:
     container_name: container_under_test
     image: "${IMAGE_NAME}"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
     tmpfs:
-      - /data
-      - /config
+      - /data:rw,mode=777
+      - /config:rw,mode=777
     ports:
       - "80:80"
       - "443:443"

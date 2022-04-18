@@ -3,10 +3,10 @@
   auto_https disable_redirects
 }
 
-:80 {
+localhost:80 {
   respond "Hello, HTTP world!"
 }
 
-:443 {
+localhost:443 {
   respond "Hello, HTTPS world!"
 }
