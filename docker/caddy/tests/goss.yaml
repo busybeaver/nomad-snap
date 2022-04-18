@@ -1,11 +1,5 @@
 command:
 port:
-#  tcp:80:
-#    listening: true
-#    skip: false
-#  tcp:443:
-#    listening: true
-#    skip: false
 http:
   http://localhost:80/:
     method: GET
