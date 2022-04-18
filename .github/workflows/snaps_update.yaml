@@ -6,16 +6,16 @@ on:
     branches:
       - main
       - gh-readonly-queue/main/**
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps_update.*'
+#    paths:
+#      - 'snaps/**'
+#      - '.github/workflows/snaps_update.*'
   # run on pull requests that target the main branch
   pull_request:
     branches:
       - main
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps_update.*'
+#    paths:
+#      - 'snaps/**'
+#      - '.github/workflows/snaps_update.*'
   # run daily on midnight
   schedule:
     - cron: '0 0 * * *'
@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -72,11 +72,11 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@bc2118736bca883de2e2c345bb7f7ef52c994920 # tag=v4.24.2
+        uses: mikefarah/yq@ed5b811f37384d92f62898492ddd81b6dc3af38f # tag=v4.24.5
 
 #      - name: Python - Get pip Cache Dir
 #        id: python_pip_cache_dir
@@ -85,7 +85,7 @@ jobs:
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
-        uses: actions/cache@136d96b4aee02b1f0de3ba493b1d47135042d9c0 # tag=v3
+        uses: actions/cache@48af2dc4a9e8278b89d7fa154b955c30c6aaab09 # tag=v3
         with:
 #          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
           path: ~/.cache/pip
@@ -145,7 +145,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
+        uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe # tag=v1.5.2
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
@@ -163,7 +163,7 @@ jobs:
 
       - name: GitHub - Create Pull Request
         id: github_create_pr
-        uses: peter-evans/create-pull-request@d6d5519d05f5814158ef015b8448f2f74648c421 # tag=v4.0.0
+        uses: peter-evans/create-pull-request@bd72e1b7922d417764d27d30768117ad7da78a0e # tag=v4.0.2
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           token: ${{ steps.github_generate_app_token.outputs.token }}
