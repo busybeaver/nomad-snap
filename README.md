@@ -28,24 +28,31 @@ _Note:_ Canonical provides a HashiCorp [Vault snap package](https://snapcraft.io
 Docker images are pushed/published to GitHub packages (the ghcr.io registry) within this repository.
 
 - A modified [HomeAssistant](https://www.home-assistant.io/) version that can be run as non-root user
+- A [Caddy](https://caddyserver.com/) server bundling multiple plugins and the possibility to run against port 80 and 443 as non-root user
 - A minimal act runner environment with Python 3 installed
 
 ## Setup
 
-On macOS run the following command to install lefthook:
+On macOS run the following command to install just:
 
 ```shell
-brew install lefthook dprint
+brew install just
 ```
 
-For other operating systems, have a look at the installation section in the [lefthook install documentation](https://github.com/evilmartians/lefthook/blob/4d074e16260327fa22d05cc01c959825e8abc80a/docs/other.md) and the [dprint docs](https://dprint.dev/install/).
+For other operating systems, have a look at the installation section in the [just documentation](https://github.com/casey/just/tree/df8eabb3ef705e0807b863db2a0c99061f691bbe#packages=).
 
-Subsequently, setup lefthook by running:
+Subsequently, setup the repository:
 
 ```shell
-lefthook install && dprint config init
+# 1) install the required tooling: the install step uses brew and therefore works only on macos;
+# on other operation systems check the needed tools in the justfile.shared and install these manually
+just install
+# 2) initialize the tooling
+just init
 ```
 
 ## Development
+
+For a list of available commands, just run `just` within the git repository.
 
 Use [act](https://github.com/nektos/act) to run the GitHub Actions CI flow locally.
