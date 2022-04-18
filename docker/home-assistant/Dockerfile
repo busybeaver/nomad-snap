@@ -8,6 +8,8 @@ RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/ho
 
 FROM homeassistant/home-assistant:2022.4@sha256:312e3202d5c4634fb544c615f8c472a280d1cbeefd1310df9b7d5b6d22124c6b
 
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://127.0.0.1:8123 || exit 1
+
 ENV HOME_ASSISTANT_ENTRYPOINT="/etc/services.d/home-assistant/run"
 # this is a simple build time check to ensure that the home assistant
 # entry point didn't change in the base/parent image. without this

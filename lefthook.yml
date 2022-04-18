@@ -1,0 +1,12 @@
+commit-msg:
+  parallel: true
+  scripts:
+    "semantic-commit-message":
+      runner: bash
+
+pre-commit:
+  parallel: true
+  commands:
+    format:
+      glob: "*.{json,md,toml}"
+      run: dprint fmt {staged_files} && git add {staged_files}

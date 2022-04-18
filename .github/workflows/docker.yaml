@@ -141,7 +141,7 @@ jobs:
           outputs: type=docker,dest=${{ needs.matrix_setup.outputs.docker_image_file }}
 
       - name: GitHub - Upload Image Artifact
-        id: github_upload
+        id: github_upload_image
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -173,7 +173,7 @@ jobs:
         uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: GitHub - Download Image Artifact
-        id: github_download
+        id: github_download_image
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -185,6 +185,7 @@ jobs:
           TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests
           echo "::set-output name=test_working_dir::${TEST_WORKING_DIR}"
           echo "::set-output name=test_result_file::goss_test_results.xml"
+          echo "::set-output name=container_logs_name::container_logs_{0}.log"
           mkdir -p ${TEST_WORKING_DIR}
 
       - name: Docker - Load Image
@@ -203,7 +204,7 @@ jobs:
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
-          IMAGE_NAME: ${{ matrix.package }}
+          IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
 
       - name: Goss - Setup
         uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
@@ -216,15 +217,18 @@ jobs:
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
-      # TODO: add functionality to pass docker run parameter for the test run
       - name: Goss - Test Docker Image
         id: goss_test
         if: steps.check_test_file.outputs.files_exists == 'true'
-        run: dgoss run ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }} | tee ${{ steps.test_parameter.outputs.test_result_file }}
+        # the service/container to test needs to be called "container_under_test" in the docker-compose.yaml file;
+        # it's important to set DEBUG=true, else will the docker container logs be deleted after running the tests;
+        # we use "sed '1d'" to remove the first line of the output. it contains the name of the container but we only need the XML based JUnit results
+        run: DEBUG=true dcgoss run container_under_test | sed '1d' | tee ${{ steps.test_parameter.outputs.test_result_file }}
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
-          IMAGE_NAME: ${{ matrix.package }}
+          IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
           GOSS_OPTS: --format junit --max-concurrent 1
+          GOSS_SLEEP: 30s
 
       - name: Docker - Post Test Teardown
         id: docker_teardown
@@ -232,21 +236,43 @@ jobs:
         run: |
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
-            echo "$TEARDOWN_FILE exists. Going to run teardown:"
+            echo "$TEARDOWN_FILE exists. Going to run service-specific teardown:"
             sh ./$TEARDOWN_FILE
           else
-            echo "$TEARDOWN_FILE does not exist. Skip teardown."
+            echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
+          fi
+
+          echo "Running general teardown..."
+          # sudo is required, otherwise "find" runs in permission errors
+          CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name "docker_output.log")
+          if test -f "$CONTAINER_LOGS_FILE"; then
+            echo "::set-output name=container_logs::${CONTAINER_LOGS_FILE}"
+            echo "Container logs found at \"$CONTAINER_LOGS_FILE\":"
+            cat "$CONTAINER_LOGS_FILE"
+          else
+            echo "No container logs found at \"$CONTAINER_LOGS_FILE\""
+
+            FALLBACK_LOGS_FILE="container_fallback.log"
+            echo "no container logs available" > "$FALLBACK_LOGS_FILE"
+            echo "::set-output name=container_logs::$(pwd)/${FALLBACK_LOGS_FILE}"
           fi
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
-        env:
-          IMAGE_NAME: ${{ matrix.package }}
+
+      - name: GitHub - Upload Container Logs
+        id: github_upload_logs
+        if: always()
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        with:
+          name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
+          path: ${{ steps.docker_teardown.outputs.container_logs }}
+          retention-days: 7
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
         uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe # tag=v1.5.2
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
-          # # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
+          # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
           app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
@@ -256,8 +282,12 @@ jobs:
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
-          check_name: Unit Test Results (Docker - ${{ matrix.package }})
+          check_name: Test Results (Docker - ${{ matrix.package }})
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
+          # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
+          # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
+          comment_mode: off
 
   container_security:
     name: 'Container Security Checks'
@@ -282,7 +312,7 @@ jobs:
         uses: actions/checkout@dcd71f646680f2efd8db4afa5ad64fdcba30e748 # tag=v3
 
       - name: GitHub - Download Image Artifact
-        id: github_download
+        id: github_download_image
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -348,7 +378,7 @@ jobs:
             ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
 
       - name: GitHub - Download Image Artifact
-        id: github_download
+        id: github_download_image
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:

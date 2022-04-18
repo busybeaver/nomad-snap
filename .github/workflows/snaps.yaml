@@ -110,12 +110,12 @@ jobs:
           mv ${{ steps.snapcraft_build.outputs.snap }} ${{ needs.matrix_setup.outputs.snap_file }}
 
       - name: GitHub - Upload Snap Artifact
-        id: github_upload
+        id: github_upload_snap
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.snap_file }}
-          retention-days: 3
+          retention-days: 1
 
   snapcraft_test:
     name: 'Install and Test'
@@ -154,6 +154,7 @@ jobs:
           TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests
           echo "::set-output name=test_working_dir::${TEST_WORKING_DIR}"
           echo "::set-output name=test_result_file::goss_test_results.xml"
+          echo "::set-output name=snap_logs_name::snap_logs_{0}.log"
           mkdir -p ${TEST_WORKING_DIR}
 
       - name: Snapcraft - Pre Test Setup
@@ -197,21 +198,40 @@ jobs:
         run: |
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
-            echo "$TEARDOWN_FILE exists. Going to run teardown:"
+            echo "$TEARDOWN_FILE exists. Going to run service-specific teardown:"
             sh ./$TEARDOWN_FILE
           else
-            echo "$TEARDOWN_FILE does not exist. Skip teardown."
+            echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
           fi
+
+          echo "Running general teardown..."
+          SNAP_LOGS_FILE="snap_${SERVICE_NAME}.log"
+          # according to the shellcheck docs, the check should be disabled in this scenario (see last bullet point):
+          # https://github.com/koalaman/shellcheck/wiki/SC2024#rationale
+          # shellcheck disable=SC2024
+          sudo snap logs "${SERVICE_NAME}" > "$SNAP_LOGS_FILE"
+          echo "::set-output name=snap_logs::$(pwd)/${SNAP_LOGS_FILE}"
+          echo "Snap logs found at \"$SNAP_LOGS_FILE\":"
+          cat "$SNAP_LOGS_FILE"
         working-directory: ${{ steps.test_parameter.outputs.test_working_dir }}
         env:
           SERVICE_NAME: ${{ matrix.package }}
+
+      - name: GitHub - Upload Snap Logs
+        id: github_upload_logs
+        if: always()
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        with:
+          name: ${{ format(steps.test_parameter.outputs.snap_logs_name, matrix.package) }}
+          path: ${{ steps.snapcraft_teardown.outputs.snap_logs }}
+          retention-days: 7
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
         uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe # tag=v1.5.2
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
-          # # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
+          # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
           app_id: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_APP_ID }}
           private_key: ${{ secrets.UNIT_TEST_RESULTS_REPORTER_PRIVATE_KEY }}
 
@@ -221,8 +241,12 @@ jobs:
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
-          check_name: Unit Test Results (Snap - ${{ matrix.package }})
+          check_name: Test Results (Snap - ${{ matrix.package }})
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
+          # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
+          # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
+          comment_mode: off
 
   snapcraft_publish:
     name: 'Publish'
