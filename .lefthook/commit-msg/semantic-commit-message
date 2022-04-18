@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
 
 # ${1} usually resolves to ".git/COMMIT_EDITMSG"
 if [ -z "${1}" ]; then
