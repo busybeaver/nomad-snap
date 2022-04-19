@@ -45,6 +45,7 @@ snap_build package:
   @# With --debug, if snapcraft encounters an error it will automatically open a shell within snap’s virtual environment (allows to explore the build issue directly)
   cd {{justfile_directory()}}/snaps/{{package}}/ && snapcraft --debug
 
+# generate a login/API token used for pushing releases to the snapcraft store
 snap_create_login_token:
   #!/usr/bin/env bash
   set -euo pipefail
