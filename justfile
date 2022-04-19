@@ -21,13 +21,13 @@ install:
 initialize:
   @just _run_shared initialize
 
-# formats files according to the used standards
-format:
-  @just _run_shared format
+# formats files according to the used standards and rules
+format *files:
+  @just _run_shared format {{files}}
 
-# checks if the files comply to the used standards
-check:
-  @just _run_shared check
+# checks if the files comply to the used standards and rules
+check *files:
+  @just _run_shared check {{files}}
 
 # runs the CI workflows locally
 ci *args:
