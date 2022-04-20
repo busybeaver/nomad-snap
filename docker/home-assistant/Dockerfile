@@ -1,6 +1,6 @@
 # a HomeAssistant version that can be run as non-root user
 
-FROM alpine/git:v2.32.0@sha256:a8a31155488a93a4d8abb834777c7b5f9d7c93db6051defbad8cc066b4e90072 as build
+FROM alpine/git:v2.34.1@sha256:b03f9259403bbf8dd365bb90ef2b7286b89f1d1c594f6d5bc3a0a49199a82359 as build
 
 ENV GIT_TAG_VERSION="v2.3"
 WORKDIR /tmp/homeassistant-docker-venv
