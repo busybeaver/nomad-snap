@@ -6,16 +6,10 @@ on:
     branches:
       - main
       - gh-readonly-queue/main/**
-#    paths:
-#      - 'docker/**'
-#      - '.github/workflows/docker.yaml'
   # run on pull requests that target the main branch
   pull_request:
     branches:
       - main
-#    paths:
-#      - 'docker/**'
-#      - '.github/workflows/docker.yaml'
   # run weekly on Monday at 12:00
   schedule:
     - cron: '0 12 * * 1'
