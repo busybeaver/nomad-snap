@@ -1,4 +1,3 @@
-set dotenv-load := true
 set shell := ["zsh", "-uc"]
 
 # lists all available commands
