@@ -1,5 +1,4 @@
-set dotenv-load := true
-set shell := ["zsh", "-uc"]
+set shell := ["bash", "-uc"]
 
 # lists all available commands
 @default:
@@ -21,15 +20,15 @@ install:
 initialize:
   @just _run_shared initialize
 
-# formats files according to the used standards and rules
+# formats files according to the used standards and rules; if the optional files parameter is provided, only the specified files are formatted; else all files are formatted
 format *files:
   @just _run_shared format {{files}}
 
-# checks if the files comply to the used standards and rules
+# checks if the files comply to the used standards and rules; if the optional files parameter is provided, only the specified files are checked; else all files are checked
 check *files:
   @just _run_shared check {{files}}
 
-# runs the CI workflows locally
+# runs the CI workflows locally; the optional args parameter allows to add additional optional arguments
 ci *args:
   @just _run_shared ci {{args}}
 
@@ -40,7 +39,7 @@ ci *args:
 alias snap := snap_build
 alias docker := docker_build
 
-# builds the specified snap package
+# builds the snap specified in the package parameter
 snap_build package:
   @# With --debug, if snapcraft encounters an error it will automatically open a shell within snap’s virtual environment (allows to explore the build issue directly)
   cd {{justfile_directory()}}/snaps/{{package}}/ && snapcraft --debug
@@ -54,6 +53,6 @@ snap_create_login_token:
   SNAPS=$(ls -m snaps | tr -d ' ')
   snapcraft export-login --snaps="$SNAPS" --acls="package_access,package_push,package_update,package_release" .login_token.txt
 
-# builds the specified docker image
+# builds the docker image specified in the package parameter
 docker_build package:
   cd {{justfile_directory()}}/docker/{{package}}/ && docker build -t local-build_{{package}} .
