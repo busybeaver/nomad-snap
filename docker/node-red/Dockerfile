@@ -1,6 +1,6 @@
 FROM node:lts-bullseye-slim@sha256:d54981fe891c9e3442ea05cb668bc8a2a3ee38609ecce52c7b5a609fadc6f64b as build
 
-COPY package.json package-json.lock /tmp/
+COPY package.json package-lock.json /tmp/
 WORKDIR /tmp/
 RUN npm install --no-fund --production
 
