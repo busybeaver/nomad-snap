@@ -3,7 +3,7 @@
 // https://docs.renovatebot.com/config-presets/
 {
   "extends": [
-    "config:base",
+    "config:js-app",
     ":docker",
     "docker:pinDigests",
     "docker:enableMajor",
