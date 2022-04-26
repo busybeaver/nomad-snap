@@ -8,5 +8,5 @@ FROM nodered/node-red:2.2.2-16-minimal
 
 ARG node-red-modules-folder=/usr/src/node-red-modules/node_modules
 
-COPY --from builder --chown node-red /tmp/node_modules/ ${node-red-modules-folder}/
+COPY --from=build --chown=node-red /tmp/node_modules/ ${node-red-modules-folder}/
 ENV NODE_PATH "$NODE_PATH:${node-red-modules-folder}"
