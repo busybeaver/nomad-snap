@@ -54,5 +54,5 @@ snap_create_login_token:
   snapcraft export-login --snaps="$SNAPS" --acls="package_access,package_push,package_update,package_release" .login_token.txt
 
 # builds the docker image specified in the package parameter
-docker_build package:
-  cd {{justfile_directory()}}/docker/{{package}}/ && docker build -t local-build_{{package}} .
+docker_build package *args:
+  cd {{justfile_directory()}}/docker/{{package}}/ && docker build {{args}} -t local-build_{{package}} .
