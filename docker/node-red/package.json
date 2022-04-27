@@ -1,6 +1,8 @@
 {
   "name": "node-red",
   "version": "1.0.0",
+  "description": "Preinstalled dependencies for the node-red",
+  "private": true,
   "dependencies": {
     "node-red-contrib-homekit-bridged": "1.4.3",
     "node-red-contrib-huemagic": "4.2.2",
