@@ -1,15 +1,22 @@
-FROM node:lts-bullseye-slim@sha256:d54981fe891c9e3442ea05cb668bc8a2a3ee38609ecce52c7b5a609fadc6f64b as build
+FROM nodered/node-red:2.2.2-16-minimal@sha256:80d8994f7ae471ec68752d6e28955648427b88e904086089c771e0f715402fa4 as build
 
 # preinstalling modules/packages improves the immutability and reproducability of the service;
 # for improved security, installing additional modules/packages during runtime can then be disabled:
 # https://nodered.org/docs/user-guide/runtime/configuration#runtime-configuration (see the "externalModules" option)
-COPY package.json package-lock.json /tmp/
-WORKDIR /tmp/
-RUN npm install --no-fund --production
+
+USER root
+RUN apk --update-cache --no-cache add jq=~1.6
+USER node-red
+
+COPY package.json ./package-addon.json
+# merge dependencies property of to package.json files and use it in the package.json file
+RUN jq ".dependencies = $(jq ".dependencies + $(jq -c '.dependencies' package.json)" package-addon.json)" package.json > package_tmp.json && \
+    mv package_tmp.json package.json && \
+    rm ./package-addon.json && \
+    npm install --no-fund --no-package-lock --production
 
 FROM nodered/node-red:2.2.2-16-minimal@sha256:80d8994f7ae471ec68752d6e28955648427b88e904086089c771e0f715402fa4
 
-ARG node_red_modules_folder="/usr/src/node-red-modules/node_modules"
-
-COPY --from=build --chown=node-red /tmp/node_modules/ ${node_red_modules_folder}/
-ENV NODE_PATH "$NODE_PATH:${node_red_modules_folder}"
+COPY --from=build --chown=node-red /usr/src/node-red/package.json ./package.json
+COPY --from=build --chown=node-red /usr/src/node-red/node_modules/ ./node_modules/
+RUN ls -la node_modules
