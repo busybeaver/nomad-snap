@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "node-red-contrib-homekit-bridged": "1.4.3",
-    "node-red-contrib-huemagic": "4.2.2"
+    "node-red-contrib-huemagic": "4.2.2",
+    "node-red-node-pushover": "0.1.1"
   },
   "scripts": {
     "install-and-clean": "npm install --no-fund && rm -rf node_modules"
