@@ -7,7 +7,7 @@ COPY package.json package-lock.json /tmp/
 WORKDIR /tmp/
 RUN npm install --no-fund --production
 
-FROM nodered/node-red:2.2.2-16-minimal
+FROM nodered/node-red:2.2.2-16-minimal@sha256:80d8994f7ae471ec68752d6e28955648427b88e904086089c771e0f715402fa4
 
 ARG node_red_modules_folder="/usr/src/node-red-modules/node_modules"
 
