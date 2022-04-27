@@ -12,5 +12,5 @@ FROM caddy:2.5.0-alpine@sha256:e602ecd5eed4cae0d809ef6cdd2b0faa091da3cea6f71dbfd
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
 # Allow to run Caddy on privileged ports (as a non-root user)
-RUN apk --update-cache --no-cache add libcap=~2.50 && \
+RUN apk --update-cache --no-cache add libcap=~2.61 && \
     setcap 'cap_net_bind_service=+eip' /usr/bin/caddy
