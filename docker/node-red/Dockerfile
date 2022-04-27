@@ -19,4 +19,3 @@ FROM nodered/node-red:2.2.2-16-minimal@sha256:80d8994f7ae471ec68752d6e2895564842
 
 COPY --from=build --chown=node-red /usr/src/node-red/package.json ./package.json
 COPY --from=build --chown=node-red /usr/src/node-red/node_modules/ ./node_modules/
-RUN ls -la node_modules
