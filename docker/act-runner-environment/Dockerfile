@@ -8,6 +8,8 @@ LABEL org.opencontainers.image.title="A minimal act runner environment with Pyth
       org.opencontainers.image.authors="busybeaver" \
       org.opencontainers.image.source="https://github.com/busybeaver/homelab-packages"
 
+# Update outdated (and potentially vulnerable) dependencies;
+# Install python3 which is used to in the CI flows to set up the build matrix
 RUN apt-get update && \
     apt-get upgrade --no-install-recommends --yes && \
     apt-get install python3-minimal=3.\* --no-install-recommends --yes && \
