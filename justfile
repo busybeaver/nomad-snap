@@ -1,5 +1,7 @@
 set shell := ["bash", "-uc"]
 
+brew_env_vars := "HOMEBREW_NO_ANALYTICS=1 HOMEBREW_NO_INSECURE_REDIRECT=1 HOMEBREW_CASK_OPTS=--require-sha"
+
 # lists all available commands
 @default:
   just --list
@@ -15,7 +17,12 @@ _run_shared cmd *args:
 # install all required tooling for development (osx only)
 install:
   @just _run_shared install snapcraft
-  brew install --cask multipass
+  {{brew_env_vars}} brew install --cask multipass
+
+# uninstall all required tooling for development (osx only)
+uninstall:
+  @just _run_shared uninstall
+  {{brew_env_vars}} brew uninstall --cask multipass
 
 # initializes the tooling for working with this repository
 initialize:
