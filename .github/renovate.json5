@@ -4,8 +4,10 @@
     ":docker",
     "docker:pinDigests",
     "docker:enableMajor",
+    "regexManagers:dockerfileVersions",
   ],
   "pip_requirements": {
+    // https://docs.renovatebot.com/python/#alternative-file-names
     "fileMatch": [".*\\.pip$"]
   },
 }
