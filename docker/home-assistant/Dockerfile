@@ -1,7 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM alpine/git:v2.34.2@sha256:dd88601a5889009b3852cf6748e2d23a0dd17ef6e26864d74f2cca24bfc4159f as build
 
+# renovate: datasource=github-tags depName=tribut/homeassistant-docker-venv versioning=loose
 ARG GIT_TAG_VERSION="v2.3"
+
 WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
