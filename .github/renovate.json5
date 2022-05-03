@@ -6,21 +6,6 @@
     "docker:enableMajor",
     "regexManagers:dockerfileVersions",
   ],
-  "packageRules": [
-    {
-      "datasources": [
-        "repology",
-      ],
-      "packagePatterns": [
-        "^debian_11/",
-        "^alpine_3_12/",
-        "^alpine_3_13/",
-        "^alpine_3_14/",
-        "^alpine_3_15/",
-      ],
-      "groupName": "linux packages",
-    },
-  ],
   "pip_requirements": {
     // https://docs.renovatebot.com/python/#alternative-file-names
     "fileMatch": [".*\\.pip$"]
