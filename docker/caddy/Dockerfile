@@ -17,5 +17,5 @@ ARG LIBCAP_VERSION="2.61"
 # Update outdated (and potentially vulnerable) dependencies;
 # Allow to run Caddy on privileged ports (as a non-root user)
 RUN apk --update-cache --no-cache upgrade && \
-    apk --update-cache --no-cache add libcap=${LIBCAP_VERSION} && \
+    apk --update-cache --no-cache add libcap=~${LIBCAP_VERSION} && \
     setcap 'cap_net_bind_service=+eip' /usr/bin/caddy
