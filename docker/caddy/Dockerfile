@@ -11,11 +11,11 @@ FROM caddy:2.5.0-alpine@sha256:e602ecd5eed4cae0d809ef6cdd2b0faa091da3cea6f71dbfd
 
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
-# renovate: datasource=repology depName=alpine_3_15/libcap
-ARG LIBCAP_VERSION="2.61"
+# renovate: datasource=repology depName=alpine_3_15/libcap versioning=loose
+ARG LIBCAP_VERSION="2.61-r0"
 
 # Update outdated (and potentially vulnerable) dependencies;
 # Allow to run Caddy on privileged ports (as a non-root user)
 RUN apk --update-cache --no-cache upgrade && \
-    apk --update-cache --no-cache add libcap=~${LIBCAP_VERSION} && \
+    apk --update-cache --no-cache add libcap=${LIBCAP_VERSION} && \
     setcap 'cap_net_bind_service=+eip' /usr/bin/caddy
