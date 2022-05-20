@@ -105,7 +105,7 @@ jobs:
 
       - name: GitHub - Upload Snap Artifact
         id: github_upload_snap
-        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.snap_file }}
@@ -214,7 +214,7 @@ jobs:
       - name: GitHub - Upload Snap Logs
         id: github_upload_logs
         if: always()
-        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
         with:
           name: ${{ format(steps.test_parameter.outputs.snap_logs_name, matrix.package) }}
           path: ${{ steps.snapcraft_teardown.outputs.snap_logs }}
