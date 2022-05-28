@@ -61,7 +61,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@1425d0720ec16e51172b88c871ac85f56bcd8ae3 # tag=v4.25.1
+        uses: mikefarah/yq@70403375d7b96075bd68b40c434807cff1593568 # tag=v4.25.2
 
 #      - name: Python - Get pip Cache Dir
 #        id: python_pip_cache_dir
