@@ -109,7 +109,7 @@ jobs:
           tar -cvf ../${FILE} *
           rm package.tgz
           cd ..
-          echo "::set-output name=spk_package::$(${FILE})"
+          echo "::set-output name=spk_package::$(echo ${FILE})"
         working-directory: ${{ needs.matrix_setup.outputs.spk_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Upload SPK Artifact
