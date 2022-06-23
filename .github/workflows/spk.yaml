@@ -106,7 +106,8 @@ jobs:
           cd builddir
           tar -cvzf package.tgz package
           FILE=${{ matrix.package }}_${VERSION}_${{ matrix.arch }}.spk
-          tar -cvf ../${FILE} *
+          # tar -cvf ../${FILE} *
+          tar -cvf ../${FILE} INFO conf/ package.tgz scripts/
           rm package.tgz
           cd ..
           echo "::set-output name=spk_package::$(echo ${FILE})"
