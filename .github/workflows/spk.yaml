@@ -100,7 +100,7 @@ jobs:
           mv ${{ matrix.arch }}/nomad builddir/package/bin/
 
           echo "Generating INFO file for ${{ matrix.package }}:"
-          ./info.sh ${VERSION}-${BUILD_VERSION} > builddir/INFO
+          sh ./info.sh ${VERSION}-${BUILD_VERSION} > builddir/INFO
 
           echo "Building SPK for ${{ matrix.package }}:"
           cd builddir
