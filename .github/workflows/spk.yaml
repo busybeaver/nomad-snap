@@ -105,21 +105,17 @@ jobs:
           echo "Building SPK for ${{ matrix.package }}:"
           cd builddir
           tar -cvzf package.tgz package
-          tar -cvf ../nomad_${VERSION}_${{ matrix.arch }}.spk *
+          FILE=${{ matrix.package }}_${VERSION}_${{ matrix.arch }}.spk
+          tar -cvf ../${FILE} *
           rm package.tgz
           cd ..
+          echo "::set-output name=spk_package::$(${FILE})"
         working-directory: ${{ needs.matrix_setup.outputs.spk_working_dir }}/${{ matrix.package }}
 
-#      - name: GitHub - Move SPK Artifact
-#        id: move_artifact
-#        run: |
-#          mv ${{ steps.spk_build.outputs.spk }} ${{ needs.matrix_setup.outputs.spk_file }}
-#
-#      - name: GitHub - Upload SPK Artifact
-#        id: github_upload
-#        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
-#        with:
-#          name: ${{ format(needs.matrix_setup.outputs.spk_artifact_name, matrix.package) }}
-#          path: ${{ needs.matrix_setup.outputs.spk_file }}
-#          retention-days: 3
-
+      - name: GitHub - Upload SPK Artifact
+        id: github_upload
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
+        with:
+          name: ${{ steps.spk_build.outputs.spk_package }}
+          path: ${{ needs.matrix_setup.outputs.spk_working_dir }}/${{ matrix.package }}/${{ steps.spk_build.outputs.spk_package }}
+          retention-days: 7
