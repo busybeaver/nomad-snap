@@ -58,19 +58,13 @@ jobs:
         id: set_matrix
         run: |
           echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
-          echo "::set-output name=spk_arch::['x86_64', 'armv7', 'armv8']"
+          echo "::set-output name=spk_arch::['amd64', 'arm', 'arm64']"
           echo "::set-output name=spk_working_dir::./spk"
-          echo "::set-output name=spk_dir::/tmp"
-          echo "::set-output name=spk_file::/tmp/package.spk"
-          echo "::set-output name=spk_artifact_name::tmp_{0}.spk"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       spk_arch: ${{ steps.set_matrix.outputs.spk_arch }}
       spk_working_dir: ${{ steps.set_matrix.outputs.spk_working_dir }}
-      spk_dir: ${{ steps.set_matrix.outputs.spk_dir }}
-      spk_file: ${{ steps.set_matrix.outputs.spk_file }}
-      spk_artifact_name: ${{ steps.set_matrix.outputs.spk_artifact_name }}
 
   spk_build:
     name: 'Build'
@@ -94,28 +88,27 @@ jobs:
         id: git_checkout
         uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
 
-      - name: SPK - Set up Build Environment
-        id: spk_setup
-        run: |
-          # TODO: move this to a docker image to have reporoducable builds
-          set -x
-          set -e
-
-          sudo apt-get update
-          sudo apt-get install -y cifs-utils python3 python3-pip jq
-
-          mkdir .toolkit
-          git clone https://github.com/SynologyOpenSource/pkgscripts-ng .toolkit
-          cd .toolkit
-          git checkout DSM7.0
-          cd ..
-
-          .toolkit/EnvDeploy -v 7.0 --list
-          .toolkit/EnvDeploy -v 7.0 -p ${{ matrix.arch }}
-
       - name: SPK - Build Artifact
         id: spk_build
         run: |
+          source ./config.sh
+          echo "Building artifact: ${{ matrix.package }} ${VERSION} / arch ${{ matrix.arch }}"
+
+          echo "Downloading ${{ matrix.package }}:"
+          wget https://releases.hashicorp.com/nomad/${VERSION}/nomad_${VERSION}_linux_${{ matrix.arch }}.zip
+          unzip -o -d ${{ matrix.arch }} nomad_${VERSION}_linux_${{ matrix.arch }}.zip
+          mv ${{ matrix.arch }}/nomad builddir/package/bin/
+
+          echo "Generating INFO file for ${{ matrix.package }}:"
+          ./info.sh ${VERSION}-${BUILD_VERSION} > builddir/INFO
+
+          echo "Building SPK for ${{ matrix.package }}:"
+          cd builddir
+          tar -cvzf package.tgz package
+          tar -cvf ../nomad_${VERSION}_${{ matrix.arch }}.spk *
+          rm package.tgz
+          cd ..
+        working-directory: ${{ needs.matrix_setup.outputs.spk_working_dir }}/${{ matrix.package }}
 
 #      - name: GitHub - Move SPK Artifact
 #        id: move_artifact
