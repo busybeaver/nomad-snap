@@ -330,7 +330,7 @@ jobs:
 
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
-        uses: github/codeql-action/upload-sarif@2ca79b6fa8d3ec278944088b4aa5f46912db5d63 # tag=v2.1.18
+        uses: github/codeql-action/upload-sarif@f5d217be74900c6ac8fbbe53f3c10376ba4e64da # tag=v2.1.19
         # always run, even if the previous step failed due to found vulnerabilities (so it vulnerabilities get reported)
         # only run if the sarif file exists
         # only run on pushes on the default branch
