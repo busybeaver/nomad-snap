@@ -7,7 +7,7 @@ ARG GIT_TAG_VERSION="v2.3"
 WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
-FROM homeassistant/home-assistant:2022.9@sha256:8d7ffaffb16d82f3fe7fed438a082fffbd20456adfadfdfef095a6b8463b4d34
+FROM homeassistant/home-assistant:2022.9@sha256:95653ee0dc9e08ddd44cd9421e067e12150710db7c51cce4aa743c2b4e475e33
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://127.0.0.1:8123 || exit 1
 
