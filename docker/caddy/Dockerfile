@@ -11,7 +11,7 @@ FROM caddy:2.6.1-alpine@sha256:21dbf9101c1eae0e2228f386eefab509d462710c2da97ba45
 
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
-# renovate: datasource=repology depName=alpine_3_15/libcap versioning=loose
+# renovate: datasource=repology depName=alpine_3_16/libcap versioning=loose
 ARG LIBCAP_VERSION="2.61-r0"
 
 # Update outdated (and potentially vulnerable) dependencies;
