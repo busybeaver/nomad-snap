@@ -12,7 +12,9 @@
   },
   "regexManagers": [
     {
-      // adopted from: https://github.com/renovatebot/renovate/blob/main/lib/config/presets/internal/regex-managers.ts
+      // adopted from:
+      // https://github.com/renovatebot/renovate/blob/main/lib/config/presets/internal/regex-managers.ts
+      // https://docs.renovatebot.com/presets-regexManagers/#regexmanagersdockerfileversions
       description: "Update '_VERSION' variables in shell scripts.",
       "fileMatch": [
         ".*\\.sh$",
