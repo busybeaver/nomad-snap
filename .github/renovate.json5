@@ -10,4 +10,16 @@
     // https://docs.renovatebot.com/python/#alternative-file-names
     "fileMatch": [".*\\.pip$"]
   },
+  "regexManagers": [
+    {
+      // adopted from: https://github.com/renovatebot/renovate/blob/main/lib/config/presets/internal/regex-managers.ts
+      description: "Update '_VERSION' variables in shell scripts.",
+      "fileMatch": [
+        ".*\\.sh$",
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s.+?_VERSION="?(?<currentValue>.+?)"?\\s"
+      ]
+    }
+  ],
 }
