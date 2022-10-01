@@ -86,7 +86,7 @@ jobs:
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
-        uses: github/super-linter/slim@a320804d310fdeb8d1a46c6c6c1e615d443b10c9 # tag=v4
+        uses: github/super-linter/slim@01d3218744765b55c3b5ffbb27e50961e50c33c5 # tag=v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -122,7 +122,7 @@ jobs:
 
       - name: Docker - Build Artifact # but don't publish yet
         id: docker_build
-        uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8 # tag=v3
+        uses: docker/build-push-action@c84f38281176d4c9cdb1626ffafcd6b3911b5d94 # tag=v3
         with:
           context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
@@ -263,7 +263,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@586e1a624db6a5a4ac2c53daeeded60c5e3d50fe # tag=v1.5.2
+        uses: tibdex/github-app-token@f717b5ecd4534d3c4df4ce9b5c1c2214f0f7cd06 # tag=v1.6.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
@@ -272,7 +272,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@7377632048da85434c30810c38353542d3162dc4 # tag=v1.37
+        uses: EnricoMi/publish-unit-test-result-action@b9f6c61d965bcaa18acc02d6daf706373a448f02 # tag=v1.40
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
@@ -330,7 +330,7 @@ jobs:
 
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
-        uses: github/codeql-action/upload-sarif@27ea8f8fe5977c00f5b37e076ab846c5bd783b96 # tag=v2.1.12
+        uses: github/codeql-action/upload-sarif@c7f292ea4f542c473194b33813ccd4c207a6c725 # tag=v2.1.21
         # always run, even if the previous step failed due to found vulnerabilities (so it vulnerabilities get reported)
         # only run if the sarif file exists
         # only run on pushes on the default branch
@@ -366,7 +366,7 @@ jobs:
 
       - name: Git - Get Changed Files
         id: git_changed_files
-        uses: tj-actions/changed-files@450eadf5a0462f8d0b5e99d07d4b6d8f7358420c # tag=v5.0.0
+        uses: tj-actions/changed-files@28ac6724247a133793509b5d165d58319b40a171 # tag=v28.0.0
         with:
           files: |
             ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile

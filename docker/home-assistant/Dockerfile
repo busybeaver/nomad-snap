@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM alpine/git:v2.34.2@sha256:92183be577e91c664e01b0318b6cc10ba82ac28db40ed8934e389f42ff3656ea as build
+FROM alpine/git:v2.36.2@sha256:3ad0f6025feea6c01f552e467989a79a057176c06a9f266de440be406dcf079b as build
 
 # renovate: datasource=github-tags depName=tribut/homeassistant-docker-venv versioning=loose
 ARG GIT_TAG_VERSION="v2.3"
@@ -7,7 +7,7 @@ ARG GIT_TAG_VERSION="v2.3"
 WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
-FROM homeassistant/home-assistant:2022.6@sha256:3e22509d56021a4f6344ffe093bac0c83dd9cb92f88ec4a5db6f398c126cf4ae
+FROM homeassistant/home-assistant:2022.9@sha256:13821043c6428b08a0a62273b68d76abb81bfc7bd387453f2ed8aa80de72d962
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://127.0.0.1:8123 || exit 1
 

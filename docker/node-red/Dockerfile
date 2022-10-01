@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM nodered/node-red:2.2.2-16-minimal@sha256:80d8994f7ae471ec68752d6e28955648427b88e904086089c771e0f715402fa4
+FROM nodered/node-red:3.0.2-16-minimal@sha256:020f81dfcfffc31dd737035575dc718ed8b39e8902adf5dc1dd0b046e74832c1
 
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
 ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.4.3
