@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 # this is strictly necessary to stop the service since we shut down the instance afterwards anyways;
