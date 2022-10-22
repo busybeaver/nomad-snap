@@ -57,6 +57,8 @@ jobs:
           echo "{snap_file}={/tmp/package.snap}" >> "$GITHUB_OUTPUT"
           echo "{snap_artifact_name}={tmp_{0}.snap}" >> "$GITHUB_OUTPUT"
 
+          cat "$GITHUB_OUTPUT"
+
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       snap_working_dir: ${{ steps.set_matrix.outputs.snap_working_dir }}
