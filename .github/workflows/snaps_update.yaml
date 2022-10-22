@@ -31,8 +31,8 @@ jobs:
       - name: Build Matrix - Setup
         id: set_matrix
         run: |
-          echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
-          echo "::set-output name=snap_working_dir::./snaps"
+          echo "{matrix}={$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')}" >> "$GITHUB_OUTPUT"
+          echo "{snap_working_dir}={./snaps}" >> "$GITHUB_OUTPUT"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
@@ -66,7 +66,7 @@ jobs:
 #      - name: Python - Get pip Cache Dir
 #        id: python_pip_cache_dir
 #        run: |
-#          echo "::set-output name=dir::$(pip cache dir)"
+#          echo "{dir}={$(pip cache dir)}" >> "$GITHUB_OUTPUT"
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
@@ -91,10 +91,10 @@ jobs:
           GIT_ORG="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).owner)')"
           GIT_REPO="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).repo)')"
 
-          echo "::set-output name=used_version::$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)"
-          echo "::set-output name=source_git_url::$GIT_REPO_URL"
-          echo "::set-output name=source_git_org::$GIT_ORG"
-          echo "::set-output name=source_git_repo::$GIT_REPO"
+          echo "{used_version}={$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)}" >> "$GITHUB_OUTPUT"
+          echo "{source_git_url}={${GIT_REPO_URL}}" >> "$GITHUB_OUTPUT"
+          echo "{source_git_org}={${GIT_ORG}}" >> "$GITHUB_OUTPUT"
+          echo "{source_git_repo}={${GIT_REPO}}" >> "$GITHUB_OUTPUT"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Latest Release Version
@@ -121,10 +121,10 @@ jobs:
           if [[ "$SEMVER_COMPARE" == "-1" ]]; then
             echo "Newer version available, going to update the snapcraft.yaml file to version $LATEST_VERSION and create/update the PR."
             yq eval --no-colors --exit-status --inplace '.version = strenv(LATEST_VERSION)' snapcraft.yaml
-            echo "::set-output name=version_updated::true"
+            echo "{version_updated}={true}" >> "$GITHUB_OUTPUT"
           else
             echo "No newer version available. Will do nothing and stay on version $USED_VERSION"
-            echo "::set-output name=version_updated::false"
+            echo "{version_updated}={false}" >> "$GITHUB_OUTPUT"
           fi
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
