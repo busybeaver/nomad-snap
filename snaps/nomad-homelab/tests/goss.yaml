@@ -32,7 +32,6 @@ command:
     exec: "sudo snap logs {{.Env.SERVICE_NAME}}"
     exit-status: 0
     stdout:
-      - started client
       - election won
       - cluster leadership acquired
       - node registration complete
