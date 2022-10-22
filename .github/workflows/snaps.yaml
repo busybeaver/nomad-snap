@@ -159,7 +159,7 @@ jobs:
           SETUP_FILE=./setup.sh
           if test -f "$SETUP_FILE"; then
             echo "$SETUP_FILE exists. Going to run setup:"
-            sh ./$SETUP_FILE
+            bash ./$SETUP_FILE
           else
             echo "$SETUP_FILE does not exist. Skip setup."
           fi
@@ -193,7 +193,7 @@ jobs:
           TEARDOWN_FILE=./teardown.sh
           if test -f "$TEARDOWN_FILE"; then
             echo "$TEARDOWN_FILE exists. Going to run service-specific teardown:"
-            sh ./$TEARDOWN_FILE
+            bash ./$TEARDOWN_FILE
           else
             echo "$TEARDOWN_FILE does not exist. Skip service-specific teardown."
           fi
