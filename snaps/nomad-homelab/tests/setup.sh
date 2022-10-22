@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 cd "/var/snap/${SERVICE_NAME}/current/" || exit 1
