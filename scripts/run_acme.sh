@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker

@@ -1,4 +1,7 @@
-#! /bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 # NEWLY ADDED BACKUP FUNCTIONALITY IS NOT FULLY TESTED YET, USE WITH CARE, ESPECIALLY DELETION
@@ -49,4 +52,4 @@ fi
 
 echo "Made these changes:"
 
-diff /usr/syno/share/nginx/ $CURRENT_BACKUP_DIR 2>&1 | tee $CURRENT_BACKUP_DIR/changes.log
+diff /usr/syno/share/nginx/ "$CURRENT_BACKUP_DIR" 2>&1 | tee "$CURRENT_BACKUP_DIR/changes.log"
