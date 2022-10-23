@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -59,7 +59,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
 
       - name: yq - Setup
         id: yq_setup
@@ -72,7 +72,7 @@ jobs:
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
-        uses: actions/cache@1c73980b09e7aea7201f325a7aa3ad00beddcdda # tag=v3
+        uses: actions/cache@9b0c1fce7a93df8e3bb8926b0d6e9d89e92f20a7 # tag=v3.0.11
         with:
 #          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
           path: ~/.cache/pip
@@ -142,7 +142,7 @@ jobs:
 
       - name: GitHub - Setup GPG Keys
         id: github_setup_gpg
-        uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # tag=v5
+        uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # tag=v5.2.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
