@@ -26,4 +26,12 @@
       ]
     }
   ],
+  "packageRules": [
+    {
+      // until the repology bug is fixed: https://github.com/renovatebot/renovate/issues/18144
+      "description": "Disable repology datasource",
+      "matchDatasources": [ "repology" ],
+      "enabled": false
+    },
+  ],
 }
