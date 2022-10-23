@@ -63,7 +63,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@9b6961875e10b058aeb482f263f26ca0f6b18eb8 # tag=v4.27.5
+        uses: mikefarah/yq@1f0881fb5faf371694bfa108753cda0b824f5037 # tag=v4.28.2
 
 #      - name: Python - Get pip Cache Dir
 #        id: python_pip_cache_dir
@@ -134,7 +134,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@f717b5ecd4534d3c4df4ce9b5c1c2214f0f7cd06 # tag=v1.6.0
+        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
@@ -142,7 +142,7 @@ jobs:
 
       - name: GitHub - Setup GPG Keys
         id: github_setup_gpg
-        uses: crazy-max/ghaction-import-gpg@c8bb57c57e8df1be8c73ff3d59deab1dbc00e0d1 # tag=v5
+        uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # tag=v5
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -152,7 +152,7 @@ jobs:
 
       - name: GitHub - Create Pull Request
         id: github_create_pr
-        uses: peter-evans/create-pull-request@671dc9c9e0c2d73f07fa45a3eb0220e1622f0c5f # tag=v4.1.3
+        uses: peter-evans/create-pull-request@b4d51739f96fca8047ad065eccef63442d8e99f7 # tag=v4.2.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           token: ${{ steps.github_generate_app_token.outputs.token }}
