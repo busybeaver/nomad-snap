@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM caddy:2.6.1-builder-alpine@sha256:fae95a8a86dc6c6677e37545b20c99a15dc9d15eb1d1a9d7940c9312be191a82 AS build
+FROM caddy:2.6.2-builder-alpine@sha256:9aec93339ba95d1947f4d3af345ed21884cf398906333c5a2a9482830d1cf64f AS build
 
 RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare \
@@ -7,7 +7,7 @@ RUN xcaddy build \
     --with github.com/hslatman/caddy-crowdsec-bouncer \
     --with github.com/caddyserver/transform-encoder
 
-FROM caddy:2.6.1-alpine@sha256:75d2e29d0c3ec9aa78e640c022d5afec48c2c8ccefe0f956280f66bcced7cceb
+FROM caddy:2.6.2-alpine@sha256:717b9f9288c8cf324581fcb833cee05af3e67f7bafff34a54122289a894975f7
 
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
