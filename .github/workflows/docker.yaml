@@ -170,7 +170,7 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
@@ -311,7 +311,7 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # tag=v3
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
@@ -377,7 +377,7 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # tag=v3
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
