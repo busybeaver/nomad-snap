@@ -56,7 +56,7 @@ jobs:
             echo "snap_working_dir=./snaps"
             echo "snap_dir=/tmp"
             echo "snap_file=/tmp/package.snap"
-            echo "snap_artifact_name=tmp_{0}.snap"
+            echo "snap_artifact_name=tmp_snaps_{0}"
           } >> "$GITHUB_OUTPUT"
 
     outputs:
@@ -100,19 +100,35 @@ jobs:
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
-      - name: GitHub - Move Snap Artifact
-        id: move_artifact
-        run: |
-          ls -la ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }} | grep "snap"
-          mv ${{ steps.snapcraft_build.outputs.snap }} ${{ needs.matrix_setup.outputs.snap_file }}
-
       - name: GitHub - Upload Snap Artifact
         id: github_upload_snap
         uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # tag=v3.1.1
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.snap_file }}
+          path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/*.snap
           retention-days: 1
+
+      - name: yq - Setup
+        id: yq_setup
+        uses: mikefarah/yq@1f0881fb5faf371694bfa108753cda0b824f5037 # tag=v4.28.2
+
+      - name: Snapcraft - Get Snap Build Information
+        id: snapcraft_build_information
+        run: |
+          USED_VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
+          USED_ARCH=$(uname -m)
+
+          {
+            echo "used_version=${USED_VERSION}"
+            echo "used_arch=${USED_ARCH}""
+            echo "used_snap=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/${{ matrix.package }}_${USED_VERSION}_${USED_ARCH}.snap"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+    outputs:
+      used_version: ${{ steps.snapcraft_build_information.outputs.used_version }}
+      used_arch: ${{ steps.snapcraft_build_information.outputs.used_arch }}
+      used_snap: ${{ steps.snapcraft_build_information.outputs.used_snap }}
 
   snapcraft_test:
     name: 'Install and Test'
@@ -148,6 +164,10 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
+          ls -la ${{ needs.matrix_setup.outputs.snap_dir }}
+          ls -la ${{steps.github_download.outputs.download-path}}
+          echo ${{ needs.snapcraft_build.outputs.used_snap }}
+
           TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
