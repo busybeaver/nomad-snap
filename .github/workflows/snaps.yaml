@@ -55,7 +55,6 @@ jobs:
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
             echo "snap_working_dir=./snaps"
             echo "snap_dir=/tmp"
-            echo "snap_file=/tmp/package.snap"
             echo "snap_artifact_name=tmp_snaps_{0}"
           } >> "$GITHUB_OUTPUT"
 
@@ -63,7 +62,6 @@ jobs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       snap_working_dir: ${{ steps.set_matrix.outputs.snap_working_dir }}
       snap_dir: ${{ steps.set_matrix.outputs.snap_dir }}
-      snap_file: ${{ steps.set_matrix.outputs.snap_file }}
       snap_artifact_name: ${{ steps.set_matrix.outputs.snap_artifact_name }}
 
   snapcraft_build:
@@ -108,28 +106,6 @@ jobs:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/*.snap
           retention-days: 1
 
-      - name: yq - Setup
-        id: yq_setup
-        uses: mikefarah/yq@1f0881fb5faf371694bfa108753cda0b824f5037 # tag=v4.28.2
-
-      - name: Snapcraft - Get Snap Build Information
-        id: snapcraft_build_information
-        run: |
-          USED_VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
-          USED_ARCH=$(uname -m)
-
-          {
-            echo "used_version=${USED_VERSION}"
-            echo "used_arch=${USED_ARCH}"
-            echo "used_snap=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/${{ matrix.package }}_${USED_VERSION}_${USED_ARCH}.snap"
-          } >> "$GITHUB_OUTPUT"
-        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
-
-    outputs:
-      used_version: ${{ steps.snapcraft_build_information.outputs.used_version }}
-      used_arch: ${{ steps.snapcraft_build_information.outputs.used_arch }}
-      used_snap: ${{ steps.snapcraft_build_information.outputs.used_snap }}
-
   snapcraft_test:
     name: 'Install and Test'
     needs: [matrix_setup, snapcraft_build]
@@ -159,14 +135,36 @@ jobs:
         uses: actions/download-artifact@9782bd6a9848b53b110e712e20e42d89988822b7 # tag=v3.0.1
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.snap_dir }}
+
+      - name: yq - Setup
+        id: yq_setup
+        uses: mikefarah/yq@1f0881fb5faf371694bfa108753cda0b824f5037 # tag=v4.28.2
+
+      - name: Snapcraft - Get Snap Build Information
+        id: snapcraft_build_information
+        run: |
+          ls -la ${{ steps.github_download.outputs.download-path }}/
+          echo "---"
+          echo ${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${ARCH}.snap
+          echo "+++"
+
+          NAME=$(yq eval --no-colors --exit-status '.name' snapcraft.yaml)
+          VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
+          ARCH=$(uname -m)
+
+          {
+            echo "version=${VERSION}"
+            echo "arch=${ARCH}"
+            echo "snap_file=${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${ARCH}.snap"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
           ls -la ${{ needs.matrix_setup.outputs.snap_dir }}
-          ls -la ${{steps.github_download.outputs.download-path}}
-          echo ${{ needs.snapcraft_build.outputs.used_snap }}
+          ls -la ${{ steps.github_download.outputs.download-path }}
+          echo ${{ needs.snapcraft_build.outputs[format('{0}', matrix.package)] }}
 
           TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/tests
           {
@@ -180,7 +178,7 @@ jobs:
         id: snapcraft_setup
         run: |
           echo "Install snap package:"
-          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
+          sudo snap install --color=never --dangerous ${{ steps.snapcraft_build_information.outputs.snap_file }}
           SETUP_FILE=./setup.sh
           if test -f "$SETUP_FILE"; then
             echo "$SETUP_FILE exists. Going to run setup:"
@@ -277,6 +275,7 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+        arch: ['amd64', 'arm64'] # as defined in the snapcraft.yaml files
 
     defaults:
       run:
