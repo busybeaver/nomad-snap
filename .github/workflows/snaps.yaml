@@ -120,7 +120,7 @@ jobs:
 
           {
             echo "used_version=${USED_VERSION}"
-            echo "used_arch=${USED_ARCH}""
+            echo "used_arch=${USED_ARCH}"
             echo "used_snap=${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/${{ matrix.package }}_${USED_VERSION}_${USED_ARCH}.snap"
           } >> "$GITHUB_OUTPUT"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
