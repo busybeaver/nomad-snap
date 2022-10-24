@@ -18,8 +18,9 @@ parts:
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
     build-packages:
       - gcc
+      # - golang-go
     build-snaps:
-      - go
+      - go/latest/stable
   nomad-wrapper:
     plugin: dump
     source-type: local
@@ -29,7 +30,7 @@ parts:
       - daemon.sh
     override-prime: |
       set -x
-      snapcraftctl prime
+      craftctl default
       chmod +x daemon.sh
   build-env:
     plugin: dump
@@ -41,7 +42,7 @@ parts:
       - .ci.env
     override-stage: |
       set -x
-      snapcraftctl stage
+      craftctl default
 
       CI_ENV_FILE=".ci.env"
       if test -f "$CI_ENV_FILE"; then
@@ -50,8 +51,8 @@ parts:
         echo "Running on branch: $CI_ENV_GITHUB_REF"
         if [ -n "$CI_ENV_GITHUB_REF" ] && [ "$CI_ENV_GITHUB_REF" != "refs/heads/main" ]; then
           echo "Running on non-default branch, appending the short git rev to the version"
-          snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-          snapcraftctl set-grade "devel"
+          craftctl set version="$(craftctl get version)-$(git rev-parse --short HEAD)"
+          craftctl set grade="devel"
         fi
       else
           echo "$CI_ENV_FILE does not exist. Skip setting up properties based on CI environment."
