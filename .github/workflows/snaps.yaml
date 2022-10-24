@@ -103,6 +103,7 @@ jobs:
       - name: GitHub - Move Snap Artifact
         id: move_artifact
         run: |
+          ls -la ${{ steps.snapcraft_build.outputs.snap }}
           mv ${{ steps.snapcraft_build.outputs.snap }} ${{ needs.matrix_setup.outputs.snap_file }}
 
       - name: GitHub - Upload Snap Artifact
