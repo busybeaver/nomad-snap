@@ -4,19 +4,22 @@ summary: HomeLab Consul - Service Mesh for any runtime or cloud
 description: HomeLab Consul - Consul automates networking for simple and secure application delivery.
 grade: stable
 confinement: strict
-base: core20
+base: core22
 architectures:
-  - build-on: [amd64, arm64]
-    run-on: [amd64, arm64]
+  - build-on: amd64
+    run-on: amd64
+  - build-on: arm64
+    run-on: arm64
 parts:
   consul:
     plugin: go
-    go-channel: latest/stable
     source-type: git
     source: https://github.com/hashicorp/consul.git
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
     build-packages:
       - gcc
+    build-snaps:
+      - go
   consul-wrapper:
     plugin: dump
     source-type: local

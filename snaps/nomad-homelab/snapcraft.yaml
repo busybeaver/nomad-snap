@@ -4,19 +4,22 @@ summary: HomeLab Nomad - Workload Orchestration Made Easy
 description: HomeLab Nomad - A simple and flexible workload orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
 grade: stable
 confinement: strict
-base: core20
+base: core22
 architectures:
-  - build-on: [amd64, arm64]
-    run-on: [amd64, arm64]
+  - build-on: amd64
+    run-on: amd64
+  - build-on: arm64
+    run-on: arm64
 parts:
   nomad:
     plugin: go
-    go-channel: latest/stable
     source-type: git
     source: https://github.com/hashicorp/nomad.git
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
     build-packages:
       - gcc
+    build-snaps:
+      - go
   nomad-wrapper:
     plugin: dump
     source-type: local
