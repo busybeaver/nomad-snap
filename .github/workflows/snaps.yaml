@@ -261,9 +261,46 @@ jobs:
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
           comment_mode: off
 
+  matrix_arch_setup:
+    name: 'Setup Publish Matrix'
+    needs: [matrix_setup]
+    runs-on: ubuntu-latest
+
+    # if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && !github.event.act
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: './snaps/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: |
+          ARCH_LIST=$(yq eval --no-colors --exit-status --output-format=json '.architectures.0.build-on' snapcraft.yaml)
+
+          {
+            echo "arch_list=${ARCH_LIST}"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+    outputs:
+      arch_list: ${{ steps.set_matrix.outputs.arch_list }}
+
   snapcraft_publish:
     name: 'Publish'
-    needs: [matrix_setup, snapcraft_test, snapcraft_build]
+    needs: [matrix_setup, snapcraft_test, snapcraft_build, matrix_arch_setup]
     runs-on: ubuntu-latest
 
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && !github.event.act
@@ -271,7 +308,7 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
-        arch: ['amd64', 'arm64'] # as defined in the snapcraft.yaml files
+        arch: ${{ fromJson(needs.matrix_arch_setup.outputs.arch_list) }}
 
     defaults:
       run:
@@ -288,6 +325,18 @@ jobs:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
+      - name: Snapcraft - Get Snap Build Information
+        id: snapcraft_build_information
+        run: |
+          NAME=$(yq eval --no-colors --exit-status '.name' snapcraft.yaml)
+          VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
+
+          {
+            echo "version=${VERSION}"
+            echo "snap_file=${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${{ matrix.arch }}.snap"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
         uses: snapcore/action-publish@0a8d537ae06f4a292e8b4ef1084cd5631b3c6871 # tag=v1.1.1
@@ -295,7 +344,7 @@ jobs:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
           store_login: ${{ secrets.SNAPCRAFT_STORE_LOGIN }}
-          snap: ${{ needs.matrix_setup.outputs.snap_file }}
+          snap: ${{ steps.snapcraft_build_information.outputs.snap_file }}
           # https://github.community/t/do-expressions-support-ternary-operators-to-change-their-returned-value/18114/3
           # The condition evaluates to a boolean, which is implicitly cast to a number and used as array index, where false = 0 and true = 1.
           release: ${{ fromJSON('["edge", "stable"]')[github.ref == format('refs/heads/{0}', github.event.repository.default_branch)] }}
