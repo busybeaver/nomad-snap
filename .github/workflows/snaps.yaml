@@ -288,7 +288,7 @@ jobs:
       - name: Build Matrix - Setup
         id: set_matrix
         run: |
-          ARCH_LIST=$(yq eval --no-colors --exit-status --output-format=json '.architectures.0.build-on' snapcraft.yaml)
+          ARCH_LIST=$(yq eval --no-colors --exit-status --output-format=json --indent=0 '.architectures.0.build-on' snapcraft.yaml)
 
           {
             echo "arch_list=${ARCH_LIST}"
