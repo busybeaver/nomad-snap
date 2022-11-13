@@ -40,6 +40,10 @@ parts:
       # files in the stage phase/area are only available during the build of the snap package,
       # but not in the final package itself
       - .ci.env
+    override-pull: |
+      craftctl default
+      echo "override-pull"
+      cat .ci.env
     override-stage: |
       set -x
       craftctl default
