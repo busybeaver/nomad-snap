@@ -36,7 +36,7 @@ parts:
     plugin: dump
     source-type: local
     source: ./
-    override-pull: |
+    override-pull: | # craftctl set version="$(craftctl get version)-$CI_ENV_GIT_COMMIT"
       set -x
       craftctl default
 
@@ -48,7 +48,6 @@ parts:
         if [ -n "$CI_ENV_GITHUB_REF" ] && [ "$CI_ENV_GITHUB_REF" != "refs/heads/main" ]; then
           echo "Running on non-default branch, appending the short git rev to the version"
           snapcraftctl set-version "$(craftctl get version)-$CI_ENV_GIT_COMMIT"
-          # craftctl set version="$(craftctl get version)-$CI_ENV_GIT_COMMIT"
           craftctl set grade="devel"
         fi
       else
