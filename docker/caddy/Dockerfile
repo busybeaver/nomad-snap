@@ -7,7 +7,7 @@ RUN xcaddy build \
     --with github.com/hslatman/caddy-crowdsec-bouncer \
     --with github.com/caddyserver/transform-encoder
 
-FROM caddy:2.6.2-alpine@sha256:717b9f9288c8cf324581fcb833cee05af3e67f7bafff34a54122289a894975f7
+FROM caddy:2.6.2-alpine@sha256:25a0097607868fb05a89a5ab9fea2f2ea4cecdc89d887d7dcee8c778a21b9e1f
 
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
