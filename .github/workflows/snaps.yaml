@@ -189,7 +189,7 @@ jobs:
           SERVICE_NAME: ${{ matrix.package }}
 
       - name: Goss - Setup
-        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
+        uses: e1himself/goss-installation-action@3b8952d233bcc9bb8e901ec819d8cde6daa7f546 # v1.1.0
         with:
           version: ${{ env.GOSS_VERSION }}
 
