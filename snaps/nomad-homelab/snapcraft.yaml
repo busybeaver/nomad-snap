@@ -5,11 +5,11 @@ description: HomeLab Nomad - A simple and flexible workload orchestrator to depl
 grade: stable
 confinement: strict
 base: core22
-# architectures:
-#   - build-on: [amd64, arm64]
-#     build-for: amd64
-#   - build-on: [amd64, arm64]
-#     build-for: arm64
+architectures:
+  - build-on: [amd64, arm64]
+    build-for: amd64
+  - build-on: [amd64, arm64]
+    build-for: arm64
 parts:
   # nomad:
   #   plugin: go
