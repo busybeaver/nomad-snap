@@ -41,7 +41,7 @@ parts:
       gpg --verify nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
 
       # Verify the SHASUM matches the archive
-      shasum -a 256 -c nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+      shasum --ignore-missing --algorithm 256 --check nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
 
       unzip nomad_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
     prime:

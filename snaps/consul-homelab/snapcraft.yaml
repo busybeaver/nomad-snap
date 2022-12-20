@@ -43,7 +43,7 @@ parts:
       gpg --verify consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
 
       # Verify the SHASUM matches the archive
-      shasum -a 256 -c consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+      shasum --ignore-missing --algorithm 256 --check consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
 
       unzip consul_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
     prime:
