@@ -26,7 +26,10 @@ parts:
     source: ./
     override-pull: |
       set -x
-      echo "arch is: ${SNAPCRAFT_ARCH_TRIPLET%%-*}"
+      craftctl default
+      
+      echo "foo"
+      printenv
 
       # Import the public key, see: https://www.hashicorp.com/security
       gpg --import hashicorp.asc
