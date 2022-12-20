@@ -64,14 +64,50 @@ jobs:
       snap_dir: ${{ steps.set_matrix.outputs.snap_dir }}
       snap_artifact_name: ${{ steps.set_matrix.outputs.snap_artifact_name }}
 
-  snapcraft_build:
-    name: 'Build'
+  matrix_arch_setup:
+    name: 'Setup Arch Matrix'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: './snaps/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: |
+          ARCH_LIST=$(yq eval --no-colors --exit-status --output-format=json --indent=0 '.architectures.0.build-on' snapcraft.yaml)
+
+          {
+            echo "arch_list=${ARCH_LIST}"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+    outputs:
+      arch_list: ${{ steps.set_matrix.outputs.arch_list }}
+
+  snapcraft_build:
+    name: 'Build'
+    needs: [matrix_setup, matrix_arch_setup]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+        arch: ${{ fromJson(needs.matrix_arch_setup.outputs.arch_list) }}
 
     defaults:
       run:
@@ -99,6 +135,7 @@ jobs:
         uses: snapcore/action-build@3457752ec9b1c79a8290b5167fce2d14df0997c1 # v1.1.2
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+          snapcraft-args: --build-for=${{ matrix.arch }}
 
       - name: GitHub - Upload Snap Artifact
         id: github_upload_snap
@@ -140,7 +177,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@42e7c3cdf08ccd664875d7ac685c7414b61962be # v4.30.5
+        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
@@ -263,44 +300,9 @@ jobs:
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
           comment_mode: off
 
-  matrix_arch_setup:
-    name: 'Setup Publish Matrix'
-    needs: [matrix_setup]
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: './snaps/'
-
-    permissions:
-      contents: read
-
-    steps:
-      - name: Git - Checkout
-        id: git_checkout
-        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
-
-      - name: Build Matrix - Setup
-        id: set_matrix
-        run: |
-          ARCH_LIST=$(yq eval --no-colors --exit-status --output-format=json --indent=0 '.architectures.0.build-on' snapcraft.yaml)
-
-          {
-            echo "arch_list=${ARCH_LIST}"
-          } >> "$GITHUB_OUTPUT"
-        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
-
-    outputs:
-      arch_list: ${{ steps.set_matrix.outputs.arch_list }}
-
   snapcraft_publish:
     name: 'Publish'
-    needs: [matrix_setup, snapcraft_test, snapcraft_build, matrix_arch_setup]
+    needs: [matrix_setup, matrix_arch_setup, snapcraft_test, snapcraft_build]
     runs-on: ubuntu-latest
 
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && !github.event.act
