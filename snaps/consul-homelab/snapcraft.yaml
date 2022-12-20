@@ -11,16 +11,46 @@ architectures:
   - build-on: [amd64, arm64]
     build-for: arm64
 parts:
+  # consul:
+  #   plugin: go
+  #   source-type: git
+  #   source: https://github.com/hashicorp/consul.git
+  #   source-tag: v$SNAPCRAFT_PROJECT_VERSION
+  #   build-packages:
+  #     - gcc
+  #     # - golang-go
+  #   build-snaps:
+  #     - go/latest/stable
   consul:
-    plugin: go
-    source-type: git
-    source: https://github.com/hashicorp/consul.git
-    source-tag: v$SNAPCRAFT_PROJECT_VERSION
-    build-packages:
-      - gcc
-      # - golang-go
-    build-snaps:
-      - go/latest/stable
+    plugin: dump
+    source: ./
+    override-pull: |
+      echo "arch is: ${SNAPCRAFT_ARCH_TRIPLET%%-*}"
+
+      # Import the public key, see: https://www.hashicorp.com/security
+      gpg --recv-keys 72D7468F
+
+      # Download the archive and signature files
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_arm64.zip
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig
+
+      # Verify the signature file is untampered
+      gpg --verify consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Verify the SHASUM matches the archive
+      shasum -a 256 -c consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      unzip consul_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
+    prime:
+      # files in the prime phase/area are available in the final snap package
+      - consul
+    override-prime: |
+      set -x
+      craftctl default
+      mv consul bin/consul
+      chmod +x bin/consul
   consul-wrapper:
     plugin: dump
     source-type: local
