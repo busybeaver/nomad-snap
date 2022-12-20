@@ -177,7 +177,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@42e7c3cdf08ccd664875d7ac685c7414b61962be # v4.30.5
+        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
@@ -232,7 +232,7 @@ jobs:
 
       - name: GitHub - Check for Test File Existence
         id: check_test_file
-        uses: andstor/file-existence-action@f02338908d150e00a4b8bebc2dad18bd9e5229b0 # tag=v1.1.0
+        uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2.0.0
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
