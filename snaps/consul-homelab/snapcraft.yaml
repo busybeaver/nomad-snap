@@ -1,5 +1,5 @@
 name: consul-homelab
-version: '1.13.3'
+version: '1.14.3'
 summary: HomeLab Consul - Service Mesh for any runtime or cloud
 description: HomeLab Consul - Consul automates networking for simple and secure application delivery.
 grade: stable
