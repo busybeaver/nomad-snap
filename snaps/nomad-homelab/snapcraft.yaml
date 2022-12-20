@@ -27,7 +27,7 @@ parts:
     override-pull: |
       set -x
       craftctl default
-      
+
       echo "foo"
       printenv
 
@@ -46,6 +46,8 @@ parts:
       # Verify the SHASUM matches the archive
       shasum --ignore-missing --algorithm 256 --check nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
 
+      # unzip packages (GitHub Actions runner use Ubuntu)
+      apt-get install unzip --yes
       unzip nomad_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
     prime:
       # files in the prime phase/area are available in the final snap package
