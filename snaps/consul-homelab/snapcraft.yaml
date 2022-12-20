@@ -1,5 +1,5 @@
 name: consul-homelab
-version: '1.13.3'
+version: '1.14.3'
 summary: HomeLab Consul - Service Mesh for any runtime or cloud
 description: HomeLab Consul - Consul automates networking for simple and secure application delivery.
 grade: stable
@@ -12,15 +12,39 @@ architectures:
     build-for: arm64
 parts:
   consul:
-    plugin: go
-    source-type: git
-    source: https://github.com/hashicorp/consul.git
-    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    plugin: dump
+    source: ./
+    source-type: local
     build-packages:
-      - gcc
-      # - golang-go
-    build-snaps:
-      - go/latest/stable
+      - unzip
+    override-pull: |
+      set -x
+      craftctl default
+
+      # Import the public key, see: https://www.hashicorp.com/security
+      gpg --import hashicorp.asc
+
+      # Download the archive and signature files
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_${CRAFT_TARGET_ARCH}.zip
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig
+
+      # Verify the signature file is untampered
+      gpg --verify consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Verify the SHASUM matches the archive
+      shasum --ignore-missing --algorithm 256 --check consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Unpack binary file
+      unzip consul_${SNAPCRAFT_PROJECT_VERSION}_linux_${CRAFT_TARGET_ARCH}.zip
+    prime:
+      # files in the prime phase/area are available in the final snap package
+      - consul
+    override-prime: |
+      set -x
+      craftctl default
+      mv consul bin/consul
+      chmod +x bin/consul
   consul-wrapper:
     plugin: dump
     source-type: local
