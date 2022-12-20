@@ -136,7 +136,7 @@ jobs:
         uses: snapcore/action-build@3457752ec9b1c79a8290b5167fce2d14df0997c1 # v1.1.2
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
-          snapcraft-args: --build-for= ${{ matrix.arch }}
+          snapcraft-args: --build-for=${{ matrix.arch }}
         # env:
         #   SNAPCRAFT_BUILD_FOR: ${{ matrix.arch }}
 
