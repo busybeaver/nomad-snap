@@ -24,11 +24,14 @@ parts:
   consul:
     plugin: dump
     source: ./
+    source-type: local
     override-pull: |
+      set -x
+      craftctl default
       echo "arch is: ${SNAPCRAFT_ARCH_TRIPLET%%-*}"
 
       # Import the public key, see: https://www.hashicorp.com/security
-      gpg --recv-keys 72D7468F
+      gpg --import hashicorp.asc
 
       # Download the archive and signature files
       curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip

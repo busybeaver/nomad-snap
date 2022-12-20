@@ -65,7 +65,7 @@ jobs:
       snap_artifact_name: ${{ steps.set_matrix.outputs.snap_artifact_name }}
 
   matrix_arch_setup:
-    name: 'Setup Publish Matrix'
+    name: 'Setup Arch Matrix'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
 

@@ -25,10 +25,11 @@ parts:
     plugin: dump
     source: ./
     override-pull: |
+      set -x
       echo "arch is: ${SNAPCRAFT_ARCH_TRIPLET%%-*}"
 
       # Import the public key, see: https://www.hashicorp.com/security
-      gpg --recv-keys 72D7468F
+      gpg --import hashicorp.asc
 
       # Download the archive and signature files
       curl -Os https://releases.hashicorp.com/nomad/${SNAPCRAFT_PROJECT_VERSION}/nomad_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
