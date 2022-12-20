@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -119,7 +119,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
 
       - name: Snapcraft - Set up Build Environment
         id: snapcraft_setup
@@ -132,7 +132,7 @@ jobs:
 
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
-        uses: snapcore/action-build@989705ff968611277779118c9990c34af832840d # tag=v1.1.1
+        uses: snapcore/action-build@3457752ec9b1c79a8290b5167fce2d14df0997c1 # v1.1.2
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
           snapcraft-args: --target-arch ${{ matrix.arch }}
@@ -167,7 +167,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3.1.0
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
 
       - name: GitHub - Download Snap Artifact
         id: github_download
@@ -177,7 +177,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@1f0881fb5faf371694bfa108753cda0b824f5037 # tag=v4.28.2
+        uses: mikefarah/yq@42e7c3cdf08ccd664875d7ac685c7414b61962be # v4.30.5
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
@@ -227,7 +227,7 @@ jobs:
           SERVICE_NAME: ${{ matrix.package }}
 
       - name: Goss - Setup
-        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
+        uses: e1himself/goss-installation-action@3b8952d233bcc9bb8e901ec819d8cde6daa7f546 # v1.1.0
         with:
           version: ${{ env.GOSS_VERSION }}
 
@@ -290,7 +290,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@713caf1dd6f1c273144546ed2d79ca24a01f4623 # tag=v2.1.0
+        uses: EnricoMi/publish-unit-test-result-action@46ab8d49369d898e381a607119161771bc65c2a6 # v2.2.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
