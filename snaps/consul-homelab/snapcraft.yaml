@@ -11,16 +11,6 @@ architectures:
   - build-on: [amd64, arm64]
     build-for: arm64
 parts:
-  # consul:
-  #   plugin: go
-  #   source-type: git
-  #   source: https://github.com/hashicorp/consul.git
-  #   source-tag: v$SNAPCRAFT_PROJECT_VERSION
-  #   build-packages:
-  #     - gcc
-  #     # - golang-go
-  #   build-snaps:
-  #     - go/latest/stable
   consul:
     plugin: dump
     source: ./
@@ -29,15 +19,17 @@ parts:
       set -x
       craftctl default
 
-      echo "foo"
-      printenv
+      ARCH=${CRAFT_TARGET_ARCH}
+      if [ "${ARCH}" = "x86_64" ]
+      then
+        ARCH="amd64"
+      fi
 
       # Import the public key, see: https://www.hashicorp.com/security
       gpg --import hashicorp.asc
 
       # Download the archive and signature files
-      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
-      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_arm64.zip
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_${ARCH}.zip
       curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
       curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig
 
@@ -49,7 +41,7 @@ parts:
 
       # unzip packages (GitHub Actions runner use Ubuntu)
       apt-get install unzip --yes
-      unzip consul_${SNAPCRAFT_PROJECT_VERSION}_linux_amd64.zip
+      unzip consul_${SNAPCRAFT_PROJECT_VERSION}_linux_${ARCH}.zip
     prime:
       # files in the prime phase/area are available in the final snap package
       - consul
