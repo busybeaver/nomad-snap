@@ -177,7 +177,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@42e7c3cdf08ccd664875d7ac685c7414b61962be # v4.30.5
+        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
