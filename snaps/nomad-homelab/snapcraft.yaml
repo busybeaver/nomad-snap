@@ -81,7 +81,7 @@ plugs:
   sys-fs-cgroup:
     interface: system-files
     read:
-    - /sys/fs/cgroup/cgroup.controllers
+      - /sys/fs/cgroup/cgroup.controllers
 apps:
   nomad-homelab:
     command: bin/nomad

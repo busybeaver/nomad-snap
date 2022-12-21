@@ -28,7 +28,7 @@ client {
 # connect plugs that do not support auto-connect
 sudo snap connect "${SERVICE_NAME}:mount-observe" ":mount-observe"
 sudo snap connect "${SERVICE_NAME}:network-observe" ":network-observe"
-sudo snap connect "${SERVICE_NAME}:docker" ":docker"
+# sudo snap connect "${SERVICE_NAME}:docker" ":docker"
 sudo snap connect "${SERVICE_NAME}:sys-fs-cgroup"
 
 sudo snap connections "${SERVICE_NAME}"
