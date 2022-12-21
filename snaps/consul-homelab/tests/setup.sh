@@ -15,7 +15,10 @@ log_level = \"INFO\"
 datacenter = \"github_actions\"
 node_name = \"runner\"
 server = true
-bootstrap = true
+bootstrap_expect = 1
+ui_config {
+  enabled = false
+}
 " | sudo tee ./config/test.hcl
 
 sudo snap connections "${SERVICE_NAME}"
