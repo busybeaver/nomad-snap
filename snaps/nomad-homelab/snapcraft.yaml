@@ -77,15 +77,22 @@ parts:
       else
           echo "$CI_ENV_FILE does not exist. Skip setting up properties based on CI environment."
       fi
+plugs:
+  sys-fs-cgroup:
+    interface: system-files
+    read:
+    - /sys/fs/cgroup/cgroup.controllers
 apps:
   nomad-homelab:
     command: bin/nomad
     plugs:
       - network
       - network-bind
-      # all plugs below requires manual connect after installation
+      # all plugs below requires manual connect after installation (for an example, see the setup.sh file in the tests folder of this package)
       - network-observe # required to (read-only) access: /usr/sbin/ip
       - mount-observe # required to (read-only) access: /proc/self/mountinfo
+      - docker # start, stop, or manage Docker containers
+      - sys-fs-cgroup # required to (read-only) access: /sys/fs/cgroup/cgroup.controllers
   daemon:
     # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
     # command: bin/consul agent -config-dir=$SNAP_DATA/config/
@@ -101,6 +108,8 @@ apps:
     plugs:
       - network
       - network-bind
-      # all plugs below requires manual connect after installation
+      # all plugs below requires manual connect after installation (for an example, see the setup.sh file in the tests folder of this package)
       - network-observe # required to (read-only) access: /usr/sbin/ip
       - mount-observe # required to (read-only) access: /proc/self/mountinfo
+      - docker # start, stop, or manage Docker containers
+      - sys-fs-cgroup # required to (read-only) access: /sys/fs/cgroup/cgroup.controllers
