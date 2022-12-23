@@ -31,6 +31,10 @@ Docker images are pushed/published to GitHub packages (the ghcr.io registry) wit
 - A [Caddy](https://caddyserver.com/) server bundling multiple plugins and the possibility to run against port 80 and 443 as non-root user
 - A minimal act runner environment with Python 3 installed
 
+## Scripts
+
+Some scripts that automate frequently conducted tasks.
+
 ## Setup
 
 On macOS run the following command to install just:
