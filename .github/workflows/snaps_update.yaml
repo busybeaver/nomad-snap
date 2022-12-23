@@ -4,6 +4,14 @@ on:
   # run daily on midnight
   schedule:
     - cron: '0 0 * * *'
+  # run on pushes to main if snapcraft.yaml files changed
+  push:
+    branches:
+      - main
+    paths:
+      - snaps/**/snapcraft.yaml
+  # trigger manually if needed
+  workflow_dispatch:
 
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
