@@ -413,7 +413,7 @@ jobs:
 
       - name: Cosign - Setup
         id: cosign_setup
-        uses: sigstore/cosign-installer@v2.8.1
+        uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b # v2.8.1
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           cosign-release: ${{ env.COSIGN_VERSION }}
