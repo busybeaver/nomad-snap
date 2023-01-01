@@ -153,15 +153,15 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
-    env:
-      GOSS_VERSION: v0.3.16
-
     defaults:
       run:
         shell: bash
 
     permissions:
       contents: read
+
+    env:
+      GOSS_VERSION: v0.3.20
 
     steps:
       - name: Git - Checkout
@@ -205,6 +205,7 @@ jobs:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
 
       - name: Goss - Setup
+        id: goss_setup
         uses: e1himself/goss-installation-action@3b8952d233bcc9bb8e901ec819d8cde6daa7f546 # v1.1.0
         with:
           version: ${{ env.GOSS_VERSION }}
@@ -258,8 +259,8 @@ jobs:
 
       - name: GitHub - Upload Container Logs
         id: github_upload_logs
-        if: always()
         uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # tag=v3.1.1
+        if: always()
         with:
           name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
           path: ${{ steps.docker_teardown.outputs.container_logs }}
@@ -361,6 +362,9 @@ jobs:
       contents: read
       packages: write
 
+    env:
+      COSIGN_VERSION: v1.13.1
+
     steps:
       - name: Git - Checkout
         id: git_checkout
@@ -403,3 +407,20 @@ jobs:
         run: |
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+
+      - name: Cosign - Setup
+        id: cosign_setup
+        uses: sigstore/cosign-installer@v2.8.1
+        if: steps.git_changed_files.outputs.any_changed == 'true'
+        with:
+          cosign-release: ${{ env.COSIGN_VERSION }}
+
+      - name: Docker - Sign Artifact
+        id: docker_sign
+        if: steps.git_changed_files.outputs.any_changed == 'true'
+        run: |
+          cosign sign ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
+          cosign sign ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+        env:
+          # Sign the images with GitHub OIDC Token (currenly experimental)
+          COSIGN_EXPERIMENTAL: true
