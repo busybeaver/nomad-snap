@@ -43,7 +43,7 @@ jobs:
       - name: Build Matrix - Setup
         id: set_matrix
         run: |
-          IMAGE_NAME=${{ env.REGISTRY }}/${{ github.repository }}/{0}
+          IMAGE_NAME="${{ env.REGISTRY }}/${{ github.repository }}/{0}"
           {
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
             echo "image_name_latest=${IMAGE_NAME}:latest"
@@ -179,7 +179,7 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
-          TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests
+          TEST_WORKING_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests"
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
