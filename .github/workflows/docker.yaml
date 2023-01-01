@@ -46,7 +46,6 @@ jobs:
           IMAGE_NAME=${{ env.REGISTRY }}/${{ github.repository }}/{0}
           {
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
-            echo "image_name=${IMAGE_NAME}"
             echo "image_name_latest=${IMAGE_NAME}:latest"
             echo "image_name_git_tag=${IMAGE_NAME}:$(git rev-parse --short HEAD)"
             echo "docker_registry=${{ env.REGISTRY }}"
@@ -58,7 +57,6 @@ jobs:
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
-      image_name: ${{ steps.set_matrix.outputs.image_name }}
       image_name_latest: ${{ steps.set_matrix.outputs.image_name_latest }}
       image_name_git_tag: ${{ steps.set_matrix.outputs.image_name_git_tag }}
       docker_registry: ${{ steps.set_matrix.outputs.docker_registry }}
@@ -422,12 +420,12 @@ jobs:
         id: docker_sign
         if: steps.git_changed_files.outputs.any_changed == 'true'
         run: |
-          IMAGE_TAG=$(docker images --no-trunc --quiet ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }})
+          IMAGE=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }})
           cosign sign --key env://COSIGN_PRIVATE_KEY \
             -a "repo=${{ github.repository }}" \
             -a "workflow=${{ github.workflow }}" \
             -a "ref=${{ github.sha }}" \
-            ${{ format(needs.matrix_setup.outputs.image_name, matrix.package) }}@${IMAGE_TAG}
+            ${IMAGE}
         env:
           COSIGN_PRIVATE_KEY: ${{secrets.COSIGN_PRIVATE_KEY}}
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
