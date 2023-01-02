@@ -371,6 +371,7 @@ jobs:
         id: git_checkout
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
         with:
+          # required by tj-actions/changed-files
           fetch-depth: 2
 
       - name: Git - Get Changed Files
@@ -416,8 +417,8 @@ jobs:
         with:
           cosign-release: ${{ env.COSIGN_VERSION }}
 
-      - name: Docker - Sign Artifact
-        id: docker_sign
+      - name: Cosign - Sign Docker Artifact
+        id: cosign_sign
         if: steps.git_changed_files.outputs.any_changed == 'true'
         run: |
           IMAGE="$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }})"
@@ -427,5 +428,5 @@ jobs:
             -a "ref=${{ github.sha }}" \
             "${IMAGE}"
         env:
-          COSIGN_PRIVATE_KEY: ${{secrets.COSIGN_PRIVATE_KEY}}
-          COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
