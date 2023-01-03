@@ -20,5 +20,3 @@ RUN npm install --no-fund --no-package-lock --save-prod --save-exact \
 USER root
 RUN apk --update-cache --no-cache upgrade
 USER node-red
-
-# testing, changing the file for CI testing purposes!!!
