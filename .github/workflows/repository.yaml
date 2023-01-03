@@ -14,7 +14,7 @@ jobs:
   repository:
     # TODO: pin to a sha tag and update automatically:
     # https://github.com/renovatebot/renovate/issues/12212
-    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@b2bd62b96e3a80da62f4ec83a694adf23d68c1c3
+    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@main
     secrets:
       REPOSITORY_ASSISTANT_APP_ID: ${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}
       REPOSITORY_ASSISTANT_PRIVATE_KEY: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}
