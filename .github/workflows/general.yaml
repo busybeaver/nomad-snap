@@ -25,9 +25,7 @@ jobs:
       contents: read
       statuses: write
 
-    # TODO: pin to a sha tag and update automatically:
-    # https://github.com/renovatebot/renovate/issues/12212
-    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@main
+    uses: busybeaver/homelab-shared/.github/workflows/general.yaml@1.0.11
     with:
       lintTypescript: false
     secrets:
