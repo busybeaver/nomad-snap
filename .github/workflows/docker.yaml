@@ -139,7 +139,7 @@ jobs:
 
       - name: GitHub - Upload Image Artifact
         id: github_upload_image
-        uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # tag=v3.1.1
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_file }}
@@ -260,7 +260,7 @@ jobs:
 
       - name: GitHub - Upload Container Logs
         id: github_upload_logs
-        uses: actions/upload-artifact@83fd05a356d7e2593de66fc9913b3002723633cb # tag=v3.1.1
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         if: always()
         with:
           name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
