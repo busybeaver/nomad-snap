@@ -1,7 +1,7 @@
 name: 'Docker CI'
 
 on:
-  # run on pushes to main if docker related files were changed
+  # run on pushes to main
   push:
     branches:
       - main
@@ -38,15 +38,16 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Build Matrix - Setup
         id: set_matrix
         run: |
+          IMAGE_NAME="${{ env.REGISTRY }}/${{ github.repository }}/{0}"
           {
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
-            echo "image_name_latest=${{ env.REGISTRY }}/${{ github.repository }}/{0}:latest"
-            echo "image_name_git_tag=${{ env.REGISTRY }}/${{ github.repository }}/{0}:$(git rev-parse --short HEAD)"
+            echo "image_name_latest=${IMAGE_NAME}:latest"
+            echo "image_name_git_tag=${IMAGE_NAME}:$(git rev-parse --short HEAD)"
             echo "docker_registry=${{ env.REGISTRY }}"
             echo "docker_working_dir=./docker"
             echo "docker_image_dir=/tmp"
@@ -84,11 +85,11 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: SuperLinter - Lint Dockerfile
         id: superlinter_scan
-        uses: github/super-linter/slim@bb2d833b08b6c288608686672b93a8a4589cdc49 # tag=v4
+        uses: github/super-linter/slim@454ba4482ce2cd0c505bc592e83c06e1e37ade61 # v4.10.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -116,15 +117,15 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Docker - Set-Up Environment
         id: docker_setup
-        uses: docker/setup-buildx-action@dc7b9719a96d48369863986a06765841d7ea23f6 # tag=v2
+        uses: docker/setup-buildx-action@8c0edbc76e98fa90f69d9a2c020dcb50019dc325 # tag=v2.2.1
 
       - name: Docker - Build Artifact # but don't publish yet
         id: docker_build
-        uses: docker/build-push-action@c84f38281176d4c9cdb1626ffafcd6b3911b5d94 # tag=v3
+        uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5 # tag=v3.2.0
         with:
           context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
@@ -138,7 +139,7 @@ jobs:
 
       - name: GitHub - Upload Image Artifact
         id: github_upload_image
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_file }}
@@ -153,9 +154,6 @@ jobs:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
-    env:
-      GOSS_VERSION: v0.3.16
-
     defaults:
       run:
         shell: bash
@@ -163,14 +161,17 @@ jobs:
     permissions:
       contents: read
 
+    env:
+      GOSS_VERSION: v0.3.20
+
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
@@ -178,7 +179,7 @@ jobs:
       - name: GitHub - Get Test Parameter
         id: test_parameter
         run: |
-          TEST_WORKING_DIR=${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests
+          TEST_WORKING_DIR="${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/tests"
           {
             echo "test_working_dir=${TEST_WORKING_DIR}"
             echo "test_result_file=goss_test_results.xml"
@@ -205,13 +206,14 @@ jobs:
           IMAGE_NAME: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
 
       - name: Goss - Setup
-        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
+        id: goss_setup
+        uses: e1himself/goss-installation-action@3b8952d233bcc9bb8e901ec819d8cde6daa7f546 # v1.1.0
         with:
           version: ${{ env.GOSS_VERSION }}
 
       - name: GitHub - Check for Test File Existence
         id: check_test_file
-        uses: andstor/file-existence-action@f02338908d150e00a4b8bebc2dad18bd9e5229b0 # tag=v1.1.0
+        uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2.0.0
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
@@ -258,8 +260,8 @@ jobs:
 
       - name: GitHub - Upload Container Logs
         id: github_upload_logs
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         if: always()
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
         with:
           name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
           path: ${{ steps.docker_teardown.outputs.container_logs }}
@@ -267,7 +269,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@f717b5ecd4534d3c4df4ce9b5c1c2214f0f7cd06 # tag=v1.6.0
+        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
@@ -276,12 +278,12 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@b9f6c61d965bcaa18acc02d6daf706373a448f02 # tag=v1.40
+        uses: EnricoMi/publish-unit-test-result-action@a3caf02865c0604ad3dc1ecfcc5cdec9c41b7936 # v2.3.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
           check_name: Test Results (Docker - ${{ matrix.package }})
-          files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
           # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
           # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
@@ -307,11 +309,11 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
@@ -334,7 +336,7 @@ jobs:
 
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
-        uses: github/codeql-action/upload-sarif@e0e5ded33cabb451ae0a9768fc7b0410bad9ad44 # tag=v2.1.26
+        uses: github/codeql-action/upload-sarif@959cbb7472c4d4ad70cdfe6f4976053fe48ab394 # v2.1.37
         # always run, even if the previous step failed due to found vulnerabilities (so it vulnerabilities get reported)
         # only run if the sarif file exists
         # only run on pushes on the default branch
@@ -361,23 +363,27 @@ jobs:
       contents: read
       packages: write
 
+    env:
+      COSIGN_VERSION: v1.13.1
+
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
+          # required by tj-actions/changed-files
           fetch-depth: 2
 
       - name: Git - Get Changed Files
         id: git_changed_files
-        uses: tj-actions/changed-files@dd7c81416dd9ddc14c594f751cd92c661e13daee # tag=v31.0.3
+        uses: tj-actions/changed-files@9a6dabf8d15381f97f1c770257a1a0db59c28a47 # v35.4.0
         with:
           files: |
             ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
@@ -390,7 +396,7 @@ jobs:
 
       - name: Docker - Log into Registry ${{ needs.matrix_setup.outputs.docker_registry }}
         id: docker_login
-        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b # tag=v2
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # tag=v2.1.0
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           registry: ${{ needs.matrix_setup.outputs.docker_registry }}
@@ -403,3 +409,24 @@ jobs:
         run: |
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
+
+      - name: Cosign - Setup
+        id: cosign_setup
+        uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b # v2.8.1
+        if: steps.git_changed_files.outputs.any_changed == 'true'
+        with:
+          cosign-release: ${{ env.COSIGN_VERSION }}
+
+      - name: Cosign - Sign Docker Artifact
+        id: cosign_sign
+        if: steps.git_changed_files.outputs.any_changed == 'true'
+        run: |
+          IMAGE="$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }})"
+          cosign sign --key env://COSIGN_PRIVATE_KEY \
+            -a "repo=${{ github.repository }}" \
+            -a "workflow=${{ github.workflow }}" \
+            -a "ref=${{ github.sha }}" \
+            "${IMAGE}"
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}

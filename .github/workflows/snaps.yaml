@@ -1,7 +1,7 @@
 name: 'Snapcraft CI'
 
 on:
-  # run on pushes to main if snap related files were changed
+  # run on pushes to main
   push:
     branches:
       - main
@@ -46,7 +46,7 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Build Matrix - Setup
         id: set_matrix
@@ -55,25 +55,59 @@ jobs:
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
             echo "snap_working_dir=./snaps"
             echo "snap_dir=/tmp"
-            echo "snap_file=/tmp/package.snap"
-            echo "snap_artifact_name=tmp_{0}.snap"
+            echo "snap_artifact_name=tmp_snaps_{0}"
           } >> "$GITHUB_OUTPUT"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       snap_working_dir: ${{ steps.set_matrix.outputs.snap_working_dir }}
       snap_dir: ${{ steps.set_matrix.outputs.snap_dir }}
-      snap_file: ${{ steps.set_matrix.outputs.snap_file }}
       snap_artifact_name: ${{ steps.set_matrix.outputs.snap_artifact_name }}
 
-  snapcraft_build:
-    name: 'Build'
+  matrix_arch_setup:
+    name: 'Setup Arch Matrix'
     needs: [matrix_setup]
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: './snaps/'
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+
+      - name: Build Matrix - Setup
+        id: set_matrix
+        run: |
+          ARCH_LIST=$(yq eval --no-colors --exit-status --output-format=json --indent=0 '.architectures.0.build-on' snapcraft.yaml)
+
+          {
+            echo "arch_list=${ARCH_LIST}"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
+    outputs:
+      arch_list: ${{ steps.set_matrix.outputs.arch_list }}
+
+  snapcraft_build:
+    name: 'Build'
+    needs: [matrix_setup, matrix_arch_setup]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+        arch: ${{ fromJson(needs.matrix_arch_setup.outputs.arch_list) }}
 
     defaults:
       run:
@@ -85,32 +119,30 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Snapcraft - Set up Build Environment
         id: snapcraft_setup
         # prefix all env variables with "CI_ENV_" to ensure these do not clash with env variables within the snapcraft build environment
         # https://gist.github.com/mihow/9c7f559807069a03e302605691f85572
-        run: printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" | sed -e 's/^/CI_ENV_/' > .ci.env
+        run: |
+          printenv | sed -e '/^#/d;/^\s*$/d' -e "s/'/'\\\''/g" -e "s/=\(.*\)/='\1'/g" | sed -e 's/^/CI_ENV_/' > .ci.env
+          echo "CI_ENV_GIT_COMMIT=$(git rev-parse --short HEAD)" >> .ci.env
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
-        uses: snapcore/action-build@ea14cdeb353272f75977040488ca191880509a8c # tag=v1
+        uses: snapcore/action-build@3457752ec9b1c79a8290b5167fce2d14df0997c1 # v1.1.2
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
-
-      - name: GitHub - Move Snap Artifact
-        id: move_artifact
-        run: |
-          mv ${{ steps.snapcraft_build.outputs.snap }} ${{ needs.matrix_setup.outputs.snap_file }}
+          snapcraft-args: --build-for=${{ matrix.arch }}
 
       - name: GitHub - Upload Snap Artifact
         id: github_upload_snap
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.snap_file }}
+          path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}/*.snap
           retention-days: 1
 
   snapcraft_test:
@@ -135,14 +167,36 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: GitHub - Download Snap Artifact
         id: github_download
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
-          path: ${{ needs.matrix_setup.outputs.snap_dir }}
+
+      - name: yq - Setup
+        id: yq_setup
+        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
+
+      - name: Snapcraft - Get Snap Build Information
+        id: snapcraft_build_information
+        run: |
+          NAME=$(yq eval --no-colors --exit-status '.name' snapcraft.yaml)
+          VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
+          ARCH=$(arch)
+
+          if [ "${ARCH}" = "x86_64" ]
+          then
+            ARCH="amd64"
+          fi
+
+          {
+            echo "version=${VERSION}"
+            echo "arch=${ARCH}"
+            echo "snap_file=${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${ARCH}.snap"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Test Parameter
         id: test_parameter
@@ -159,7 +213,7 @@ jobs:
         id: snapcraft_setup
         run: |
           echo "Install snap package:"
-          sudo snap install --color=never --dangerous ${{ needs.matrix_setup.outputs.snap_file }}
+          sudo snap install --color=never --dangerous ${{ steps.snapcraft_build_information.outputs.snap_file }}
           SETUP_FILE=./setup.sh
           if test -f "$SETUP_FILE"; then
             echo "$SETUP_FILE exists. Going to run setup:"
@@ -172,13 +226,13 @@ jobs:
           SERVICE_NAME: ${{ matrix.package }}
 
       - name: Goss - Setup
-        uses: e1himself/goss-installation-action@88e5a33ec3f7d299fee2e259ff1a6032cb0cdd11 # renovate: tag=v1.0.4
+        uses: e1himself/goss-installation-action@3b8952d233bcc9bb8e901ec819d8cde6daa7f546 # v1.1.0
         with:
           version: ${{ env.GOSS_VERSION }}
 
       - name: GitHub - Check for Test File Existence
         id: check_test_file
-        uses: andstor/file-existence-action@f02338908d150e00a4b8bebc2dad18bd9e5229b0 # tag=v1.1.0
+        uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b # v2.0.0
         with:
           files: ${{ steps.test_parameter.outputs.test_working_dir }}/goss.yaml
 
@@ -218,7 +272,7 @@ jobs:
       - name: GitHub - Upload Snap Logs
         id: github_upload_logs
         if: always()
-        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # tag=v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: ${{ format(steps.test_parameter.outputs.snap_logs_name, matrix.package) }}
           path: ${{ steps.snapcraft_teardown.outputs.snap_logs }}
@@ -226,7 +280,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@f717b5ecd4534d3c4df4ce9b5c1c2214f0f7cd06 # tag=v1.6.0
+        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
@@ -235,12 +289,12 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@b9f6c61d965bcaa18acc02d6daf706373a448f02 # tag=v1.40
+        uses: EnricoMi/publish-unit-test-result-action@a3caf02865c0604ad3dc1ecfcc5cdec9c41b7936 # v2.3.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
           check_name: Test Results (Snap - ${{ matrix.package }})
-          files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
+          junit_files: ${{ steps.test_parameter.outputs.test_working_dir }}/${{ steps.test_parameter.outputs.test_result_file }}
           # we only add github checks to the PR/commit, but don't create PR comments; reason is that comments will not
           # be replaced but always newly added due to (it looks for "github-actions" user instead of the github app user):
           # https://github.com/EnricoMi/publish-unit-test-result-action/blob/ae7c14a87cf1a1200805b487debc65963bdb3f2d/python/publish/publisher.py#L493
@@ -248,7 +302,7 @@ jobs:
 
   snapcraft_publish:
     name: 'Publish'
-    needs: [matrix_setup, snapcraft_test, snapcraft_build]
+    needs: [matrix_setup, matrix_arch_setup, snapcraft_test, snapcraft_build]
     runs-on: ubuntu-latest
 
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && !github.event.act
@@ -256,6 +310,7 @@ jobs:
     strategy:
       matrix:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
+        arch: ${{ fromJson(needs.matrix_arch_setup.outputs.arch_list) }}
 
     defaults:
       run:
@@ -267,19 +322,31 @@ jobs:
     steps:
       - name: GitHub - Download Snap Artifact
         id: github_download
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: ${{ format(needs.matrix_setup.outputs.snap_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.snap_dir }}
 
+      - name: Snapcraft - Get Snap Build Information
+        id: snapcraft_build_information
+        run: |
+          NAME=$(yq eval --no-colors --exit-status '.name' snapcraft.yaml)
+          VERSION=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)
+
+          {
+            echo "version=${VERSION}"
+            echo "snap_file=${{ steps.github_download.outputs.download-path }}/${NAME}_${VERSION}_${{ matrix.arch }}.snap"
+          } >> "$GITHUB_OUTPUT"
+        working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
+
       - name: Snapcraft - Publish Artifact
         id: snapcraft_publish
-        uses: snapcore/action-publish@0a8d537ae06f4a292e8b4ef1084cd5631b3c6871 # tag=v1
+        uses: snapcore/action-publish@0a8d537ae06f4a292e8b4ef1084cd5631b3c6871 # tag=v1.1.1
         with:
           # Generate via snapcraft (available on ubuntu or via 'brew' on macOS):
           # snapcraft export-login --snaps="nomad-homelab,consul-homelab" --acls="package_access,package_push,package_update,package_release" exported.txt
           store_login: ${{ secrets.SNAPCRAFT_STORE_LOGIN }}
-          snap: ${{ needs.matrix_setup.outputs.snap_file }}
+          snap: ${{ steps.snapcraft_build_information.outputs.snap_file }}
           # https://github.community/t/do-expressions-support-ternary-operators-to-change-their-returned-value/18114/3
           # The condition evaluates to a boolean, which is implicitly cast to a number and used as array index, where false = 0 and true = 1.
           release: ${{ fromJSON('["edge", "stable"]')[github.ref == format('refs/heads/{0}', github.event.repository.default_branch)] }}

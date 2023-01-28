@@ -1,10 +1,21 @@
 name: "Repository CI"
 
 on:
+  # run on pushes to main
+  push:
+    branches:
+      - main
+      - gh-readonly-queue/main/**
+  # run on pull requests that target the main branch
+  pull_request:
+    branches:
+      - main
+  # run on pull request events
   pull_request_target:
     types:
       - opened
       - synchronize
+      - edited
       - reopened
       # - review_requested
     branches:
@@ -12,9 +23,7 @@ on:
 
 jobs:
   repository:
-    # TODO: pin to a sha tag and update automatically:
-    # https://github.com/renovatebot/renovate/issues/12212
-    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@main
+    uses: busybeaver/homelab-shared/.github/workflows/repository.yaml@3773e2206fe17784e66b5553676e836ade2d0f63 # v1.0.17
     secrets:
       REPOSITORY_ASSISTANT_APP_ID: ${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}
       REPOSITORY_ASSISTANT_PRIVATE_KEY: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}

@@ -1,22 +1,51 @@
 name: consul-homelab
-version: '1.13.3'
+version: '1.14.4'
 summary: HomeLab Consul - Service Mesh for any runtime or cloud
 description: HomeLab Consul - Consul automates networking for simple and secure application delivery.
+website: https://github.com/hashicorp/consul.git
 grade: stable
 confinement: strict
-base: core20
+base: core22
 architectures:
   - build-on: [amd64, arm64]
-    run-on: [amd64, arm64]
+    build-for: amd64
+  - build-on: [amd64, arm64]
+    build-for: arm64
 parts:
   consul:
-    plugin: go
-    go-channel: latest/stable
-    source-type: git
-    source: https://github.com/hashicorp/consul.git
-    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    plugin: dump
+    source: ./
+    source-type: local
     build-packages:
-      - gcc
+      - unzip
+    override-pull: |
+      set -x
+      craftctl default
+
+      # Import the public key, see: https://www.hashicorp.com/security
+      gpg --import hashicorp.asc
+
+      # Download the archive and signature files
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_linux_${CRAFT_TARGET_ARCH}.zip
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+      curl -Os https://releases.hashicorp.com/consul/${SNAPCRAFT_PROJECT_VERSION}/consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig
+
+      # Verify the signature file is untampered
+      gpg --verify consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Verify the SHASUM matches the archive
+      shasum --ignore-missing --algorithm 256 --check consul_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Unpack binary file
+      unzip consul_${SNAPCRAFT_PROJECT_VERSION}_linux_${CRAFT_TARGET_ARCH}.zip
+    prime:
+      # files in the prime phase/area are available in the final snap package
+      - consul
+    override-prime: |
+      set -x
+      craftctl default
+      mv consul bin/consul
+      chmod +x bin/consul
   consul-wrapper:
     plugin: dump
     source-type: local
@@ -26,19 +55,15 @@ parts:
       - daemon.sh
     override-prime: |
       set -x
-      snapcraftctl prime
+      craftctl default
       chmod +x daemon.sh
   build-env:
     plugin: dump
     source-type: local
     source: ./
-    stage:
-      # files in the stage phase/area are only available during the build of the snap package,
-      # but not in the final package itself
-      - .ci.env
-    override-stage: |
+    override-pull: | # craftctl set version="$(craftctl get version)-$CI_ENV_GIT_COMMIT"
       set -x
-      snapcraftctl stage
+      craftctl default
 
       CI_ENV_FILE=".ci.env"
       if test -f "$CI_ENV_FILE"; then
@@ -47,8 +72,8 @@ parts:
         echo "Running on branch: $CI_ENV_GITHUB_REF"
         if [ -n "$CI_ENV_GITHUB_REF" ] && [ "$CI_ENV_GITHUB_REF" != "refs/heads/main" ]; then
           echo "Running on non-default branch, appending the short git rev to the version"
-          snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-          snapcraftctl set-grade "devel"
+          snapcraftctl set-version "$(craftctl get version)-$CI_ENV_GIT_COMMIT"
+          craftctl set grade="devel"
         fi
       else
           echo "$CI_ENV_FILE does not exist. Skip setting up properties based on CI environment."
@@ -61,7 +86,7 @@ apps:
       - network-bind
   daemon:
     # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
-    # command: bin/consul agent -config-dir $SNAP_DATA/config/
+    # command: bin/consul agent -config-dir=$SNAP_DATA/config/
     # we need to move this to a simple wrapper script, since snapcraft doesn't allow = chars in the command property
     # https://bugs.launchpad.net/snapd/+bug/1820055
     command: daemon.sh
