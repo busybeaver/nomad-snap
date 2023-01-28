@@ -26,4 +26,15 @@
       ]
     }
   ],
+    "packageRules": [
+    {
+      "groupName": "Caddy Docker containers",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackagePrefixes": [
+        "caddy"
+      ]
+    },
+  ],
 }
