@@ -1,24 +1,17 @@
 name: 'Snapcraft Update CI'
 
 on:
-  # run on main if the file itself was changed
-  push:
-    branches:
-      - main
-      - gh-readonly-queue/main/**
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps_update.*'
-  # run on pull requests that target the main branch
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'snaps/**'
-      - '.github/workflows/snaps_update.*'
   # run daily on midnight
   schedule:
     - cron: '0 0 * * *'
+  # run on pushes to main if snapcraft.yaml files changed
+  push:
+    branches:
+      - main
+    paths:
+      - snaps/**/snapcraft.yaml
+  # trigger manually if needed
+  workflow_dispatch:
 
 concurrency:
   # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
@@ -41,13 +34,15 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Build Matrix - Setup
         id: set_matrix
         run: |
-          echo "::set-output name=matrix::$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
-          echo "::set-output name=snap_working_dir::./snaps"
+          {
+            echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
+            echo "snap_working_dir=./snaps"
+          } >> "$GITHUB_OUTPUT"
 
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
@@ -72,20 +67,20 @@ jobs:
     steps:
       - name: Git - Checkout
         id: git_checkout
-        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@3924ed8a35a3edd80732ace69d79624f4fa49d2d # tag=v4.22.1
+        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
 
 #      - name: Python - Get pip Cache Dir
 #        id: python_pip_cache_dir
 #        run: |
-#          echo "::set-output name=dir::$(pip cache dir)"
+#          echo "dir=$(pip cache dir)" >> "$GITHUB_OUTPUT"
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
-        uses: actions/cache@4b0cf6cc4619e737324ddfcec08fff2413359514 # tag=v3
+        uses: actions/cache@4723a57e26efda3a62cbde1812113b730952852d # v3.2.2
         with:
 #          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
           path: ~/.cache/pip
@@ -101,15 +96,17 @@ jobs:
       - name: GitHub - Retrieve Repository Source and Current Version
         id: github_retrieve_data
         run: |
-          GIT_REPO_URL="$(yq eval --no-colors --exit-status '.parts.[] | select(.source-type == "git") | .source' snapcraft.yaml)"
+          GIT_REPO_URL="$(yq eval --no-colors --exit-status '.website' snapcraft.yaml)"
           export GIT_REPO_URL
           GIT_ORG="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).owner)')"
           GIT_REPO="$(python3 -c 'import os; from giturlparse import parse; print(parse(os.getenv("GIT_REPO_URL")).repo)')"
 
-          echo "::set-output name=used_version::$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)"
-          echo "::set-output name=source_git_url::$GIT_REPO_URL"
-          echo "::set-output name=source_git_org::$GIT_ORG"
-          echo "::set-output name=source_git_repo::$GIT_REPO"
+          {
+            echo "used_version=$(yq eval --no-colors --exit-status '.version' snapcraft.yaml)"
+            echo "source_git_url=${GIT_REPO_URL}"
+            echo "source_git_org=${GIT_ORG}"
+            echo "source_git_repo=${GIT_REPO}"
+          } >> "$GITHUB_OUTPUT"
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Get Latest Release Version
@@ -136,16 +133,16 @@ jobs:
           if [[ "$SEMVER_COMPARE" == "-1" ]]; then
             echo "Newer version available, going to update the snapcraft.yaml file to version $LATEST_VERSION and create/update the PR."
             yq eval --no-colors --exit-status --inplace '.version = strenv(LATEST_VERSION)' snapcraft.yaml
-            echo "::set-output name=version_updated::true"
+            echo "version_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "No newer version available. Will do nothing and stay on version $USED_VERSION"
-            echo "::set-output name=version_updated::false"
+            echo "version_updated=false" >> "$GITHUB_OUTPUT"
           fi
         working-directory: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@7ce9ffdcdeb2ba82b01b51d6584a6a85872336d4 # renovate: tag=v1.5.1
+        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}
@@ -153,7 +150,7 @@ jobs:
 
       - name: GitHub - Setup GPG Keys
         id: github_setup_gpg
-        uses: crazy-max/ghaction-import-gpg@4d58d49bfefed583addec96996588e8bc4b306b8 # tag=v4
+        uses: crazy-max/ghaction-import-gpg@111c56156bcc6918c056dbef52164cfa583dc549 # tag=v5.2.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -163,7 +160,7 @@ jobs:
 
       - name: GitHub - Create Pull Request
         id: github_create_pr
-        uses: peter-evans/create-pull-request@18f7dc018cc2cd597073088f7c7591b9d1c02672 # tag=v3.14.0
+        uses: peter-evans/create-pull-request@2b011faafdcbc9ceb11414d64d0573f37c774b04 # v4.2.3
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           token: ${{ steps.github_generate_app_token.outputs.token }}

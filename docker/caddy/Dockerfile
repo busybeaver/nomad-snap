@@ -1,15 +1,24 @@
-# syntax=docker/dockerfile:1.4
-FROM caddy:builder-alpine AS builder
+# syntax=docker/dockerfile:1
+FROM caddy:2.6.2-builder-alpine@sha256:4e33a687e42df986f235fba46d39525719478b1380e620bbd9153ac2310f2a17 AS build
 
 RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare \
     --with github.com/lolPants/caddy-requestid \
-    --with github.com/hslatman/caddy-crowdsec-bouncer
+    --with github.com/hslatman/caddy-crowdsec-bouncer \
+    --with github.com/caddyserver/transform-encoder
 
-FROM caddy:alpine@sha256:f95672886ddd6284ccba4b0be903d0d0949d7c665f5e7acc96cc6a0af2467364
+FROM caddy:2.6.2-alpine@sha256:25a0097607868fb05a89a5ab9fea2f2ea4cecdc89d887d7dcee8c778a21b9e1f
 
-COPY --from=builder --link=true /usr/bin/caddy /usr/bin/caddy
+COPY --from=build --link=true /usr/bin/caddy /usr/bin/caddy
 
+# check here on which alpine version caddy is based on and update the renovate config when needed:
+# https://github.com/caddyserver/caddy-docker
+# ---
+# renovate: datasource=repology depName=alpine_3_16/libcap versioning=loose
+ARG LIBCAP_VERSION="2.64-r0"
+
+# Update outdated (and potentially vulnerable) dependencies;
 # Allow to run Caddy on privileged ports (as a non-root user)
-RUN apk --update-cache --no-cache add libcap=~2.50 && \
+RUN apk --update-cache --no-cache upgrade && \
+    apk --update-cache --no-cache add libcap=${LIBCAP_VERSION} && \
     setcap 'cap_net_bind_service=+eip' /usr/bin/caddy

@@ -1,0 +1,17 @@
+command:
+port:
+http:
+  http://localhost:80/:
+    method: GET
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 1000
+    skip: false
+  https://localhost:443/:
+    method: GET
+    status: 200
+    allow-insecure: true
+    no-follow-redirects: false
+    timeout: 1000
+    skip: false

@@ -1,22 +1,51 @@
 name: nomad-homelab
-version: '1.2.6'
+version: '1.4.3'
 summary: HomeLab Nomad - Workload Orchestration Made Easy
 description: HomeLab Nomad - A simple and flexible workload orchestrator to deploy and manage containers and non-containerized applications across on-prem and clouds at scale.
+website: https://github.com/hashicorp/nomad.git
 grade: stable
 confinement: strict
-base: core20
+base: core22
 architectures:
   - build-on: [amd64, arm64]
-    run-on: [amd64, arm64]
+    build-for: amd64
+  - build-on: [amd64, arm64]
+    build-for: arm64
 parts:
   nomad:
-    plugin: go
-    go-channel: latest/stable
-    source-type: git
-    source: https://github.com/hashicorp/nomad.git
-    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    plugin: dump
+    source: ./
+    source-type: local
     build-packages:
-      - gcc
+      - unzip
+    override-pull: |
+      set -x
+      craftctl default
+
+      # Import the public key, see: https://www.hashicorp.com/security
+      gpg --import hashicorp.asc
+
+      # Download the archive and signature files
+      curl -Os https://releases.hashicorp.com/nomad/${SNAPCRAFT_PROJECT_VERSION}/nomad_${SNAPCRAFT_PROJECT_VERSION}_linux_${CRAFT_TARGET_ARCH}.zip
+      curl -Os https://releases.hashicorp.com/nomad/${SNAPCRAFT_PROJECT_VERSION}/nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+      curl -Os https://releases.hashicorp.com/nomad/${SNAPCRAFT_PROJECT_VERSION}/nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig
+
+      # Verify the signature file is untampered
+      gpg --verify nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS.sig nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Verify the SHASUM matches the archive
+      shasum --ignore-missing --algorithm 256 --check nomad_${SNAPCRAFT_PROJECT_VERSION}_SHA256SUMS
+
+      # Unpack binary file
+      unzip nomad_${SNAPCRAFT_PROJECT_VERSION}_linux_${CRAFT_TARGET_ARCH}.zip
+    prime:
+      # files in the prime phase/area are available in the final snap package
+      - nomad
+    override-prime: |
+      set -x
+      craftctl default
+      mv nomad bin/nomad
+      chmod +x bin/nomad
   nomad-wrapper:
     plugin: dump
     source-type: local
@@ -26,19 +55,15 @@ parts:
       - daemon.sh
     override-prime: |
       set -x
-      snapcraftctl prime
+      craftctl default
       chmod +x daemon.sh
   build-env:
     plugin: dump
     source-type: local
     source: ./
-    stage:
-      # files in the stage phase/area are only available during the build of the snap package,
-      # but not in the final package itself
-      - .ci.env
-    override-stage: |
+    override-pull: | # craftctl set version="$(craftctl get version)-$CI_ENV_GIT_COMMIT"
       set -x
-      snapcraftctl stage
+      craftctl default
 
       CI_ENV_FILE=".ci.env"
       if test -f "$CI_ENV_FILE"; then
@@ -47,24 +72,31 @@ parts:
         echo "Running on branch: $CI_ENV_GITHUB_REF"
         if [ -n "$CI_ENV_GITHUB_REF" ] && [ "$CI_ENV_GITHUB_REF" != "refs/heads/main" ]; then
           echo "Running on non-default branch, appending the short git rev to the version"
-          snapcraftctl set-version "$SNAPCRAFT_PROJECT_VERSION-$(git rev-parse --short HEAD)"
-          snapcraftctl set-grade "devel"
+          snapcraftctl set-version "$(craftctl get version)-$CI_ENV_GIT_COMMIT"
+          craftctl set grade="devel"
         fi
       else
           echo "$CI_ENV_FILE does not exist. Skip setting up properties based on CI environment."
       fi
+plugs:
+  sys-fs-cgroup:
+    interface: system-files
+    read:
+      - /sys/fs/cgroup/cgroup.controllers
 apps:
   nomad-homelab:
     command: bin/nomad
     plugs:
       - network
       - network-bind
-      # all plugs below requires manual connect after installation
+      # all plugs below requires manual connect after installation (for an example, see the setup.sh file in the tests folder of this package)
       - network-observe # required to (read-only) access: /usr/sbin/ip
       - mount-observe # required to (read-only) access: /proc/self/mountinfo
+      - docker # start, stop, or manage Docker containers
+      - sys-fs-cgroup # required to (read-only) access: /sys/fs/cgroup/cgroup.controllers
   daemon:
     # SNAP_DATA is backed up and restored across snap refresh and snap revert operations
-    # command: bin/consul agent -config-dir $SNAP_DATA/config/
+    # command: bin/consul agent -config-dir=$SNAP_DATA/config/
     # we need to move this to a simple wrapper script, since snapcraft doesn't allow = chars in the command property
     # https://bugs.launchpad.net/snapd/+bug/1820055
     command: daemon.sh
@@ -77,6 +109,8 @@ apps:
     plugs:
       - network
       - network-bind
-      # all plugs below requires manual connect after installation
+      # all plugs below requires manual connect after installation (for an example, see the setup.sh file in the tests folder of this package)
       - network-observe # required to (read-only) access: /usr/sbin/ip
       - mount-observe # required to (read-only) access: /proc/self/mountinfo
+      - docker # start, stop, or manage Docker containers
+      - sys-fs-cgroup # required to (read-only) access: /sys/fs/cgroup/cgroup.controllers

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  container_under_test:
+    container_name: container_under_test
+    image: "${IMAGE_NAME}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    tmpfs:
+      - /config:rw,mode=777,uid=1000,gid=1000
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - "8123:8123"

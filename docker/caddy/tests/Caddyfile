@@ -1,0 +1,12 @@
+{
+  debug
+  auto_https disable_redirects
+}
+
+localhost:80 {
+  respond "Hello, HTTP world!"
+}
+
+localhost:443 {
+  respond "Hello, HTTPS world!"
+}

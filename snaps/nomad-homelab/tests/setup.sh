@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 cd "/var/snap/${SERVICE_NAME}/current/" || exit 1
@@ -19,13 +22,14 @@ server {
 }
 client {
   enabled = true
-  servers = [\"127.0.0.1\"]
 }
 " | sudo tee ./config/test.hcl
 
+# connect plugs that do not support auto-connect
 sudo snap connect "${SERVICE_NAME}:mount-observe" ":mount-observe"
 sudo snap connect "${SERVICE_NAME}:network-observe" ":network-observe"
-# TODO: add docker plug/connection
+# sudo snap connect "${SERVICE_NAME}:docker" ":docker"
+sudo snap connect "${SERVICE_NAME}:sys-fs-cgroup"
 
 sudo snap connections "${SERVICE_NAME}"
 sudo snap start "${SERVICE_NAME}.daemon"
