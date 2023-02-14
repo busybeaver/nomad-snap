@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM caddy:2.6.3-builder-alpine@sha256:6e0bc040397e8f66ce3312982429dd07dd532b4d51afbdc30afdbd3395fdc030 AS build
+FROM caddy:2.6.3-builder-alpine@sha256:bb62cca6f05fdeb8a31c70721139cd6d016027c812a481303f55e75479d7a412 AS build
 
 RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare \
