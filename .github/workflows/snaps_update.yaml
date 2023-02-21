@@ -111,7 +111,7 @@ jobs:
 
       - name: GitHub - Get Latest Release Version
         id: github_latest_version
-        uses: pozetroninc/github-action-get-latest-release@57753c3124f4365ae77b2b8111cae1f71195572a # renovate: tag=v0.6.0
+        uses: pozetroninc/github-action-get-latest-release@d1dafdb6e338bdab109e6afce581a01858680dfb # v0.7.0
         with:
           owner: ${{ steps.github_retrieve_data.outputs.source_git_org }}
           repo: ${{ steps.github_retrieve_data.outputs.source_git_repo }}
