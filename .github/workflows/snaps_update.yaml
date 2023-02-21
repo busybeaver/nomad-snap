@@ -1,5 +1,7 @@
 name: 'Snapcraft Update CI'
 
+# NOTE: temp disabled since the snap packages aren't currently used due to changes in the local setup/environment
+
 on:
   # run daily on midnight
   schedule:
