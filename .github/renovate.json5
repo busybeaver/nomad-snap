@@ -17,12 +17,13 @@
       // adopted from:
       // https://github.com/renovatebot/renovate/blob/main/lib/config/presets/internal/regex-managers.ts
       // https://docs.renovatebot.com/presets-regexManagers/#regexmanagersdockerfileversions
+      // https://docs.renovatebot.com/modules/manager/regex/
       description: "Update '_VERSION' variables in shell scripts.",
       "fileMatch": [
         "^scripts/.+\\.sh$",
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?[A-Za-z0-9_]+?_VERSION=[\"']?(?<currentValue>.+?)[\"']?"
+        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?[A-Za-z0-9_]+?_VERSION=[\"']?(?<currentValue>.+?)(?:@(?<currentDigest>sha256:[a-f0-9]+))?[\"']?"
       ]
     }
   ],
