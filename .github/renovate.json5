@@ -9,7 +9,7 @@
   "pip_requirements": {
     // https://docs.renovatebot.com/python/#alternative-file-names
     "fileMatch": [
-      "^\\.github\\/workflows\\/.+\\.pip$",
+      "^\\.github/workflows/.+\\.pip$",
     ]
   },
   "regexManagers": [
@@ -19,10 +19,10 @@
       // https://docs.renovatebot.com/presets-regexManagers/#regexmanagersdockerfileversions
       description: "Update '_VERSION' variables in shell scripts.",
       "fileMatch": [
-        "^scripts\\/.+\\.sh$",
+        "^scripts/.+\\.sh$",
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s.+?_VERSION=\"?(?<currentValue>.+?)\"?\\s"
+        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>[^\\s]+?)(?: (lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?[A-Za-z0-9_]+?_VERSION=[\"']?(?<currentValue>.+?)[\"']?"
       ]
     }
   ],
