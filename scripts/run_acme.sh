@@ -11,5 +11,5 @@ docker run \
   --rm \
   --net=host \
   --volume "${ACME_HOME:-$(pwd)/acme.sh}":/acme.sh \
-  --env-file "${ENV_FILE}"
+  --env-file "${ENV_FILE}" \
   "neilpang/acme.sh:${IMAGE_VERSION}" "$@"
