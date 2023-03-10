@@ -5,6 +5,12 @@ IFS=$'\n\t'
 set -x
 
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker
-IMAGE_VERSION=latest@sha256:30bf4ea471d331d7df54cd8575660ee23e4e81da63ecb5e64e8652c48a135291
+IMAGE_VERSION=latest@sha256:e9139e0190c7805c3f228fa6dff6a2464771e558285a2efbf204c4a8664c1abd
 
-docker run --rm "neilpang/acme.sh:${IMAGE_VERSION}" "$@"
+docker run \
+  --rm \
+  --net=host \
+  --volume "${ACME_HOME:-$(pwd)/acme.sh}":/acme.sh \
+  --env-file "${GLOBAL_ENV_FILE}" \
+  --env-file "${ENV_FILE}" \
+  "neilpang/acme.sh:${IMAGE_VERSION}" "$@"

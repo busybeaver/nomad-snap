@@ -8,7 +8,7 @@ WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
 # a HomeAssistant version that can be run as non-root user
-FROM homeassistant/home-assistant:2023.1@sha256:56af74dddf922c16ce95ca3ca3f5638bdb173bc79d05d566aa68659f61ed5c16
+FROM homeassistant/home-assistant:2023.3@sha256:a7285b69682336df2426362ab6c6f3c58616519b19266a436e48bb5e3c24daaa
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://127.0.0.1:8123 || exit 1
 
@@ -24,4 +24,5 @@ RUN cat ${HOME_ASSISTANT_ENTRYPOINT} > /dev/null
 COPY --from=build --link=true /tmp/homeassistant-docker-venv/run ${HOME_ASSISTANT_ENTRYPOINT}
 
 # Update outdated (and potentially vulnerable) dependencies
-RUN apk --update-cache --no-cache upgrade
+RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
+    apk --update-cache upgrade

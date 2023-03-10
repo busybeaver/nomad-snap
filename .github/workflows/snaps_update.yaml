@@ -1,5 +1,7 @@
 name: 'Snapcraft Update CI'
 
+# NOTE: temp disabled since the snap packages aren't currently used due to changes in the local setup/environment
+
 on:
   # run daily on midnight
   schedule:
@@ -71,7 +73,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
+        uses: mikefarah/yq@47f4f8c7939f887e851b35f14def6741b8f5396e # v4.31.2
 
 #      - name: Python - Get pip Cache Dir
 #        id: python_pip_cache_dir
@@ -80,7 +82,7 @@ jobs:
 
       - name: Python - Setup pip Dependencies Cache
         id: python_pip_cache_setup
-        uses: actions/cache@4723a57e26efda3a62cbde1812113b730952852d # v3.2.2
+        uses: actions/cache@69d9d449aced6a2ede0bc19182fadc3a0a42d2b0 # v3.2.6
         with:
 #          path: ${{ steps.python_pip_cache_dir.outputs.dir }}
           path: ~/.cache/pip
@@ -111,7 +113,7 @@ jobs:
 
       - name: GitHub - Get Latest Release Version
         id: github_latest_version
-        uses: pozetroninc/github-action-get-latest-release@57753c3124f4365ae77b2b8111cae1f71195572a # renovate: tag=v0.6.0
+        uses: pozetroninc/github-action-get-latest-release@d1dafdb6e338bdab109e6afce581a01858680dfb # v0.7.0
         with:
           owner: ${{ steps.github_retrieve_data.outputs.source_git_org }}
           repo: ${{ steps.github_retrieve_data.outputs.source_git_repo }}
@@ -142,7 +144,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
         if: steps.github_evaluate_data.outputs.version_updated == 'true'
         with:
           app_id: ${{ secrets.SNAP_PACKAGE_UPDATER_APP_ID }}

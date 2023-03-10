@@ -11,6 +11,7 @@ ARG LIBCAP_VERSION="2.66-r0"
 
 # Update outdated (and potentially vulnerable) dependencies;
 # Allow to run micromdm on privileged ports (as a non-root user)
-RUN apk --update-cache --no-cache upgrade && \
-    apk --update-cache --no-cache add libcap=${LIBCAP_VERSION} && \
+RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
+    apk --update-cache upgrade && \
+    apk --update-cache add libcap=${LIBCAP_VERSION} && \
     setcap 'cap_net_bind_service=+eip' /usr/bin/micromdm

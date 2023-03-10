@@ -1,5 +1,7 @@
 name: 'Snapcraft CI'
 
+# NOTE: temp disabled since the snap packages aren't currently used due to changes in the local setup/environment
+
 on:
   # run on pushes to main
   push:
@@ -177,7 +179,7 @@ jobs:
 
       - name: yq - Setup
         id: yq_setup
-        uses: mikefarah/yq@87cba2ecbeaecf860efcceb66deab46ae030ce1e # v4.30.6
+        uses: mikefarah/yq@47f4f8c7939f887e851b35f14def6741b8f5396e # v4.31.2
 
       - name: Snapcraft - Get Snap Build Information
         id: snapcraft_build_information
@@ -280,7 +282,7 @@ jobs:
 
       - name: GitHub - Generate App Token
         id: github_generate_app_token
-        uses: tibdex/github-app-token@021a2405c7f990db57f5eae5397423dcc554159c # tag=v1.7.0
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           # https://github.com/EnricoMi/publish-unit-test-result-action/issues/161
@@ -289,7 +291,7 @@ jobs:
 
       - name: GitHub - Publish Unit Test Results
         id: github_publish_results
-        uses: EnricoMi/publish-unit-test-result-action@a3caf02865c0604ad3dc1ecfcc5cdec9c41b7936 # v2.3.0
+        uses: EnricoMi/publish-unit-test-result-action@689e79fca56cb0c3117fbb26e9769b4634a3f521 # v2.4.2
         if: always() && steps.check_test_file.outputs.files_exists == 'true'
         with:
           github_token: ${{ steps.github_generate_app_token.outputs.token }}
