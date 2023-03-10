@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 FROM caddy:2.6.4-alpine@sha256:3f4414616d9141c4fbd9f66641d9b91a3b67833dd4145738c536dee584db5314
 
-COPY --from=build /usr/bin/caddy /usr/bin/caddy
+COPY --from=build --link=true /usr/bin/caddy /usr/bin/caddy
 
 # check here on which alpine version caddy is based on and update the renovate config when needed:
 # https://github.com/caddyserver/caddy-docker

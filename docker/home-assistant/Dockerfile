@@ -7,6 +7,7 @@ ARG GIT_TAG_VERSION="v2.3"
 WORKDIR /tmp/homeassistant-docker-venv
 RUN git clone --depth 1 --branch ${GIT_TAG_VERSION} https://github.com/tribut/homeassistant-docker-venv.git .
 
+# a HomeAssistant version that can be run as non-root user
 FROM homeassistant/home-assistant:2023.3@sha256:a7285b69682336df2426362ab6c6f3c58616519b19266a436e48bb5e3c24daaa
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl --fail http://127.0.0.1:8123 || exit 1
@@ -20,7 +21,7 @@ ARG HOME_ASSISTANT_ENTRYPOINT="/etc/services.d/home-assistant/run"
 RUN cat ${HOME_ASSISTANT_ENTRYPOINT} > /dev/null
 
 # Copy/override the entry point of home-assistant, allows to run home-assistant as non-root user
-COPY --from=build /tmp/homeassistant-docker-venv/run ${HOME_ASSISTANT_ENTRYPOINT}
+COPY --from=build --link=true /tmp/homeassistant-docker-venv/run ${HOME_ASSISTANT_ENTRYPOINT}
 
 # Update outdated (and potentially vulnerable) dependencies
 RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
