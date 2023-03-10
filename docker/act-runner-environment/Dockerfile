@@ -12,8 +12,8 @@ LABEL org.opencontainers.image.title="A minimal act runner environment with Pyth
 
 # Update outdated (and potentially vulnerable) dependencies;
 # Install python3 which is used to in the CI flows to set up the build matrix
-RUN apt-get update && \
+RUN --mount=type=cache,id=apt_lists,sharing=locked,target=/var/lib/apt/lists \
+    --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
+    apt-get update && \
     apt-get upgrade --no-install-recommends --yes && \
-    apt-get install python3-minimal=3.\* --no-install-recommends --yes && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install python3-minimal=3.\* --no-install-recommends --yes

@@ -23,4 +23,5 @@ RUN cat ${HOME_ASSISTANT_ENTRYPOINT} > /dev/null
 COPY --from=build /tmp/homeassistant-docker-venv/run ${HOME_ASSISTANT_ENTRYPOINT}
 
 # Update outdated (and potentially vulnerable) dependencies
-RUN apk --update-cache --no-cache upgrade
+RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
+    apk --update-cache upgrade
