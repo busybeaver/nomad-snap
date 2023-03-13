@@ -5,7 +5,7 @@ IFS=$'\n\t'
 set -x
 
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker
-IMAGE_VERSION=latest@sha256:e9139e0190c7805c3f228fa6dff6a2464771e558285a2efbf204c4a8664c1abd
+IMAGE_VERSION=latest@sha256:7f41145ec11b8465327d9f8006586f0a0f93a7b1405076321ab51a870e907215
 
 docker run \
   --rm \
