@@ -48,6 +48,7 @@ jobs:
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
             echo "image_name_latest=${IMAGE_NAME}:latest"
             echo "image_name_git_tag=${IMAGE_NAME}:$(git rev-parse --short HEAD)"
+            echo "image_name_date=${IMAGE_NAME}:$(date +%F)"
             echo "docker_registry=${{ env.REGISTRY }}"
             echo "docker_working_dir=./docker"
             echo "docker_image_dir=/tmp"
@@ -59,6 +60,7 @@ jobs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
       image_name_latest: ${{ steps.set_matrix.outputs.image_name_latest }}
       image_name_git_tag: ${{ steps.set_matrix.outputs.image_name_git_tag }}
+      image_name_date: ${{ steps.set_matrix.outputs.image_name_date }}
       docker_registry: ${{ steps.set_matrix.outputs.docker_registry }}
       docker_working_dir: ${{ steps.set_matrix.outputs.docker_working_dir }}
       docker_image_dir: ${{ steps.set_matrix.outputs.docker_image_dir }}
@@ -129,7 +131,7 @@ jobs:
         with:
           context: ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}
           push: false
-          tags: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
+          tags: ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }},${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
           # platforms: ${{ steps.docker_setup.outputs.platforms }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -408,6 +410,7 @@ jobs:
         if: steps.git_changed_files.outputs.any_changed == 'true'
         run: |
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }}
+          docker image push ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }}
           docker image push ${{ format(needs.matrix_setup.outputs.image_name_latest, matrix.package) }}
 
       - name: Cosign - Setup
