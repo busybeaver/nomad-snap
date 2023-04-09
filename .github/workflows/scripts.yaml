@@ -66,11 +66,12 @@ jobs:
             --output-signature scripts.sha256.sig \
             "${CHECKSUM_FILE}"
 
-            cat scripts.sha256.bundle
+            cat scripts.sha256.bundle || true
             echo "---"
-            cat scripts.sha256.cert
+            cat scripts.sha256.cert || true
             echo "---"
-            cat scripts.sha256.sig
+            cat scripts.sha256.sig || true
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+
