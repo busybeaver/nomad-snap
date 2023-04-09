@@ -37,10 +37,18 @@ jobs:
       CHECKSUM_FILE: scripts.sha256
 
     steps:
+      - name: GitHub - Generate App Token
+        id: github_generate_app_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
+        with:
+          app_id: ${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}
+          private_key: ${{ secrets.REPOSITORY_ASSISTANT_PRIVATE_KEY }}
+
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
         with:
+          token: ${{ steps.github_generate_app_token.outputs.token }}
 
       - name: Cosign - Setup
         id: cosign_setup
