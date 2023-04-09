@@ -59,7 +59,7 @@ jobs:
         id: cosign_sign
         run: |
           cosign sign-blob
-            --key env://COSIGN_PRIVATE_KEY
+            --key env://COSIGN_PRIVATE_KEY \
             --yes \
             --output-signature "${CHECKSUM_FILE}.sig" \
             --verbose \
@@ -67,8 +67,6 @@ jobs:
 
           echo "File signature:"
           cat "${CHECKSUM_FILE}.sig"
-
-          git status
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
