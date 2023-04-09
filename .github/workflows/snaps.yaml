@@ -157,6 +157,7 @@ jobs:
         package: ${{ fromJson(needs.matrix_setup.outputs.matrix) }}
 
     env:
+      # renovate: datasource=github-releases depName=goss-org/goss
       GOSS_VERSION: v0.3.16
 
     defaults:

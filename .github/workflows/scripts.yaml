@@ -28,6 +28,7 @@ jobs:
       contents: read
 
     env:
+      # renovate: datasource=github-releases depName=sigstore/cosign
       COSIGN_VERSION: v1.13.1
       CHECKSUM_FILE: scripts.sha256
 
