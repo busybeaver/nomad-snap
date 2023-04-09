@@ -83,9 +83,9 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@3ea6ae190baf489ba007f7c92608f33ce20ef04a # v4.16.0
         with:
           commit_message: "chore: update checksum and signature file [skip ci]"
-          commit_options: --no-verify
+          commit_options: '--no-verify'
           commit_user_name: ${{ steps.github_setup_gpg.outputs.name }}
           commit_user_email: ${{ steps.github_setup_gpg.outputs.email }}
           commit_author: repository-assistant[bot] <${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}+repository-assistant[bot]@users.noreply.github.com>
           file_pattern: 'scripts/*.sha256 scripts/*.sha256.sig'
-          push_options: --force
+          push_options: '--force'
