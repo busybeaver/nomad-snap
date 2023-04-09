@@ -165,7 +165,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=goss-org/goss
-      GOSS_VERSION: v0.3.20
+      GOSS_VERSION: v0.3.21
 
     steps:
       - name: Git - Checkout
@@ -339,7 +339,7 @@ jobs:
 
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
-        uses: github/codeql-action/upload-sarif@8c8d71dde4abced210732d8486586914b97752e8 # v2.2.10
+        uses: github/codeql-action/upload-sarif@d186a2a36cc67bfa1b860e6170d37fb9634742c7 # v2.2.11
         # always run, even if the previous step failed due to found vulnerabilities (so it vulnerabilities get reported)
         # only run if the sarif file exists
         # only run on pushes on the default branch
@@ -368,7 +368,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=sigstore/cosign
-      COSIGN_VERSION: v1.13.1
+      COSIGN_VERSION: v2.0.0
 
     steps:
       - name: Git - Checkout
