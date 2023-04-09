@@ -15,8 +15,8 @@ concurrency:
   group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
 
 jobs:
-  public_key_verification:
-    name: 'Public Key Verification'
+  checksums_signature:
+    name: 'Create Checksums and Signature'
     runs-on: ubuntu-latest
 
     # only run if:
@@ -79,3 +79,4 @@ jobs:
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+
