@@ -427,7 +427,7 @@ jobs:
         if: steps.git_changed_files.outputs.any_changed == 'true'
         run: |
           GIT_TAG_IMAGE="$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_git_tag, matrix.package) }})"
-          cosign sign
+          cosign sign \
             --key env://COSIGN_PRIVATE_KEY \
             --yes \
             --annotations "repo=${{ github.repository }}" \
@@ -436,7 +436,7 @@ jobs:
             "${GIT_TAG_IMAGE}"
 
           DATE_IMAGE="$(docker inspect --format='{{index .RepoDigests 0}}' ${{ format(needs.matrix_setup.outputs.image_name_date, matrix.package) }})"
-          cosign sign
+          cosign sign \
             --key env://COSIGN_PRIVATE_KEY \
             --yes \
             --annotations "repo=${{ github.repository }}" \

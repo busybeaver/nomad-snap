@@ -58,7 +58,7 @@ jobs:
       - name: Cosign - Create Signature File
         id: cosign_sign
         run: |
-          cosign sign-blob
+          cosign sign-blob \
             --key env://COSIGN_PRIVATE_KEY \
             --yes \
             --output-signature "${CHECKSUM_FILE}.sig" \
