@@ -1,0 +1,72 @@
+name: 'Scripts CI'
+
+on:
+  # run on pushes to main
+  push:
+    branches:
+      - main
+    paths:
+      - './scripts/**'
+
+concurrency:
+  # on main, we want all builds to complete even if commits/merging happens faster to make it easier to discover at which point
+  # something broke; else, we cancel "old" builds and run/(re)start the build with the latest changes
+  group: ${{ github.ref == 'refs/heads/main' && format('ci-main-{0}-{1}', github.workflow, github.sha) || format('ci-{0}-{1}', github.workflow, github.ref) }}
+
+jobs:
+  public_key_verification:
+    name: 'Public Key Verification'
+    runs-on: ubuntu-latest
+
+    # only run if:
+    # - the 'General CI' finished successfully
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: '/scripts/'
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      COSIGN_VERSION: v1.13.1
+      CHECKSUM_FILE: scripts.sha256
+
+    steps:
+      - name: Git - Checkout
+        id: git_checkout
+        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
+        with:
+
+      - name: Cosign - Setup
+        id: cosign_setup
+        uses: sigstore/cosign-installer@9becc617647dfa20ae7b1151972e9b3a2c338a2b # v2.8.1
+        with:
+          cosign-release: ${{ env.COSIGN_VERSION }}
+
+      - name: GitHub - Compute Checksums for Script Files
+        id: cosign_sign
+        run: |
+          rm -rf "${CHECKSUM_FILE}" "${CHECKSUM_FILE}.sig"
+          find "." -type f -exec sha256sum {} \; | LC_ALL=C sort -d | tee scripts.sha256
+
+      - name: Cosign - Upload and Sign Public Key
+        id: cosign_sign
+        run: |
+          cosign sign-blob --key env://COSIGN_PRIVATE_KEY --verbose \
+            --bundle scripts.sha256.bundle \
+            --output-certificate scripts.sha256.cert \
+            --output-signature scripts.sha256.sig \
+            "${CHECKSUM_FILE}"
+
+            cat scripts.sha256.bundle
+            echo "---"
+            cat scripts.sha256.cert
+            echo "---"
+            cat scripts.sha256.sig
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
