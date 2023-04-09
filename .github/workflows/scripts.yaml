@@ -57,7 +57,7 @@ jobs:
           cosign-release: ${{ env.COSIGN_VERSION }}
 
       - name: GitHub - Compute Checksums for Script Files
-        id: cosign_sign
+        id: github_compute_checksums
         run: |
           rm -rf "${CHECKSUM_FILE}" "${CHECKSUM_FILE}.sig"
           find "." -type f -exec sha256sum {} \; | LC_ALL=C sort -d | tee scripts.sha256
