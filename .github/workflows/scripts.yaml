@@ -61,7 +61,7 @@ jobs:
         id: cosign_sign
         run: |
           cosign sign-blob --key env://COSIGN_PRIVATE_KEY --verbose \
-            --output "${CHECKSUM_FILE}.sig" \
+            --output-signature "${CHECKSUM_FILE}.sig" \
             "${CHECKSUM_FILE}"
 
           echo "File signature:"
@@ -88,4 +88,4 @@ jobs:
           commit_user_name: ${{ steps.github_setup_gpg.outputs.name }}
           commit_user_email: ${{ steps.github_setup_gpg.outputs.email }}
           commit_author: repository-assistant[bot] <${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}+repository-assistant[bot]@users.noreply.github.com>
-          file_pattern: "${CHECKSUM_FILE} ${CHECKSUM_FILE}.sig"
+          file_pattern: "./scripts/${CHECKSUM_FILE} ./scripts/${CHECKSUM_FILE}.sig"
