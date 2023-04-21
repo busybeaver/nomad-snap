@@ -158,7 +158,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=goss-org/goss
-      GOSS_VERSION: v0.3.21
+      GOSS_VERSION: v0.3.22
 
     defaults:
       run:
