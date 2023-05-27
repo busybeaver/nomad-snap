@@ -327,7 +327,7 @@ jobs:
 
       - name: Snyk - Check for Docker Image Vulnerabilities
         id: snyk_scan
-        uses: snyk/actions/docker@7fad562681122205233d1242c3bb39598c5393da # renovate: tag=0.3.0
+        uses: snyk/actions/docker@b98d498629f1c368650224d6d212bf7dfa89e4bf # 0.4.0
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
