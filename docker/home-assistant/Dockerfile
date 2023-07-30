@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM alpine/git:v2.40.1@sha256:a88fb2105d2f3273a274293b8d390198b2e3d23d7115be77607691850ffeaa70 as build
+FROM alpine/git:v2.40.1@sha256:7ee4031c1e08fb1646878c53059535b5e88bcf1f0ccb3aad3485362e2039d886 as build
 
 # renovate: datasource=github-tags depName=tribut/homeassistant-docker-venv versioning=loose
 ARG GIT_TAG_VERSION="v2.3"
