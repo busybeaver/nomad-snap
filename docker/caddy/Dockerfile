@@ -15,8 +15,8 @@ COPY --from=build /usr/bin/caddy /usr/bin/caddy
 # check here on which alpine version caddy is based on and update the renovate config when needed:
 # https://github.com/caddyserver/caddy-docker
 # ---
-# renovate: datasource=repology depName=alpine_3_16/libcap versioning=loose
-ARG LIBCAP_VERSION="2.64-r1"
+# renovate: datasource=repology depName=alpine_3_18/libcap versioning=loose
+ARG LIBCAP_VERSION="2.69-r0"
 
 # Update outdated (and potentially vulnerable) dependencies;
 # Allow to run Caddy on privileged ports (as a non-root user)
