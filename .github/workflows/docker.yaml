@@ -165,7 +165,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=goss-org/goss
-      GOSS_VERSION: v0.4.1
+      GOSS_VERSION: v0.4.2
 
     steps:
       - name: Git - Checkout
