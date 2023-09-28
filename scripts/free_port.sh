@@ -2,7 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-set -x
+if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
+  set -x
+fi
 
 # NEWLY ADDED BACKUP FUNCTIONALITY IS NOT FULLY TESTED YET, USE WITH CARE, ESPECIALLY DELETION
 # Developed for DSM 6 - 7.0.1. Not tested on other versions.
