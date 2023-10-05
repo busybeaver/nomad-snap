@@ -7,7 +7,7 @@ if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
 fi
 
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker
-IMAGE_VERSION=latest@sha256:3ec83e8f3e756ccef1db6e691313dfc7bf11b219c1d60a13797255d7d6bb2eda
+IMAGE_VERSION=latest@sha256:e28211824df195bca01eb735be777c6ae2d81a74c537e3d2d1db460547eb7cdc
 
 docker run \
   --rm \
