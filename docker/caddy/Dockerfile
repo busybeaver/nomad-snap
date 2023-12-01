@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     --with github.com/hslatman/caddy-crowdsec-bouncer \
     --with github.com/caddyserver/transform-encoder
 
-FROM caddy:2.7.5-alpine@sha256:f1c092da9fcba7a8197cf1065a347d4f0bb67b6dd188985eafaf0a5aec6c9041
+FROM caddy:2.7.5-alpine@sha256:bff780b445b10138b0dadc2e844812c9c745323b1d5244b5bcf6353a7d9d0698
 
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
