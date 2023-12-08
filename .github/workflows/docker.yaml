@@ -368,7 +368,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=sigstore/cosign
-      COSIGN_VERSION: v2.2.1
+      COSIGN_VERSION: v2.2.2
 
     steps:
       - name: Git - Checkout
