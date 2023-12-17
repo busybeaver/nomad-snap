@@ -73,6 +73,6 @@ rm -rf ./tmp
 echo "Start/update docker-compose in detached mode"
 docker-compose up --no-color --detach --remove-orphans --file "${DOCKER_COMPOSE_FILE}"
 sleep 10
-docker-compose logs --no-color --tail="25"
+docker-compose logs --no-color --tail="25" --file "${DOCKER_COMPOSE_FILE}"
 
 echo "download_docker_compose.sh script finished successfully at $(date)"
