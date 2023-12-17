@@ -21,9 +21,6 @@ rm -rf .[!.]* docker-compose.yaml public_key
 
 # requires SSH key or deploy key present
 git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "git@github.com:${GIT_REPO_PATH}.git" .
-# ".[!.]*" matches all dot files except "." and files whose name begins with ".." // https://unix.stackexchange.com/a/77313
-# "!(docker-compose.yaml|public_key)" matches all non dot files except the docker-compose.yaml file and public_key folder (requires "extglob")
-rm -rf .[!.]* !(docker-compose.yaml|public_key)
 
 # extract images from docker-compose.yaml file
 DOCKER_COMPOSE_IMAGES=$(docker run \
@@ -62,3 +59,9 @@ for DOCKER_COMPOSE_IMAGE in ${DOCKER_COMPOSE_IMAGES}; do
     echo "Skipping signature check for image: ${DOCKER_COMPOSE_IMAGE}"
   fi
 done
+
+# ".[!.]*" matches all dot files except "." and files whose name begins with ".." // https://unix.stackexchange.com/a/77313
+# "!(docker-compose.yaml)" matches all non dot files except the docker-compose.yaml file (requires "extglob")
+rm -rf .[!.]* !(docker-compose.yaml)
+
+docker-compose up -d
