@@ -12,7 +12,7 @@ shopt -s extglob
 YQ_IMAGE_VERSION=4.40.5@sha256:32be61dc94d0acc44f513ba69d0fc05f1f92c2e760491f2a27e11fc13cde6327
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
-COSIGN_IMAGE_VERSION=1.13.1@sha256:fe8da3dbe7c080be303a41f4cce5c3b902740891909a47051a21c7d7bf58bebd
+COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
 
 GIT_REPO_PATH="${GIT_ORG}/${GIT_REPOSITORY}"
 
