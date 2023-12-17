@@ -43,5 +43,6 @@ echo "Verification finished and succeeded, replacing old script files"
 cd .. || exit 1
 rm -rf ./scripts
 mv ./tmp/scripts ./scripts
+rm -rf ./tmp
 
 echo "download_scripts.sh script finished successfully"
