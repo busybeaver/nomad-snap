@@ -32,9 +32,9 @@ DOCKER_COMPOSE_IMAGES=$(docker run \
   --security-opt=no-new-privileges \
   --cap-drop all \
   --network none \
-  "mikefarah/yq:${YQ_IMAGE_VERSION}" '.services.[].image' < docker-compose.yaml)
+  "mikefarah/yq:${YQ_IMAGE_VERSION}" '.services.[].image' <docker-compose.yaml)
 
-printf "The docker-compose.yaml file specifies the following Docker images:\n${DOCKER_COMPOSE_IMAGES}\n\n"
+printf "The docker-compose.yaml file specifies the following Docker images:\n%s\n\n" "${DOCKER_COMPOSE_IMAGES}"
 
 echo "Verify the public sign key: public_key/cosign.pub"
 DOCKER_CONTENT_TRUST=1 docker run \
