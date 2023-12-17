@@ -44,7 +44,7 @@ DOCKER_CONTENT_TRUST=1 docker run \
   --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
   "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify-blob --key /public_key/cosign.pub --signature /public_key/cosign.pub.sig /public_key/cosign.pub
 
-echo "Verify the signature of the docker images"
+echo "Verify the signature of the docker image and if the image is available and accessible on remote registry"
 for DOCKER_COMPOSE_IMAGE in ${DOCKER_COMPOSE_IMAGES}; do
   # we can only verify the signature of our own images
   if [[ "${DOCKER_COMPOSE_IMAGE}" =~ ^ghcr\.io\/busybeaver\/homelab-packages\/.* ]]; then
@@ -64,7 +64,7 @@ for DOCKER_COMPOSE_IMAGE in ${DOCKER_COMPOSE_IMAGES}; do
 done
 
 DOCKER_COMPOSE_FILE="docker-compose.yaml"
-echo "Verification finished and succeeded, replacing old ${DOCKER_COMPOSE_FILE} file"
+echo "Verification and image availability check finished and succeeded, replacing old ${DOCKER_COMPOSE_FILE} file"
 cd .. || exit 1
 rm "./${DOCKER_COMPOSE_FILE}"
 mv "./tmp/${DOCKER_COMPOSE_FILE}" "./${DOCKER_COMPOSE_FILE}"
@@ -75,4 +75,4 @@ docker-compose up --no-color --detach --remove-orphans --file "${DOCKER_COMPOSE_
 sleep 10
 docker-compose logs --no-color --tail="25"
 
-echo "download_docker_compose.sh script finished successfully"
+echo "download_docker_compose.sh script finished successfully at $(date)"
