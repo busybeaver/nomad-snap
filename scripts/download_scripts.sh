@@ -37,7 +37,7 @@ DOCKER_CONTENT_TRUST=1 docker run \
   "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify-blob --key /public_key/cosign.pub --signature /scripts/scripts.sha256.sig /scripts/scripts.sha256
 
 echo "Check the script checksums"
-( cd ./scripts && sha256sum -c scripts.sha256 )
+(cd ./scripts && sha256sum -c scripts.sha256)
 
 echo "Verification finished and succeeded, replacing old script files"
 cd .. || exit 1
