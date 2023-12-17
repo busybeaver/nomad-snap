@@ -17,10 +17,11 @@ COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f
 GIT_REPO_PATH="${GIT_ORG}/${GIT_REPOSITORY}"
 
 cd "${CHECKOUT_DIRECTORY:-.}" || exit 1
-rm -rf .[!.]* docker-compose.yaml public_key
 
 # requires SSH key or deploy key present
-git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "git@github.com:${GIT_REPO_PATH}.git" .
+rm -rf ./tmp
+git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "git@github.com:${GIT_REPO_PATH}.git" ./tmp
+cd ./tmp || exit 1
 
 # extract images from docker-compose.yaml file
 DOCKER_COMPOSE_IMAGES=$(docker run \
@@ -55,13 +56,22 @@ for DOCKER_COMPOSE_IMAGE in ${DOCKER_COMPOSE_IMAGES}; do
       --cap-drop all \
       --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
       "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify --key /public_key/cosign.pub --annotations "repo=${GIT_REPO_PATH}" --output text "${DOCKER_COMPOSE_IMAGE}"
+    echo "Check if the image is available and accessible on remote registry: ${DOCKER_COMPOSE_IMAGE}"
+    docker manifest inspect "${DOCKER_COMPOSE_IMAGE}" > /dev/null
   else
-    echo "Skipping signature check for image: ${DOCKER_COMPOSE_IMAGE}"
+    echo "Skipping signature and image availability check for image: ${DOCKER_COMPOSE_IMAGE}"
   fi
 done
 
-# ".[!.]*" matches all dot files except "." and files whose name begins with ".." // https://unix.stackexchange.com/a/77313
-# "!(docker-compose.yaml)" matches all non dot files except the docker-compose.yaml file (requires "extglob")
-rm -rf .[!.]* !(docker-compose.yaml)
+echo "Verification finished and succeeded, replacing old docker-compose.yaml file"
+cd .. || exit 1
+rm ./docker-compose.yaml
+mv ./tmp/docker-compose.yaml ./docker-compose.yaml
+rm -rf ./tmp
 
-docker-compose up --detach --remove-orphans
+echo "Start/update docker-compose in detached mode"
+docker-compose up --no-color --detach --remove-orphans
+sleep 10
+docker-compose logs --no-color --tail="25"
+
+echo "download_docker_compose.sh script finished successfully"
