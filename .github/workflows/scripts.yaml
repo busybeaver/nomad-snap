@@ -52,7 +52,15 @@ jobs:
       - name: GitHub - Compute Checksums for Script Files
         id: github_compute_checksums
         run: |
-          rm -rf "${CHECKSUM_FILE}" "${CHECKSUM_FILE}.sig"
+          if [ -f "${CHECKSUM_FILE}" ]; then
+            echo "Deleting old ${CHECKSUM_FILE} checksum file"
+            rm "${CHECKSUM_FILE}"
+          fi
+          if [ -f "${CHECKSUM_FILE}.sig" ]; then
+            echo "Deleting old ${CHECKSUM_FILE}.sig checksum signature file"
+            rm "${CHECKSUM_FILE}.sig"
+          fi
+
           find "." -type f -exec sha256sum {} \; | LC_ALL=C sort -d | tee scripts.sha256
 
       - name: Cosign - Create Signature File
