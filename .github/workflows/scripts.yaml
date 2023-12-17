@@ -41,7 +41,7 @@ jobs:
           ref: ${{ github.head_ref }}
           # this is the token that the "git-auto-commit" action is using, so we use the one from the app
           # https://github.com/marketplace/actions/git-auto-commit#commits-made-by-this-action-do-not-trigger-new-workflow-runs
-          token: ${{ secrets.GH_AUTOMATION_TOKEN }}
+          ssh-key: ${{ secrets.SSH_KEY }}
 
       - name: Cosign - Setup
         id: cosign_setup
@@ -90,4 +90,4 @@ jobs:
           commit_user_email: ${{ steps.github_setup_gpg.outputs.email }}
           commit_author: repository-assistant[bot] <${{ secrets.REPOSITORY_ASSISTANT_APP_ID }}+repository-assistant[bot]@users.noreply.github.com>
           file_pattern: 'scripts/*.sha256 scripts/*.sha256.sig'
-          push_options: '--force'
+          # push_options: '--force'
