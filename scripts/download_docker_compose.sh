@@ -9,10 +9,10 @@ fi
 shopt -s extglob
 
 # renovate: datasource=docker depName=mikefarah/yq versioning=docker
-YQ_IMAGE_VERSION=4.33.2@sha256:18b81bb2162f8104d2e64d38dc34b4716a75a39c26a564f491b9e2e379b5ff4d
+YQ_IMAGE_VERSION=4.40.5@sha256:32be61dc94d0acc44f513ba69d0fc05f1f92c2e760491f2a27e11fc13cde6327
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
-COSIGN_IMAGE_VERSION=1.13.1@sha256:b31c7f4419c8793a90100424204be9b795d814a6c77b5cb2211410dac440c256
+COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
 
 GIT_REPO_PATH="${GIT_ORG}/${GIT_REPOSITORY}"
 
