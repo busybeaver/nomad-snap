@@ -64,4 +64,4 @@ done
 # "!(docker-compose.yaml)" matches all non dot files except the docker-compose.yaml file (requires "extglob")
 rm -rf .[!.]* !(docker-compose.yaml)
 
-docker-compose up -d
+docker-compose up --detach --remove-orphans
