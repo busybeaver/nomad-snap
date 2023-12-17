@@ -8,7 +8,7 @@ fi
 
 shopt -s extglob
 
-cd "${CHECKOUT_DIRECTORY:-.}"
+cd "${CHECKOUT_DIRECTORY:-.}" || exit -1
 rm -rf .[!.]* scripts
 
 git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "https://github.com/busybeaver/${GIT_REPOSITORY:-homelab-packages}.git" .
