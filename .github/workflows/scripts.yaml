@@ -61,7 +61,7 @@ jobs:
             rm "${CHECKSUM_FILE}.sig"
           fi
 
-          find "." -type f -exec sha256sum {} \; | LC_ALL=C sort -d | tee scripts.sha256
+          find "." -type f \( -name "*.sh" \) -exec sha256sum {} \; | LC_ALL=C sort -d | tee scripts.sha256
 
       - name: Cosign - Create Signature File
         id: cosign_sign
