@@ -63,14 +63,15 @@ for DOCKER_COMPOSE_IMAGE in ${DOCKER_COMPOSE_IMAGES}; do
   fi
 done
 
-echo "Verification finished and succeeded, replacing old docker-compose.yaml file"
+DOCKER_COMPOSE_FILE="docker-compose.yaml"
+echo "Verification finished and succeeded, replacing old ${DOCKER_COMPOSE_FILE} file"
 cd .. || exit 1
-rm ./docker-compose.yaml
-mv ./tmp/docker-compose.yaml ./docker-compose.yaml
+rm "./${DOCKER_COMPOSE_FILE}"
+mv "./tmp/${DOCKER_COMPOSE_FILE}" "./${DOCKER_COMPOSE_FILE}"
 rm -rf ./tmp
 
 echo "Start/update docker-compose in detached mode"
-docker-compose up --no-color --detach --remove-orphans
+docker-compose up --no-color --detach --remove-orphans --file "${DOCKER_COMPOSE_FILE}"
 sleep 10
 docker-compose logs --no-color --tail="25"
 
