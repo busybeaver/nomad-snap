@@ -16,7 +16,7 @@ COSIGN_IMAGE_VERSION=1.13.1@sha256:b31c7f4419c8793a90100424204be9b795d814a6c77b5
 
 GIT_REPO_PATH="${GIT_ORG}/${GIT_REPOSITORY}"
 
-cd "${CHECKOUT_DIRECTORY:-.}"|| exit -1
+cd "${CHECKOUT_DIRECTORY:-.}" || exit 1
 rm -rf .[!.]* docker-compose.yaml public_key
 
 # requires SSH key or deploy key present
