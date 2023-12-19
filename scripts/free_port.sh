@@ -6,6 +6,8 @@ if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
 
+echo "free_port.sh script started at $(date)"
+
 # NEWLY ADDED BACKUP FUNCTIONALITY IS NOT FULLY TESTED YET, USE WITH CARE, ESPECIALLY DELETION
 # Developed for DSM 6 - 7.0.1. Not tested on other versions.
 # Steps to install
@@ -55,3 +57,5 @@ fi
 echo "Made these changes:"
 
 diff /usr/syno/share/nginx/ "$CURRENT_BACKUP_DIR" 2>&1 | tee "$CURRENT_BACKUP_DIR/changes.log"
+
+echo "free_port.sh script finished successfully at $(date)"

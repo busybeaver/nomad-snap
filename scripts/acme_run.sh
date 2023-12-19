@@ -6,6 +6,8 @@ if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
 
+echo "acme_run.sh script started at $(date)"
+
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker
 IMAGE_VERSION=latest@sha256:7282c745441d3fae7fa91b37daafa3f7a2d45f3b47f5f8fed184787280b65bca
 
@@ -16,3 +18,5 @@ docker run \
   --env-file "${GLOBAL_ENV_FILE}" \
   --env-file "${ENV_FILE}" \
   "neilpang/acme.sh:${IMAGE_VERSION}" "$@"
+
+echo "acme_run.sh script finished successfully at $(date)"

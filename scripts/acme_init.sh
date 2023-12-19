@@ -6,6 +6,8 @@ if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
 
+echo "acme_init.sh script started at $(date)"
+
 HOMELAB_PACKAGES_CONFIG="${HOMELAB_PACKAGES_CONFIG_FOLDER:-~/homelab-packages-config}"
 
 # general setup
@@ -40,3 +42,5 @@ export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/n8n.env"
 export CERT_DOMAIN="node-red.mollner.cloud"
 export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/node-red.env"
 # bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}"
+
+echo "acme_init.sh script finished successfully at $(date)"
