@@ -6,6 +6,8 @@ if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
 
+echo "download_scripts.sh script started at $(date)"
+
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
 COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
 
@@ -15,31 +17,37 @@ rm -rf ./tmp
 git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "https://github.com/busybeaver/${GIT_REPOSITORY:-homelab-packages}.git" ./tmp
 cd ./tmp || exit 1
 
-echo "Verify the public sign key: public_key/cosign.pub"
-DOCKER_CONTENT_TRUST=1 docker run \
-  --rm \
-  --interactive \
-  --security-opt=no-new-privileges \
-  --cap-drop all \
-  --network none \
-  --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
-  "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify-blob --key /public_key/cosign.pub --signature /public_key/cosign.pub.sig /public_key/cosign.pub
+if [ "${SKIP_VERIFICATION:-}" != "TRUE" ]; then
+  echo "Verify the public sign key: public_key/cosign.pub"
+  DOCKER_CONTENT_TRUST=1 docker run \
+    --rm \
+    --interactive \
+    --security-opt=no-new-privileges \
+    --cap-drop all \
+    --network none \
+    --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
+    "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify-blob --key /public_key/cosign.pub --signature /public_key/cosign.pub.sig /public_key/cosign.pub
 
-echo "Verify the checksum file: scripts/scripts.sha256"
-DOCKER_CONTENT_TRUST=1 docker run \
-  --rm \
-  --interactive \
-  --security-opt=no-new-privileges \
-  --cap-drop all \
-  --network none \
-  --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
-  --volume "${SCRIPTS_DIRECTORY:-$(pwd)/scripts}":/scripts:ro \
-  "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify-blob --key /public_key/cosign.pub --signature /scripts/scripts.sha256.sig /scripts/scripts.sha256
+  echo "Verify the checksum file: scripts/scripts.sha256"
+  DOCKER_CONTENT_TRUST=1 docker run \
+    --rm \
+    --interactive \
+    --security-opt=no-new-privileges \
+    --cap-drop all \
+    --network none \
+    --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
+    --volume "${SCRIPTS_DIRECTORY:-$(pwd)/scripts}":/scripts:ro \
+    "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify-blob --key /public_key/cosign.pub --signature /scripts/scripts.sha256.sig /scripts/scripts.sha256
 
-echo "Check the script checksums"
-(cd ./scripts && sha256sum -c scripts.sha256)
+  echo "Check the script checksums"
+  (cd ./scripts && sha256sum -c scripts.sha256)
 
-echo "Verification finished and succeeded, replacing old script files"
+  echo "Verification finished and succeeded"
+else
+  echo "SKIPPED Verification. Use with caution!"
+fi
+
+echo "Replacing old script files"
 cd .. || exit 1
 rm -rf ./scripts
 mv ./tmp/scripts ./scripts
