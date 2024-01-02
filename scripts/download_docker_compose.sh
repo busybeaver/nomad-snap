@@ -58,7 +58,7 @@ if [ "${SKIP_VERIFICATION:-}" != "TRUE" ]; then
         --volume "${PUBLIC_KEY_DIRECTORY:-$(pwd)/public_key}":/public_key:ro \
         "bitnami/cosign:${COSIGN_IMAGE_VERSION}" verify --key /public_key/cosign.pub --annotations "repo=${GIT_REPO_PATH}" --output text "${DOCKER_COMPOSE_IMAGE}"
       echo "Check if the image is available and accessible on remote registry: ${DOCKER_COMPOSE_IMAGE}"
-      docker manifest inspect "${DOCKER_COMPOSE_IMAGE}" > /dev/null
+      docker manifest inspect "${DOCKER_COMPOSE_IMAGE}" >/dev/null
     else
       echo "Skipping signature and image availability check for image: ${DOCKER_COMPOSE_IMAGE}"
     fi
