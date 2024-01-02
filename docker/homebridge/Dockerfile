@@ -24,7 +24,7 @@ COPY --from=build /tmp/homebridge.gpg /etc/apt/trusted.gpg.d/homebridge.gpg
 
 # renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
-# renovate: datasource=repology depName=ubuntu_22_04/libcap versioning=loose
+# renovate: datasource=repology depName=ubuntu_22_04/libcap2 versioning=loose
 ARG LIBCAP_VERSION="2.44"
 # renovate: datasource=github-releases depName=homebridge/homebridge-apt-pkg versioning=loose
 ARG HOMEBRIDGE_VERSION="1.1.5"
