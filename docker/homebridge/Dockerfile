@@ -25,7 +25,7 @@ COPY --from=build /tmp/homebridge.gpg /etc/apt/trusted.gpg.d/homebridge.gpg
 # renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/libcap2 versioning=loose
-ARG LIBCAP_VERSION="2.44"
+ARG LIBCAP_VERSION="1:2.44-1ubuntu0.22.04.1"
 # renovate: datasource=github-releases depName=homebridge/homebridge-apt-pkg versioning=loose
 ARG HOMEBRIDGE_VERSION="1.1.5"
 
@@ -38,7 +38,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Install homebridge
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
-      libcap2-bin="1:${LIBCAP_VERSION}*" \
+      libcap2-bin="${LIBCAP_VERSION}" \
       homebridge="${HOMEBRIDGE_VERSION}" && \
     # Allow nodejs to run on privileged ports
     setcap 'cap_net_bind_service=+eip' /opt/homebridge/bin/node
