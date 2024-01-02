@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
 FROM public.ecr.aws/lts/ubuntu:22.04@sha256:c88265b8f9e40ca21547aeecd90b688a167738fefda07b943cdf48f7d714d503 as build
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/curl versioning=loose
@@ -17,6 +19,8 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
 
 FROM public.ecr.aws/lts/ubuntu:22.04@sha256:c88265b8f9e40ca21547aeecd90b688a167738fefda07b943cdf48f7d714d503
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=60s CMD curl --fail http://127.0.0.1:8581 || exit 1
 
