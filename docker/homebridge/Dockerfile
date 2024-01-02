@@ -8,7 +8,7 @@ ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/curl versioning=loose
 ARG CURL_VERSION="7.81.0-1ubuntu1.15"
 # renovate: datasource=repology depName=ubuntu_22_04/gnupg2 versioning=loose
-ARG GPG_VERSION="2.2.27"
+ARG GPG_VERSION="2.2.27-3ubuntu2.1"
 
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
