@@ -38,7 +38,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Install homebridge
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
-      libcap2-bin="1:${LIBCAP_VERSION}*" \
+      libcap2-bin="1:${LIBCAP_VERSION}" \
       homebridge="${HOMEBRIDGE_VERSION}" && \
     # Allow nodejs to run on privileged ports
     setcap 'cap_net_bind_service=+eip' /opt/homebridge/bin/node
