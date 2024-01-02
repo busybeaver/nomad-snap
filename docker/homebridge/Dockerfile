@@ -15,7 +15,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get install --yes --no-install-recommends --no-install-suggests \
       ca-certificates="${CA_CERTIFICATES_VERSION}" \
       curl="${CURL_VERSION}" \
-      gpg="${GPG_VERSION}*" && \
+      gpg="${GPG_VERSION}" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
 
 FROM public.ecr.aws/lts/ubuntu:22.04@sha256:c88265b8f9e40ca21547aeecd90b688a167738fefda07b943cdf48f7d714d503
