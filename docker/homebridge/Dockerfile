@@ -12,7 +12,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
       ca-certificates="${CA_CERTIFICATES_VERSION}" \
-      curl="${CURL_VERSION}*" \
+      curl="${CURL_VERSION}" \
       gpg="${GPG_VERSION}*" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
 
