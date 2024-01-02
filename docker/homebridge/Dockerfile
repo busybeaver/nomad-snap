@@ -2,7 +2,7 @@
 FROM public.ecr.aws/lts/ubuntu:22.04_stable@sha256:c88265b8f9e40ca21547aeecd90b688a167738fefda07b943cdf48f7d714d503 as build
 
 # renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
-ARG CA_CERTIFICATES_VERSION="20230311"
+ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/curl versioning=loose
 ARG CURL_VERSION="7.81.0"
 # renovate: datasource=repology depName=ubuntu_22_04/gnupg versioning=loose
@@ -11,7 +11,7 @@ ARG GPG_VERSION="2.2.27"
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
-      ca-certificates="${CA_CERTIFICATES_VERSION}*" \
+      ca-certificates="${CA_CERTIFICATES_VERSION}" \
       curl="${CURL_VERSION}*" \
       gpg="${GPG_VERSION}*" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
@@ -23,7 +23,7 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=60s CMD curl 
 COPY --from=build /tmp/homebridge.gpg /etc/apt/trusted.gpg.d/homebridge.gpg
 
 # renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
-ARG CA_CERTIFICATES_VERSION="20230311"
+ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/libcap versioning=loose
 ARG LIBCAP_VERSION="2.44"
 # renovate: datasource=github-releases depName=homebridge/homebridge-apt-pkg versioning=loose
@@ -33,7 +33,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Setup repository
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
-      ca-certificates="${CA_CERTIFICATES_VERSION}*" && \
+      ca-certificates="${CA_CERTIFICATES_VERSION}" && \
     echo "deb https://repo.homebridge.io stable main" | tee /etc/apt/sources.list.d/homebridge.list > /dev/null && \
     # Install homebridge
     apt-get update && \
