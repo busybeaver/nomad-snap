@@ -13,7 +13,7 @@ DOPPLER_TEMP_INSTALL_DIRECTORY="/tmp/doppler-install"
 
 mkdir "${DOPPLER_TEMP_INSTALL_DIRECTORY}"
 cd "${DOPPLER_TEMP_INSTALL_DIRECTORY}"
-curl -Ls --proto "=https" --tlsv1.3 --retry 3 "https://github.com/DopplerHQ/cli/releases/download/${DOPPLER_VERSION}/doppler_${DOPPLER_VERSION}_linux_amd64.tar.gz" > doppler_linux_arm64.tar.gz
+curl -Ls --proto "=https" --tlsv1.3 --retry 3 "https://github.com/DopplerHQ/cli/releases/download/${DOPPLER_VERSION}/doppler_${DOPPLER_VERSION}_linux_amd64.tar.gz" >doppler_linux_arm64.tar.gz
 tar -xvzf doppler_linux_arm64.tar.gz
 
 chmod +x "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler"
