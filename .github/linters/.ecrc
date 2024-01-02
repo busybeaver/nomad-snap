@@ -1,5 +1,5 @@
 {
   "NoColor": true,
   "IgnoreDefaults": true,
-  "Exclude": ["\\.idea/", ".*\\.sig"]
+  "Exclude": ["\\.idea/", "\\.sig$"]
 }
