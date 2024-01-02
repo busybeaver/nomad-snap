@@ -11,7 +11,7 @@ ARG GPG_VERSION="2.2.27"
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
-      ca-certificates="${CA_CERTIFICATES_VERSION}*" \
+      ca-certificates="${CA_CERTIFICATES_VERSION}" \
       curl="${CURL_VERSION}*" \
       gpg="${GPG_VERSION}*" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
@@ -33,7 +33,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Setup repository
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
-      ca-certificates="${CA_CERTIFICATES_VERSION}*" && \
+      ca-certificates="${CA_CERTIFICATES_VERSION}" && \
     echo "deb https://repo.homebridge.io stable main" | tee /etc/apt/sources.list.d/homebridge.list > /dev/null && \
     # Install homebridge
     apt-get update && \
