@@ -4,7 +4,7 @@ FROM public.ecr.aws/lts/ubuntu:22.04_stable@sha256:c88265b8f9e40ca21547aeecd90b6
 # renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/curl versioning=loose
-ARG CURL_VERSION="7.81.0"
+ARG CURL_VERSION="7.81.0-1ubuntu1.15"
 # renovate: datasource=repology depName=ubuntu_22_04/gnupg versioning=loose
 ARG GPG_VERSION="2.2.27"
 
