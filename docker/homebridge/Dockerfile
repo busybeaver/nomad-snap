@@ -66,7 +66,7 @@ ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.2.5
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
 ARG HOMEBRIDGE_CAMERA_FFMPEG_VERSION=3.1.4
 
-# shellcheck source=/dev/null
+# shellcheck disable=SC1091
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     . /opt/homebridge/source.sh && \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --save-prod --no-package-lock --save-exact \
