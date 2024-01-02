@@ -44,6 +44,9 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get install --yes --no-install-recommends --no-install-suggests \
       libcap2-bin="${LIBCAP_VERSION}" \
       homebridge="${HOMEBRIDGE_VERSION}" && \
+    # Cleanup
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     # Allow nodejs to run on privileged ports
     setcap 'cap_net_bind_service=+eip' /opt/homebridge/bin/node
 
@@ -63,6 +66,7 @@ ARG HOMEBRIDGE_DELAY_SWITCH_VERSION=3.2.5
 # renovate: datasource=npm depName=homebridge-camera-ffmpeg versioning=npm
 ARG HOMEBRIDGE_CAMERA_FFMPEG_VERSION=3.1.4
 
+# shellcheck source=/dev/null
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     . /opt/homebridge/source.sh && \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --save-prod --no-package-lock --save-exact \
