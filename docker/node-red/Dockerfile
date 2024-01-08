@@ -10,7 +10,7 @@ ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
 ARG NODE_RED_PUSHOVER_VERSION=0.2.1
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
-ARG NODE_RED_KNX_ULTIMATE_VERSION=2.3.0
+ARG NODE_RED_KNX_ULTIMATE_VERSION=2.3.2
 
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --no-fund --no-package-lock --save-prod --save-exact \
