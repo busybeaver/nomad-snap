@@ -58,7 +58,7 @@ ARG HOMEBRIDGE_FRITZ_PLATFORM_VERSION=6.0.19
 # renovate: datasource=npm depName=homebridge-weather-plus versioning=npm
 ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.3.1
 # renovate: datasource=npm depName=homebridge-homeconnect versioning=npm
-ARG HOMEBRIDGE_HOMECONNECT_VERSION=0.37.7
+ARG HOMEBRIDGE_HOMECONNECT_VERSION=0.37.8
 # renovate: datasource=npm depName=homebridge-dummy versioning=npm
 ARG HOMEBRIDGE_DUMMY_VERSION=0.9.0
 # renovate: datasource=npm depName=homebridge-delay-switch versioning=npm
