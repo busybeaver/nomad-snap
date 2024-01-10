@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
-FROM caddy:2.7.6-builder-alpine@sha256:88ea79d5d4c27d14e88147a8ee7880afdd51b939d2fc2b455146a10fbc326986 AS build
+FROM caddy:2.7.6-builder-alpine@sha256:2cc3adbbf1d2a62a983a23823d00a3d5ad83560344fe3a78f0cbdc38e1b606ca AS build
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     xcaddy build \
