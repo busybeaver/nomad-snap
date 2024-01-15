@@ -4,7 +4,7 @@ FROM nodered/node-red:3.1.3-16-minimal@sha256:f2e2e38fe95af20d56f2fcf062ffeef264
 ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
-ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.5.0
+ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.6.0
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
 ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
