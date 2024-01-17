@@ -1,16 +1,16 @@
 # syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
-FROM nodered/node-red:3.1.3-16-minimal@sha256:6e565c93c60f3af9d0c25c0075f28cbb140ce3b6f7f8ae73ea92a9c4aeca5a24
+FROM nodered/node-red:3.1.3-16-minimal@sha256:f2e2e38fe95af20d56f2fcf062ffeef264fd59ea4e37f19dae878ad060310707
 
 ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
-ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.5.0
+ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.6.0
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
 ARG NODE_RED_HUEMAGIC_VERSION=4.2.2
 # renovate: datasource=npm depName=node-red-node-pushover versioning=npm
 ARG NODE_RED_PUSHOVER_VERSION=0.2.1
 # renovate: datasource=npm depName=node-red-contrib-knx-ultimate versioning=npm
-ARG NODE_RED_KNX_ULTIMATE_VERSION=2.2.38
+ARG NODE_RED_KNX_ULTIMATE_VERSION=2.3.5
 
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --no-fund --no-package-lock --save-prod --save-exact \

@@ -141,7 +141,7 @@ jobs:
 
       - name: GitHub - Upload Image Artifact
         id: github_upload_image
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_file }}
@@ -174,7 +174,7 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
@@ -263,7 +263,7 @@ jobs:
 
       - name: GitHub - Upload Container Logs
         id: github_upload_logs
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+        uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
         if: always()
         with:
           name: ${{ format(steps.test_parameter.outputs.container_logs_name, matrix.package) }}
@@ -316,7 +316,7 @@ jobs:
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}
           path: ${{ needs.matrix_setup.outputs.docker_image_dir }}
@@ -339,7 +339,7 @@ jobs:
 
       - name: GitHub - Upload result to Code Scanning
         id: github_upload_sarif
-        uses: github/codeql-action/upload-sarif@012739e5082ff0c22ca6d6ab32e07c36df03c4a4 # v3.22.12
+        uses: github/codeql-action/upload-sarif@e5f05b81d5b6ff8cfa111c80c22c5fd02a384118 # v3.23.0
         # always run, even if the previous step failed due to found vulnerabilities (so it vulnerabilities get reported)
         # only run if the sarif file exists
         # only run on pushes on the default branch
@@ -380,14 +380,14 @@ jobs:
 
       - name: Git - Get Changed Files
         id: git_changed_files
-        uses: tj-actions/changed-files@716b1e13042866565e00e85fd4ec490e186c4a2f # v41.0.1
+        uses: tj-actions/changed-files@62f4729b5df35e6e0e01265fa70a82ccaf196b4b # v41.1.1
         with:
           files: |
             ${{ needs.matrix_setup.outputs.docker_working_dir }}/${{ matrix.package }}/Dockerfile
 
       - name: GitHub - Download Image Artifact
         id: github_download_image
-        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         if: steps.git_changed_files.outputs.any_changed == 'true'
         with:
           name: ${{ format(needs.matrix_setup.outputs.docker_artifact_name, matrix.package) }}

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
-FROM public.ecr.aws/lts/ubuntu:22.04@sha256:c88265b8f9e40ca21547aeecd90b688a167738fefda07b943cdf48f7d714d503 as build
+FROM public.ecr.aws/lts/ubuntu:22.04@sha256:f956764fa6a580f75a6f686aaf050ac1446eb0011c8e900bb4b4e28ca2b4e5c6 as build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -18,7 +18,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
       gpg="${GPG_VERSION}" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
 
-FROM public.ecr.aws/lts/ubuntu:22.04@sha256:c88265b8f9e40ca21547aeecd90b688a167738fefda07b943cdf48f7d714d503
+FROM public.ecr.aws/lts/ubuntu:22.04@sha256:f956764fa6a580f75a6f686aaf050ac1446eb0011c8e900bb4b4e28ca2b4e5c6
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -31,7 +31,7 @@ ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
 # renovate: datasource=repology depName=ubuntu_22_04/libcap2 versioning=loose
 ARG LIBCAP_VERSION="1:2.44-1ubuntu0.22.04.1"
 # renovate: datasource=github-releases depName=homebridge/homebridge-apt-pkg versioning=loose
-ARG HOMEBRIDGE_VERSION="1.1.5"
+ARG HOMEBRIDGE_VERSION="1.1.6"
 
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     # Setup repository
@@ -56,9 +56,9 @@ ARG NPM_CACHE_FOLDER="/tmp/npm_cache"
 # renovate: datasource=npm depName=homebridge-fritz-platform versioning=npm
 ARG HOMEBRIDGE_FRITZ_PLATFORM_VERSION=6.0.19
 # renovate: datasource=npm depName=homebridge-weather-plus versioning=npm
-ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.3.1
+ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.3.2
 # renovate: datasource=npm depName=homebridge-homeconnect versioning=npm
-ARG HOMEBRIDGE_HOMECONNECT_VERSION=0.37.3
+ARG HOMEBRIDGE_HOMECONNECT_VERSION=0.38.0
 # renovate: datasource=npm depName=homebridge-dummy versioning=npm
 ARG HOMEBRIDGE_DUMMY_VERSION=0.9.0
 # renovate: datasource=npm depName=homebridge-delay-switch versioning=npm
