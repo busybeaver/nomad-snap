@@ -6,9 +6,9 @@ DATADIR=/app/data
 
 files_ownership () {
   # Check if the $DATADIR folder is owned by the user invoking the container
-  if [ $(stat -c%u "$DATADIR") !=  $(id -u) ]; then
+  if [ $(stat -c%u "$DATADIR") != $(id -u) ]; then
     echo "File ownership incorrect, attempting to fix."
-    chown -hRc "$(id -u)":"$(id -g)" $DATADIR || echo "ERROR: Failed to set file ownership. Please run 'sudo chown -R $(id -u):$(id -g) /path/to/container/volume' to resolve."; exit 1
+    chown -hRc "$(id -u)":"$(id -g)" $DATADIR || echo "ERROR: Failed to set file ownership. Please run 'sudo chown -R $(id -u):$(id -g) /path/to/container/volume' to resolve." && exit 1
     echo "File ownership fix succesful! Continuing."
   fi
 
@@ -25,7 +25,7 @@ files_ownership () {
     echo "Directory permission fix succesful! Continuing."
   fi
 
-   # Check the R/W permissions on the files
+  # Check the R/W permissions on the files
   if [ $(stat -c%a "$DATADIR"/* | head -n 1) != 640 ]; then
     echo "File permissions incorrect. Attempting to fix."
     find $DATADIR -type f -exec chmod 640 {} \;
