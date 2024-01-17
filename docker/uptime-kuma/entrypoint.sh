@@ -41,7 +41,9 @@ files_ownership() {
 
 echo "==> Performing startup jobs and maintenance tasks"
 echo "==> Checking file permissions"
-files_ownership
+if [ "${RUN_FILE_OWNERSHIP_FIX}" == "TRUE" ]; then
+  files_ownership
+fi
 
 echo "==> Starting application as user: $(id -u) ($USER) and group $(id -g)"
 
