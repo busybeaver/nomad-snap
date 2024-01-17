@@ -41,7 +41,7 @@ files_ownership() {
 
 echo "==> Performing startup jobs and maintenance tasks"
 echo "==> Checking file permissions"
-if [ "${RUN_FILE_OWNERSHIP_FIX}" == "TRUE" ]; then
+if [ "${RUN_FILE_OWNERSHIP_FIX}" = "TRUE" ]; then
   files_ownership
 fi
 
