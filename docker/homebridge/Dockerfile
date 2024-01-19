@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
-FROM public.ecr.aws/lts/ubuntu:22.04@sha256:e97d0591a28fa0ba238b77ca1f61b2e99831774b4d3293100efc5e14906aee59 as build
+FROM public.ecr.aws/lts/ubuntu:22.04@sha256:836ed018a4a27c7016876c232f68c12de8494cf0ba56bfdb3a3e5ae3c9b04640 as build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -18,7 +18,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
       gpg="${GPG_VERSION}" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
 
-FROM public.ecr.aws/lts/ubuntu:22.04@sha256:e97d0591a28fa0ba238b77ca1f61b2e99831774b4d3293100efc5e14906aee59
+FROM public.ecr.aws/lts/ubuntu:22.04@sha256:836ed018a4a27c7016876c232f68c12de8494cf0ba56bfdb3a3e5ae3c9b04640
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
