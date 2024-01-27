@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
-FROM caddy:2.7.6-builder-alpine@sha256:6830ac674c20121639507269dc8c2fe4283de1be46818111db409812d10d5de1 AS build
+FROM caddy:2.7.6-builder-alpine@sha256:66d3f2d6a830bfe0c09be564238554563b916bc08561ae646a8c4fac40c8f1d2 AS build
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     xcaddy build \
@@ -8,7 +8,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     --with github.com/hslatman/caddy-crowdsec-bouncer \
     --with github.com/caddyserver/transform-encoder
 
-FROM caddy:2.7.6-alpine@sha256:a9044fcee0bb19da784385461997d320fb05f59a8388fb76cfbb99e8f527c643
+FROM caddy:2.7.6-alpine@sha256:80ca561981768b2c3568cc4bef3d4cd1f11c2a625c806bedeb8453aef98779a0
 
 COPY --from=build /usr/bin/caddy /usr/bin/caddy
 
