@@ -56,7 +56,7 @@ ARG NPM_CACHE_FOLDER="/tmp/npm_cache"
 # renovate: datasource=npm depName=homebridge-fritz-platform versioning=npm
 ARG HOMEBRIDGE_FRITZ_PLATFORM_VERSION=6.0.19
 # renovate: datasource=npm depName=homebridge-weather-plus versioning=npm
-ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.3.2
+ARG HOMEBRIDGE_WEATHER_PLUS_VERSION=3.3.3
 # renovate: datasource=npm depName=homebridge-homeconnect versioning=npm
 ARG HOMEBRIDGE_HOMECONNECT_VERSION=0.40.0
 # renovate: datasource=npm depName=homebridge-dummy versioning=npm
