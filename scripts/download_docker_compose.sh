@@ -9,7 +9,7 @@ fi
 echo "download_docker_compose.sh script started at $(date)"
 
 # renovate: datasource=docker depName=mikefarah/yq versioning=docker
-YQ_IMAGE_VERSION=4.40.5@sha256:32be61dc94d0acc44f513ba69d0fc05f1f92c2e760491f2a27e11fc13cde6327
+YQ_IMAGE_VERSION=4.40.7@sha256:d4a50c9fd0de48d0eb4223f35671b2bb106acf2c0bb269e67a6e95f6d9b5ebd4
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
 COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
