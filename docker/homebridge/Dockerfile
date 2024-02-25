@@ -49,7 +49,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     rm -rf /var/lib/apt/lists/* && \
     # Allow nodejs to run on privileged ports
     setcap 'cap_net_bind_service=+eip' /opt/homebridge/bin/node && \
-    # Make the start script executable 
+    # Make the start script executable
     chmod +x /opt/homebridge/start.sh
 
 WORKDIR /var/lib/homebridge
