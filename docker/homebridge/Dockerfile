@@ -48,7 +48,9 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     # Allow nodejs to run on privileged ports
-    setcap 'cap_net_bind_service=+eip' /opt/homebridge/bin/node
+    setcap 'cap_net_bind_service=+eip' /opt/homebridge/bin/node && \
+    # Make the start script executable 
+    chmod +x /opt/homebridge/start.sh
 
 WORKDIR /var/lib/homebridge
 ARG NPM_CACHE_FOLDER="/tmp/npm_cache"
@@ -80,3 +82,4 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
       "homebridge-camera-ffmpeg@${HOMEBRIDGE_CAMERA_FFMPEG_VERSION}" \
       "homebridge-dyson-pure-cool@${HOMEBRIDGE_DYSON_PURE_COOL_VERSION}"
 
+CMD [ "/opt/homebridge/start.sh" ]
