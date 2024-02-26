@@ -1,5 +1,5 @@
 {
   "NoColor": true,
   "IgnoreDefaults": true,
-  "Exclude": ["^\\.idea/", "^scripts/scripts\\.sha256"]
+  "Exclude": ["^\\.idea/", "\\.sha256$", "\\.sha256\\.sig$"]
 }
