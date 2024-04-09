@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1@sha256:ac85f380a63b13dfcefa89046420e1781752bab202122f8f50032edf31be0021
+# syntax=docker/dockerfile:1@sha256:dbbd5e059e8a07ff7ea6233b213b36aa516b4c53c645f1817a4dd18b83cbea56
 FROM public.ecr.aws/lts/ubuntu:22.04@sha256:722b3bddfe96b95441f626cf94974d79213090ecbd16954f71d7c080fb413561 as build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
