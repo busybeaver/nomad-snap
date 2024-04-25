@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1@sha256:dbbd5e059e8a07ff7ea6233b213b36aa516b4c53c645f1817a4dd18b83cbea56
+# syntax=docker/dockerfile:1@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
 FROM louislam/uptime-kuma:1.23.12-debian@sha256:bc6f244ecf277eeff6cc54262b724b693b386766c28fe78d7d5b9247d37907fd
 
 # renovate: datasource=repology depName=debian_10/libcap2 versioning=loose
