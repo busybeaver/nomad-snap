@@ -9,7 +9,7 @@ fi
 echo "acme_run.sh script started at $(date)"
 
 # renovate: datasource=docker depName=neilpang/acme.sh versioning=docker
-IMAGE_VERSION=latest@sha256:944907f1e390702660cea3bdaab7b5e0a9adf59833fe0a505a67e8cae3bf2b8d
+IMAGE_VERSION=latest@sha256:ac2265ce18fed76c30294baebdee62c06a80e203d4d950a6b02ba4810faa847f
 
 docker run \
   --rm \
