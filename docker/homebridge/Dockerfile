@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
-FROM public.ecr.aws/lts/ubuntu:22.04@sha256:1cc4019c277242e5fb710f2cf40af1590ad053b7d764efba48b051871dcc18d8 as build
+FROM public.ecr.aws/lts/ubuntu:24.04@sha256:d55d834bd8b4e1b720fe743ab90a295e8f50ca280aa8c02700a5440461ea160e as build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
-ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
-# renovate: datasource=repology depName=ubuntu_22_04/curl versioning=loose
-ARG CURL_VERSION="7.81.0-1ubuntu1.16"
-# renovate: datasource=repology depName=ubuntu_22_04/gnupg2 versioning=loose
-ARG GPG_VERSION="2.2.27-3ubuntu2.1"
+# renovate: datasource=repology depName=ubuntu_24_04/ca-certificates versioning=loose
+ARG CA_CERTIFICATES_VERSION="20240203"
+# renovate: datasource=repology depName=ubuntu_24_04/curl versioning=loose
+ARG CURL_VERSION="8.5.0-2ubuntu10.1"
+# renovate: datasource=repology depName=ubuntu_24_04/gnupg2 versioning=loose
+ARG GPG_VERSION="2.4.4-2ubuntu17"
 
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
@@ -18,7 +18,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
       gpg="${GPG_VERSION}" && \
     curl -sSfL https://repo.homebridge.io/KEY.gpg | gpg --dearmor -o /tmp/homebridge.gpg
 
-FROM public.ecr.aws/lts/ubuntu:22.04@sha256:1cc4019c277242e5fb710f2cf40af1590ad053b7d764efba48b051871dcc18d8
+FROM public.ecr.aws/lts/ubuntu:24.04@sha256:d55d834bd8b4e1b720fe743ab90a295e8f50ca280aa8c02700a5440461ea160e
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -26,10 +26,10 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=60s CMD curl 
 
 COPY --from=build /tmp/homebridge.gpg /etc/apt/trusted.gpg.d/homebridge.gpg
 
-# renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
-ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
-# renovate: datasource=repology depName=ubuntu_22_04/libcap2 versioning=loose
-ARG LIBCAP_VERSION="1:2.44-1ubuntu0.22.04.1"
+# renovate: datasource=repology depName=ubuntu_24_04/ca-certificates versioning=loose
+ARG CA_CERTIFICATES_VERSION="20240203"
+# renovate: datasource=repology depName=ubuntu_24_04/libcap2 versioning=loose
+ARG LIBCAP_VERSION="1:2.66-5ubuntu2"
 # renovate: datasource=github-releases depName=homebridge/homebridge-apt-pkg versioning=loose
 ARG HOMEBRIDGE_VERSION="v1.2.1"
 
