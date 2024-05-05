@@ -3,12 +3,12 @@ FROM public.ecr.aws/lts/ubuntu:24.04@sha256:d55d834bd8b4e1b720fe743ab90a295e8f50
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# renovate: datasource=repology depName=ubuntu_22_04/ca-certificates versioning=loose
-ARG CA_CERTIFICATES_VERSION="20230311ubuntu0.22.04.1"
-# renovate: datasource=repology depName=ubuntu_22_04/curl versioning=loose
-ARG CURL_VERSION="7.81.0-1ubuntu1.16"
-# renovate: datasource=repology depName=ubuntu_22_04/gnupg2 versioning=loose
-ARG GPG_VERSION="2.2.27-3ubuntu2.1"
+# renovate: datasource=repology depName=ubuntu_24_04/ca-certificates versioning=loose
+ARG CA_CERTIFICATES_VERSION="20240203"
+# renovate: datasource=repology depName=ubuntu_24_04/curl versioning=loose
+ARG CURL_VERSION="8.5.0-2ubuntu10.1"
+# renovate: datasource=repology depName=ubuntu_24_04/gnupg2 versioning=loose
+ARG GPG_VERSION="2.4.4-2ubuntu17"
 
 RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
