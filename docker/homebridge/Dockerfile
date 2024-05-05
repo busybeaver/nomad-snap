@@ -43,7 +43,7 @@ RUN --mount=type=cache,id=apt,sharing=locked,target=/var/cache/apt \
     apt-get update && \
     apt-get install --yes --no-install-recommends --no-install-suggests \
       libcap2-bin="${LIBCAP_VERSION}" \
-      homebridge="${HOMEBRIDGE_VERSION}" && \
+      homebridge="${HOMEBRIDGE_VERSION:1}" && \
     # Cleanup
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
