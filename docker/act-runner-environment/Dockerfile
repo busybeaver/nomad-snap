@@ -2,7 +2,7 @@
 
 # A Debian based minimal Node.js environment with Python installed; mostly used for running the GitHub Action CI
 # locally via "act"; tries to mimic the runtime environment of GitHub Actions while being as minimal as possible
-FROM node:lts-bullseye-slim@sha256:0a8e0ff0a4ba6c93a5308922fdd14fbbc277e8e0b3d62d4f269c2f0d778c8272
+FROM node:lts-bullseye-slim@sha256:31c27cd248772637259b57fcb6a3b0027e5cedfe0f619524d6a88fb42911fd85
 
 LABEL org.opencontainers.image.title="A minimal act runner environment with Python 3 installed" \
       org.opencontainers.image.description="A Debian based minimal Node.js environment with Python installed; mostly used for running the GitHub Action CI locally via \"act\"; tries to mimic the runtime environment of GitHub Actions while being as minimal as possible" \
