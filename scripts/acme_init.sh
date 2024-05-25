@@ -26,7 +26,12 @@ export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/syno.env"
 export CERT_DOMAIN_1="adguard1.mollner.cloud"
 export CERT_DOMAIN_2="dns1.mollner.cloud"
 export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/adguard.env"
-bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN_1" --domain "$CERT_DOMAIN_2" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}" --post-hook "set -x && id && cp \$CERT_KEY_PATH ${VOLUME_BASE_DIRECTORY}/adguard/conf/cert.key && cp \$CERT_PATH ${VOLUME_BASE_DIRECTORY}/adguard/conf/cert.cer && docker restart adguard-home" --force
+# bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN_1" --domain "$CERT_DOMAIN_2" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}" --post-hook "set -x && id && cp \$CERT_KEY_PATH ${VOLUME_BASE_DIRECTORY}/adguard/conf/cert.key && cp \$CERT_PATH ${VOLUME_BASE_DIRECTORY}/adguard/conf/cert.cer && docker restart adguard-home" --force
+
+# uptime-kuma
+export CERT_DOMAIN="uptime.mollner.cloud"
+export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/adguard.env"
+bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}" --post-hook "\$CERT_KEY_PATH ${VOLUME_BASE_DIRECTORY}/adguard/conf/cert.key && cp \$CERT_PATH ${VOLUME_BASE_DIRECTORY}/adguard/conf/cert.cer" --force
 
 # homebridge
 export CERT_DOMAIN="homebridge.mollner.cloud"
