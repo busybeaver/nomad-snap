@@ -31,7 +31,7 @@ export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/adguard.env"
 # uptime-kuma
 export CERT_DOMAIN="uptime.mollner.cloud"
 export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/uptime-kuma.env"
-bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}" --post-hook "set -x && \$CERT_KEY_PATH /volume_base_directory/uptime-kuma/cert/cert.key && cp \$CERT_PATH /volume_base_directory/uptime-kuma/cert/cert.cer && chown -R ${UPTIME_KUMA_USER}:${DOCKER_USER_GROUP} /volume_base_directory/uptime-kuma/cert" --force
+bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}" --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/uptime-kuma/cert/cert.key && cp \$CERT_PATH /volume_base_directory/uptime-kuma/cert/cert.cer && chown -R ${UPTIME_KUMA_USER}:${DOCKER_USER_GROUP} /volume_base_directory/uptime-kuma/cert" --force
 
 # homebridge
 export CERT_DOMAIN="homebridge.mollner.cloud"
