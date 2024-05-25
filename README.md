@@ -7,10 +7,11 @@ Building, packaging, and publishing services and applications for the personal H
 ## Target Systems/Environments
 
 - [Ubuntu Core](https://ubuntu.com/core) ([Snap Packages](https://snapcraft.io/))
-- [Synology DSM](https://www.synology.com/en-global/dsm) ([SPK Packages](https://kb.synology.com/en-us/DSM/tutorial/How_to_install_applications_with_Package_Center))
 - [Docker](https://www.docker.com/) ([Images](https://hub.docker.com/))
 
 ## Snap Packages
+
+_Update 2024-03-04:_ Temporary unmaintained since those currently aren't used anymore in the local setup/environment.
 
 Published to the [Snapcraft store](https://snapcraft.io/) (right now privately/unlisted).
 
@@ -19,10 +20,6 @@ Published to the [Snapcraft store](https://snapcraft.io/) (right now privately/u
 
 _Note:_ Canonical provides a HashiCorp [Vault snap package](https://snapcraft.io/vault), so no need to build/create it.
 
-## SPK Packages
-
-- todo
-
 ## Docker Images
 
 Docker images are pushed/published to GitHub packages (the ghcr.io registry) within this repository.
@@ -30,6 +27,9 @@ Docker images are pushed/published to GitHub packages (the ghcr.io registry) wit
 - A modified [HomeAssistant](https://www.home-assistant.io/) version that can be run as non-root user
 - A [Caddy](https://caddyserver.com/) server bundling multiple plugins and the possibility to run against port 80 and 443 as non-root user
 - A minimal act runner environment with Python 3 installed
+- A modified [Homebridge](https://homebridge.io) version that has already a couple of plugins build in so it can be run in a read-only filesystem with a non-root user on privileged ports.
+- A custom [Node-RED](https://nodered.org) version that has already a couple of plugins build in so it can be run in a read-only filesystem with a non-root user on privileged ports.
+- A [Uptime Kuma](https://uptime.kuma.pet) version that allows running the services on port 80 and 443 as non-root user.
 
 ## Scripts
 
