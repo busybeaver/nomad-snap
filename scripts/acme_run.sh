@@ -15,6 +15,7 @@ docker run \
   --rm \
   --net=host \
   --volume "${ACME_HOME:-$(pwd)/output}":/acme.sh \
+  --volume "${VOLUME_BASE_DIRECTORY:-$(pwd)/volume_base_directory}":/volume_base_directory \
   --env-file "${GLOBAL_ENV_FILE}" \
   --env-file "${ENV_FILE}" \
   "neilpang/acme.sh:${IMAGE_VERSION}" "$@"
