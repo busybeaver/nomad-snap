@@ -46,6 +46,13 @@ jobs:
       contents: read
 
     steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
@@ -84,6 +91,13 @@ jobs:
       contents: read
 
     steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
@@ -119,6 +133,13 @@ jobs:
       contents: read
 
     steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
@@ -168,6 +189,13 @@ jobs:
       contents: read
 
     steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
       - name: Git - Checkout
         id: git_checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
@@ -323,6 +351,13 @@ jobs:
       contents: read
 
     steps:
+      - name: StepSecurity - Harden Github-hosted Runners
+        uses: step-security/harden-runner@f086349bfa2bd1361f7909c78558e816508cdc10 # v2.8.0
+        with:
+          egress-policy: audit
+          disable-telemetry: true
+          disable-sudo: true
+
       - name: GitHub - Download Snap Artifact
         id: github_download
         uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
