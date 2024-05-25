@@ -14,13 +14,13 @@ YQ_IMAGE_VERSION=4.44.1@sha256:bcb889a1f9bdb0613c8a054542d02360c2b1b35521041be3e
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
 COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
 
-GIT_REPO_PATH="${GIT_ORG}/${GIT_REPOSITORY}"
+GIT_REPO_PATH="busybeaver/${GIT_REPOSITORY:-homelab-services}"
 
 cd "${CHECKOUT_DIRECTORY:-.}" || exit 1
 
 # requires SSH key or deploy key present
 rm -rf ./tmp
-git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "git@github.com:${GIT_REPO_PATH}.git" ./tmp
+git clone --branch main --single-branch --depth 1 --filter=blob:limit=1m "https://github.com/${GIT_REPO_PATH}.git" ./tmp
 cd ./tmp || exit 1
 
 if [ "${SKIP_VERIFICATION:-}" != "TRUE" ]; then
