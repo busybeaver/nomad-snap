@@ -3,6 +3,21 @@ FROM nodered/node-red:3.1.9-18-minimal@sha256:4127685ca1286cad5330ac09d389102f37
 
 ARG NPM_CACHE_FOLDER="/usr/src/node-red/npm_cache"
 
+# check here on which alpine version node-red is based on and update the renovate config when needed:
+# https://github.com/node-red/node-red-docker/blob/master/docker-custom/Dockerfile.custom
+# https://repology.org/project/libcap/versions
+# ---
+# renovate: datasource=repology depName=alpine_3_19/libcap versioning=loose
+ARG LIBCAP_VERSION="2.69-r1"
+
+# Allow nodejs to run on privileged ports
+USER root
+RUN --mount=type=cache,id=apk,sharing=locked,target=/var/cache/apk \
+    apk --update-cache upgrade && \
+    apk --update-cache add libcap=${LIBCAP_VERSION} && \
+    setcap 'cap_net_bind_service=+eip' /usr/local/bin/node
+USER node-red
+
 # renovate: datasource=npm depName=node-red-contrib-homekit-bridged versioning=npm
 ARG NODE_RED_HOMEKIT_BRIDGED_VERSION=1.6.1
 # renovate: datasource=npm depName=node-red-contrib-huemagic versioning=npm
