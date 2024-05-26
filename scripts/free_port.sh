@@ -2,9 +2,13 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+LC_ALL=C
+
+shopt -s nocasematch
 if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
+shopt -u nocasematch
 
 echo "free_port.sh script started at $(date)"
 

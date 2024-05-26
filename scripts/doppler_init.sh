@@ -10,6 +10,8 @@ if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
 fi
 shopt -u nocasematch
 
+echo "doppler_init.sh script started at $(date)"
+
 # renovate: datasource=github-releases depName=DopplerHQ/cli versioning=loose
 DOPPLER_VERSION="3.68.0"
 
@@ -25,3 +27,5 @@ sudo chown root:root "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler"
 sudo mv "${DOPPLER_TEMP_INSTALL_DIRECTORY}/doppler" /usr/local/bin/doppler
 
 rm -rf "${DOPPLER_TEMP_INSTALL_DIRECTORY}"
+
+echo "doppler_init.sh script finished successfully at $(date)"
