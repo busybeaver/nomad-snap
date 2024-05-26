@@ -11,7 +11,7 @@ fi
 shopt -u nocasematch
 
 # renovate: datasource=github-releases depName=DopplerHQ/cli versioning=loose
-DOPPLER_VERSION="3.66.5"
+DOPPLER_VERSION="3.68.0"
 
 DOPPLER_TEMP_INSTALL_DIRECTORY="/tmp/doppler-install"
 
