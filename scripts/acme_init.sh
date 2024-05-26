@@ -39,7 +39,8 @@ if [ "${INIT_FRITZ_BOX^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="fritz-box.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="router.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/fritz-box.env"
-  bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" ${ADDITIONAL_ARGUMENTS:-}
+  # fritzbox does not support ecc keys, only rsa keys
+  bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" --keylength 4096 ${ADDITIONAL_ARGUMENTS:-}
   bash scripts/acme_run.sh --deploy --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --deploy-hook fritzbox --insecure
   echo "--- Finished certificate renewal setup for Fritz!Box ---"
 fi
