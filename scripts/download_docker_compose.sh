@@ -77,7 +77,7 @@ mv "./tmp/${DOCKER_COMPOSE_FILE}" "./${DOCKER_COMPOSE_FILE}"
 rm -rf ./tmp
 
 echo "Start/update docker-compose in detached mode"
-docker-compose --env-file <(doppler secrets download --no-file --format docker) --file "${DOCKER_COMPOSE_FILE}" up --no-color --detach --remove-orphans
+doppler run --mount .env --mount-max-reads 1 -- docker-compose --file "${DOCKER_COMPOSE_FILE}" up --no-color --detach --remove-orphans
 sleep 10
 docker-compose --file "${DOCKER_COMPOSE_FILE}" logs --no-color --tail="25"
 
