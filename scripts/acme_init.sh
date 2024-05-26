@@ -51,7 +51,7 @@ if [ "${INIT_ADGUARD^^}" == "TRUE" ]; then
   export CERT_DOMAIN_2="dns1.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/adguard.env"
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" --force \
-    --renew-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/adguard/conf/certs/cert.key && cp \$CERT_PATH /volume_base_directory/adguard/conf/certs/cert.cer && chown -R ${ADGUARD_USER}:${DOCKER_USER_GROUP} /volume_base_directory/adguard/conf/certs"
+    --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/adguard/conf/certs/cert.key && cp \$CERT_PATH /volume_base_directory/adguard/conf/certs/cert.cer && chown -R ${ADGUARD_USER}:${DOCKER_USER_GROUP} /volume_base_directory/adguard/conf/certs"
   echo "--- Finished certificate renewal setup for Adguard 1 ---"
 fi
 
@@ -63,7 +63,7 @@ if [ "${INIT_UPTIME_KUMA^^}" == "TRUE" ]; then
   export CERT_DOMAIN_3="health.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/uptime-kuma.env"
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --domain "${CERT_DOMAIN_3}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" --force \
-    --renew-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/uptime-kuma/cert/cert.key && cp \$CERT_PATH /volume_base_directory/uptime-kuma/cert/cert.cer && chown -R ${UPTIME_KUMA_USER}:${DOCKER_USER_GROUP} /volume_base_directory/uptime-kuma/cert"
+    --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/uptime-kuma/cert/cert.key && cp \$CERT_PATH /volume_base_directory/uptime-kuma/cert/cert.cer && chown -R ${UPTIME_KUMA_USER}:${DOCKER_USER_GROUP} /volume_base_directory/uptime-kuma/cert"
   echo "--- Finished certificate renewal setup for Uptime Kuma ---"
 fi
 
@@ -92,7 +92,7 @@ if [ "${INIT_NODE_RED^^}" == "TRUE" ]; then
   export CERT_DOMAIN_2="status.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/node-red.env"
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" --force \
-    --renew-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/node-red/cert/cert.key && cp \$CERT_PATH /volume_base_directory/node-red/cert/cert.cer && chown -R ${NODE_RED_USER}:${DOCKER_USER_GROUP} /volume_base_directory/node-red/cert"
+    --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/node-red/cert/cert.key && cp \$CERT_PATH /volume_base_directory/node-red/cert/cert.cer && chown -R ${NODE_RED_USER}:${DOCKER_USER_GROUP} /volume_base_directory/node-red/cert"
   echo "--- Finished certificate renewal setup for Node-RED ---"
 fi
 
