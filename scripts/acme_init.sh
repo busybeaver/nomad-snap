@@ -91,7 +91,7 @@ if [ "${INIT_NODE_RED^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="node-red.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="automation.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/node-red.env"
-  bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" --force \
+  bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" \
     --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/node-red/cert/cert.key && cp \$CERT_PATH /volume_base_directory/node-red/cert/cert.cer && chown -R ${NODE_RED_USER}:${DOCKER_USER_GROUP} /volume_base_directory/node-red/cert"
   echo "--- Finished certificate renewal setup for Node-RED ---"
 fi
