@@ -8,6 +8,7 @@ shopt -s nocasematch
 if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
+shopt -u nocasematch
 
 echo "acme_init.sh script started at $(date)"
 
@@ -22,7 +23,7 @@ export ACME_HOME="${HOMELAB_PACKAGES_CONFIG}/acme.sh"
 export GLOBAL_ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/cf.env"
 
 # synology nas
-if [ "${INIT_SYNOLOGY:-}" == "TRUE" ]; then
+if [ "${INIT_SYNOLOGY^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="nas1.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="synology1.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/syno.env"
@@ -31,7 +32,7 @@ if [ "${INIT_SYNOLOGY:-}" == "TRUE" ]; then
 fi
 
 # fritz!box
-if [ "${INIT_FRITZ_BOX:-}" == "TRUE" ]; then
+if [ "${INIT_FRITZ_BOX^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="fritz-box.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="router.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/fritz-box.env"
@@ -40,7 +41,7 @@ if [ "${INIT_FRITZ_BOX:-}" == "TRUE" ]; then
 fi
 
 # adguard
-if [ "${INIT_ADGUARD:-}" == "TRUE" ]; then
+if [ "${INIT_ADGUARD^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="adguard1.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="dns1.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/adguard.env"
@@ -49,7 +50,7 @@ if [ "${INIT_ADGUARD:-}" == "TRUE" ]; then
 fi
 
 # uptime-kuma
-if [ "${INIT_UPTIME_KUMA:-}" == "TRUE" ]; then
+if [ "${INIT_UPTIME_KUMA^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="uptime.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="status.${ROOT_DOMAIN}"
   export CERT_DOMAIN_3="health.${ROOT_DOMAIN}"
@@ -59,27 +60,26 @@ if [ "${INIT_UPTIME_KUMA:-}" == "TRUE" ]; then
 fi
 
 # homebridge
-if [ "${INIT_HOMEBRIDGE:-}" == "TRUE" ]; then
+if [ "${INIT_HOMEBRIDGE^^}" == "TRUE" ]; then
   export CERT_DOMAIN="homebridge.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/homebridge.env"
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}"
 fi
 
 # n8n
-if [ "${INIT_N8N:-}" == "TRUE" ]; then
+if [ "${INIT_N8N^^}" == "TRUE" ]; then
   export CERT_DOMAIN="n8n.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/n8n.env"
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}"
 fi
 
 # node-red
-if [ "${INIT_NODE_RED:-}" == "TRUE" ]; then
+if [ "${INIT_NODE_RED^^}" == "TRUE" ]; then
   export CERT_DOMAIN_1="node-red.${ROOT_DOMAIN}"
   export CERT_DOMAIN_2="status.${ROOT_DOMAIN}"
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/node-red.env"
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" \
     --renew-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/node-red/cert/cert.key && cp \$CERT_PATH /volume_base_directory/node-red/cert/cert.cer && chown -R ${NODE_RED_USER}:${DOCKER_USER_GROUP} /volume_base_directory/node-red/cert"
 fi
-shopt -u nocasematch
 
 echo "acme_init.sh script finished successfully at $(date)"
