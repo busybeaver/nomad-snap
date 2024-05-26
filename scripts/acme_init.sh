@@ -2,6 +2,9 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+LC_ALL=C
+
+shopt -s nocasematch
 if [ "${DEBUG_SCRIPT:-}" == "TRUE" ]; then
   set -x
 fi
@@ -47,5 +50,7 @@ export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/n8n.env"
 export CERT_DOMAIN="node-red.mollner.cloud"
 export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/node-red.env"
 # bash scripts/acme_run.sh --issue --domain "$CERT_DOMAIN" --dns "$CERT_DNS" --server "${ACME_DIRECTORY_RESOURCE}"
+
+shopt -u nocasematch
 
 echo "acme_init.sh script finished successfully at $(date)"
