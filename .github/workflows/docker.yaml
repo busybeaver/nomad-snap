@@ -275,7 +275,8 @@ jobs:
 
           echo "Running general teardown..."
           # sudo is required, otherwise "find" runs in permission errors
-          CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name "docker_output.log")
+          # CONTAINER_LOGS_FILE=$(sudo find /tmp/ -name "docker_output.log" || "")
+          CONTAINER_LOGS_FILE="not_existent.log"
           if test -f "$CONTAINER_LOGS_FILE"; then
             echo "container_logs=${CONTAINER_LOGS_FILE}" >> "$GITHUB_OUTPUT"
             echo "Container logs found at \"$CONTAINER_LOGS_FILE\":"
