@@ -16,7 +16,7 @@ echo "download_docker_compose.sh script started at $(date)"
 YQ_IMAGE_VERSION=4.44.1@sha256:bcb889a1f9bdb0613c8a054542d02360c2b1b35521041be3e1bd8fbd0534d411
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
-COSIGN_IMAGE_VERSION=1.13.1@sha256:0cede189f264e3939020acd5333d5854fcb60c372cb7f30d7deaefff57ee2965
+COSIGN_IMAGE_VERSION=2.2.4@sha256:fd2548908d9f91fce3edb628da356fda8cca98eecc05a471c3147aac24460acc
 
 GIT_REPO_PATH="busybeaver/${GIT_REPOSITORY:-homelab-services}"
 
