@@ -27,6 +27,6 @@ jobs:
 
     uses: busybeaver/homelab-shared/.github/workflows/general.yaml@89d1411a4749ab9fbf5be46822147c26fcc1e235 # v1.1.1
     with:
-      lintTypescript: false
+      lintDocker: true
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
