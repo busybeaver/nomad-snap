@@ -55,7 +55,7 @@ jobs:
             echo "matrix=$(python3 -c 'import os, json; print(json.dumps(os.listdir(".")))')"
             echo "image_name_latest=${IMAGE_NAME}:latest"
             echo "image_name_git_tag=${IMAGE_NAME}:$(git rev-parse --short HEAD)"
-            echo "image_name_date=${IMAGE_NAME}:$(date +%F)"
+            echo "image_name_date=${IMAGE_NAME}:$(date +%F | sed 's/-/\./g')"
             echo "docker_registry=${{ env.REGISTRY }}"
             echo "docker_working_dir=./docker"
             echo "docker_image_dir=/tmp"
