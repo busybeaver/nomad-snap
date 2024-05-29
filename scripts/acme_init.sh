@@ -55,7 +55,7 @@ if [ "${INIT_ADGUARD^^}" == "TRUE" ]; then
   export ENV_FILE="${HOMELAB_PACKAGES_CONFIG}/env_files/adguard.env"
   # shellcheck disable=SC2086
   bash scripts/acme_run.sh --issue --domain "${CERT_DOMAIN_1}" --domain "${CERT_DOMAIN_2}" --dns "${CERT_DNS}" --server "${ACME_DIRECTORY_RESOURCE}" ${ADDITIONAL_ARGUMENTS:-} \
-    --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/adguard/conf/certs/cert.key && cp \$CERT_PATH /volume_base_directory/adguard/conf/certs/cert.cer && chown -R ${ADGUARD_USER}:${DOCKER_USER_GROUP} /volume_base_directory/adguard/conf/certs"
+    --post-hook "set -x && cp \$CERT_KEY_PATH /volume_base_directory/adguard/cert/cert.key && cp \$CERT_PATH /volume_base_directory/adguard/cert/cert.cer && chown -R ${ADGUARD_USER}:${DOCKER_USER_GROUP} /volume_base_directory/adguard/cert"
   echo "--- Finished certificate renewal setup for Adguard 1 ---"
 fi
 
