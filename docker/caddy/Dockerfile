@@ -16,8 +16,8 @@ COPY --from=build /usr/bin/caddy /usr/bin/caddy
 # https://github.com/caddyserver/caddy-docker
 # https://repology.org/project/libcap/versions
 # ---
-# renovate: datasource=repology depName=alpine_3_18/libcap versioning=loose
-ARG LIBCAP_VERSION="2.69-r0"
+# renovate: datasource=repology depName=alpine_3_20/libcap versioning=loose
+ARG LIBCAP_VERSION="2.70-r0"
 
 # Update outdated (and potentially vulnerable) dependencies;
 # Allow to run Caddy on privileged ports (as a non-root user)
