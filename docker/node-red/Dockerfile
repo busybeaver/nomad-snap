@@ -50,7 +50,7 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-contrib-dwd-local-weather@${NODE_RED_DWD_LOCAL_WEATHER_VERSION} \
     node-red-node-openweathermap@${NODE_RED_OPENWEATHERMAP_VERSION} \
     node-red-contrib-sun-position@${NODE_RED_SUN_POSITION_VERSION} \
-    node-red-node-ping=${NODE_RED_NODE_PING_VERSION}
+    node-red-node-ping@${NODE_RED_NODE_PING_VERSION}
 
 # Update outdated (and potentially vulnerable) dependencies
 USER root
