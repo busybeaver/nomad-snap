@@ -73,7 +73,7 @@ ARG HOMEBRIDGE_DYSON_PURE_COOL_VERSION=2.7.10
 # hadolint ignore=SC1091
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     . /opt/homebridge/source.sh && \
-    npm_config_cache="${NPM_CACHE_FOLDER}" npm install --save-prod --no-package-lock --save-exact \
+    npm_config_cache="${NPM_CACHE_FOLDER}" npm install --save-prod --no-package-lock --save-exact --no-update-notifier \
       "homebridge-fritz-platform@${HOMEBRIDGE_FRITZ_PLATFORM_VERSION}" \
       "homebridge-weather-plus@${HOMEBRIDGE_WEATHER_VERSION}" \
       "homebridge-homeconnect@${HOMEBRIDGE_HOMECONNECT_VERSION}" \
