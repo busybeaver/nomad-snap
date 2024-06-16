@@ -36,6 +36,8 @@ ARG NODE_RED_DWD_LOCAL_WEATHER_VERSION=1.0.5
 ARG NODE_RED_OPENWEATHERMAP_VERSION=1.0.1
 # renovate: datasource=npm depName=node-red-contrib-sun-position versioning=npm
 ARG NODE_RED_SUN_POSITION_VERSION=2.2.0-beta3
+# renovate: datasource=npm depName=node-red-node-ping versioning=npm
+ARG NODE_RED_NODE_PING_VERSION=0.3.3
 
 RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CACHE_FOLDER}" \
     npm_config_cache="${NPM_CACHE_FOLDER}" npm install --no-fund --no-package-lock --save-prod --save-exact --no-update-notifier \
@@ -47,7 +49,8 @@ RUN --mount=type=cache,id=npm,sharing=locked,uid=1000,gid=1000,target="${NPM_CAC
     node-red-contrib-sonos-events@${NODE_RED_SONOS_EVENTS_VERSION} \
     node-red-contrib-dwd-local-weather@${NODE_RED_DWD_LOCAL_WEATHER_VERSION} \
     node-red-node-openweathermap@${NODE_RED_OPENWEATHERMAP_VERSION} \
-    node-red-contrib-sun-position@${NODE_RED_SUN_POSITION_VERSION}
+    node-red-contrib-sun-position@${NODE_RED_SUN_POSITION_VERSION} \
+    node-red-node-ping=${NODE_RED_NODE_PING_VERSION}
 
 # Update outdated (and potentially vulnerable) dependencies
 USER root
