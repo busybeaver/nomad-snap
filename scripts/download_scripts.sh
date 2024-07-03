@@ -13,7 +13,7 @@ shopt -u nocasematch
 echo "download_scripts.sh script started at $(date)"
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
-COSIGN_IMAGE_VERSION=2.2.4@sha256:d3b3a8dfbfd40a6c4fd9957bd0dcaef0e97ed2f20f4f493b64ff11021c2ce1ef
+COSIGN_IMAGE_VERSION=2.2.4@sha256:be0aeb92529c3f3a55f7126e8e42365732dc881498b12dd9dba427a578f57855
 
 cd "${CHECKOUT_DIRECTORY:-.}" || exit 1
 
