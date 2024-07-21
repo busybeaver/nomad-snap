@@ -155,7 +155,7 @@ jobs:
 
       - name: Snapcraft - Build Artifact
         id: snapcraft_build
-        uses: snapcore/action-build@2096990827aa966f773676c8a53793c723b6b40f # v1.2.0
+        uses: snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79 # v1.3.0
         with:
           path: ${{ needs.matrix_setup.outputs.snap_working_dir }}/${{ matrix.package }}
           snapcraft-args: --build-for=${{ matrix.arch }}
