@@ -186,7 +186,7 @@ jobs:
 
     env:
       # renovate: datasource=github-releases depName=goss-org/goss
-      GOSS_VERSION: v0.4.7
+      GOSS_VERSION: v0.4.8
 
     steps:
       - name: StepSecurity - Harden Github-hosted Runners
