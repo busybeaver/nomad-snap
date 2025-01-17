@@ -13,7 +13,7 @@ shopt -u nocasematch
 echo "download_docker_compose.sh script started at $(date)"
 
 # renovate: datasource=docker depName=mikefarah/yq versioning=docker
-YQ_IMAGE_VERSION=4.44.2@sha256:2ecaeeff15976cd00c4627f119b592b5c9311b7080beff469211606c42c6cbd2
+YQ_IMAGE_VERSION=4.45.1@sha256:2c100efaca06e95ffe452cfe9bfc0048b493f0f3a072d5fe06f828c638d9462b
 
 # renovate: datasource=docker depName=bitnami/cosign versioning=docker
 COSIGN_IMAGE_VERSION=2.3.0@sha256:22cabf1d25cac08dfd2b9e92b4fe71f406a0b4cb6a049fefa2eaf3a5cea4d339
