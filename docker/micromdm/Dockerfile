@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1@sha256:fe40cf4e92cd0c467be2cfc30657a680ae2398318afd50b0c80585784c604f28
+# syntax=docker/dockerfile:1@sha256:93bfd3b68c109427185cd78b4779fc82b484b0b7618e36d0f104d4d801e66d25
 FROM ghcr.io/micromdm/micromdm:v1.12.1@sha256:4854deb1a413bffdb81616af1ae14316185dcab51b88c421f0516d8541596bee
 
 # Enabling the docker healthcheck below
